@@ -26,7 +26,27 @@ public class RequestParameters
       parameters.put(entry.getKey(), new ArrayList<String>(Arrays.asList(entry.getValue())));
     }
   }
-  
+
+  public RequestParameters(String parametersString)
+  {
+    parameters = new HashMap<String, List<String>>();
+    String[] parameterValues = parametersString.split(",");
+    for (String parameterValue : parameterValues)
+    {
+      String[] parameter = parameterValue.split("=");
+      if (parameter.length == 2)
+      {
+        String key = parameter[0].trim();
+        String value = parameter[1].trim();
+        if (!parameters.containsKey(key))
+        {
+          parameters.put(key, new ArrayList<String>());
+        }
+        parameters.get(key).add(value);
+      }
+    }
+  }
+
   void initializeForRoute(RouteConfig routeConfig)
   {
     for (Entry<String, List<String>> entry : routeConfig.defaultParameters.entrySet())
@@ -57,7 +77,7 @@ public class RequestParameters
   {
     return parameters.containsKey(name);
   }
-  
+
   public int count(String name)
   {
     List<String> vals = getValues(name);

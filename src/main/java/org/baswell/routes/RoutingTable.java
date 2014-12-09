@@ -76,7 +76,12 @@ public class RoutingTable
       throw new InvalidPatternException("Invalid pattern: " + pattern);
     }
   }
-  
+
+  public List<RouteNode> getRouteNodes()
+  {
+    return new ArrayList<RouteNode>(routeNodes);
+  }
+
   public RoutingTable add(Object... instancesOrClasses)
   {
     for (Object obj : instancesOrClasses) addedObjects.add(obj);

@@ -1,7 +1,5 @@
 package org.baswell.routes;
 
-import org.baswell.routes.meta.MetaHandler;
-
 import java.io.IOException;
 import java.util.regex.Pattern;
 
@@ -68,7 +66,7 @@ public class RoutesFilter implements Filter
 
         if (RoutingTable.routingTable.routesConfig.hasRoutesMetaPath())
         {
-          webHandler = new MetaHandler(RoutingTable.routingTable.routesConfig);
+          webHandler = new MetaHandler(RoutingTable.routingTable, RoutingTable.routingTable.routesConfig);
         }
       }
     }

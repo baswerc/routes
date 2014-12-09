@@ -11,7 +11,7 @@ import javax.servlet.http.HttpServletRequest;
 public class RequestPath
 {
   private final List<String> segments;
-  
+
   public RequestPath(HttpServletRequest servletRequest)
   {
     this(parseUrlSegments(servletRequest.getRequestURI(), servletRequest.getContextPath()));
