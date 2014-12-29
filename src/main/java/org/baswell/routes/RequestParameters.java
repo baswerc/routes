@@ -13,6 +13,8 @@ public class RequestParameters
 {
   final Map<String, List<String>> parameters;
 
+  final String queryString;
+
   public RequestParameters(HttpServletRequest request)
   {
     this(request.getParameterMap());
@@ -21,10 +23,21 @@ public class RequestParameters
   public RequestParameters(Map<String, String[]> parameterMap)
   {
     parameters = new HashMap<String, List<String>>();
+    StringBuilder queryStringBuilder = new StringBuilder();
+    int index = 0;
     for (Entry<String, String[]> entry : parameterMap.entrySet())
     {
-      parameters.put(entry.getKey(), new ArrayList<String>(Arrays.asList(entry.getValue())));
+      String key = entry.getKey();
+      String[] values = entry.getValue();
+      parameters.put(key, new ArrayList<String>(Arrays.asList(values)));
+      for (String value : values)
+      {
+        if (index > 0) queryStringBuilder.append('&');
+        ++index;
+        queryStringBuilder.append(key).append('=').append(value);
+      }
     }
+    queryString = queryStringBuilder.toString();
   }
 
   public RequestParameters(String parametersString)
@@ -45,6 +58,7 @@ public class RequestParameters
         parameters.get(key).add(value);
       }
     }
+    queryString = parametersString;
   }
 
   void initializeForRoute(RouteConfig routeConfig)
@@ -331,5 +345,16 @@ public class RequestParameters
       for (String value : parameters.get(name)) doubles.add(Double.parseDouble(value));
     }
     return doubles;
+  }
+
+  public boolean hasParameters()
+  {
+    return !parameters.isEmpty();
+  }
+
+  @Override
+  public String toString()
+  {
+    return queryString;
   }
 }

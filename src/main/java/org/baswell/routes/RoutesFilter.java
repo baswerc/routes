@@ -1,5 +1,7 @@
 package org.baswell.routes;
 
+import org.baswell.routes.cache.RoutesCache;
+
 import java.io.IOException;
 import java.util.regex.Pattern;
 
@@ -12,10 +14,14 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import static org.baswell.routes.RoutingTable.*;
+
 public class RoutesFilter implements Filter
 {
   private volatile RouteRequestPipeline pipeline;
-  
+
+  private RoutesCache cache;
+
   private Pattern onlyPattern;
   
   private Pattern exceptPattern;
@@ -43,15 +49,16 @@ public class RoutesFilter implements Filter
   {
     assert RoutingTable.routingTable != null;
 
-    HttpServletRequest servletRequest = (HttpServletRequest)request;
-    HttpServletResponse servletResponse = (HttpServletResponse)response;
-    
+    final HttpServletRequest servletRequest = (HttpServletRequest)request;
+    final HttpServletResponse servletResponse = (HttpServletResponse)response;
+    final String requestPath = servletRequest.getRequestURI().substring(servletRequest.getContextPath().length());
+
     if ((onlyPattern != null) || exceptPattern != null)
     {
-      String requestPath = servletRequest.getRequestURI().substring(servletRequest.getContextPath().length());
       if (((onlyPattern != null) && !onlyPattern.matcher(requestPath).matches()) || ((exceptPattern != null) && exceptPattern.matcher(requestPath).matches()))
       {
         chain.doFilter(servletRequest, servletResponse);
+        return;
       }
     }
     
@@ -61,25 +68,46 @@ public class RoutesFilter implements Filter
       {
         if (pipeline == null)
         {
-          pipeline = new RouteRequestPipeline(RoutingTable.routingTable.routesConfig);
-        }
+          RoutesConfig routesConfig = routingTable.routesConfig;
 
-        if (RoutingTable.routingTable.routesConfig.hasRoutesMetaPath())
-        {
-          webHandler = new MetaHandler(RoutingTable.routingTable, RoutingTable.routingTable.routesConfig);
+          pipeline = new RouteRequestPipeline(routesConfig);
+
+          cache = routesConfig.getCache();
+
+          if (routesConfig.hasRoutesMetaPath())
+          {
+            webHandler = new MetaHandler(routingTable, routesConfig);
+          }
         }
       }
     }
-    
-    RequestPath path = new RequestPath(servletRequest);
-    RequestParameters parameters = new RequestParameters(servletRequest);
-    HttpMethod httpMethod = HttpMethod.fromServletMethod(servletRequest.getMethod());
-    Format format = new Format(servletRequest.getHeader("Accept"));
 
-    RouteNode routeNode = RoutingTable.routingTable.find(path, parameters, httpMethod, format);
+    final HttpMethod httpMethod = HttpMethod.fromServletMethod(servletRequest.getMethod());
+    final Format format = new Format(servletRequest.getHeader("Accept"));
+    final RequestPath path = new RequestPath(servletRequest);
+    final RequestParameters parameters = new RequestParameters(servletRequest);
+
+    RouteNode routeNode = null;
+    boolean fromCache = true;
+
+    if (cache != null)
+    {
+      routeNode = (RouteNode)cache.get(httpMethod, format, path, parameters);
+    }
+
+    if (routeNode == null)
+    {
+      fromCache = false;
+      routeNode = routingTable.find(path, parameters, httpMethod, format);
+    }
+
     if (routeNode != null)
     {
       pipeline.invoke(routeNode, servletRequest, servletResponse, httpMethod, format, path, parameters);
+      if (!fromCache && (cache != null))
+      {
+        cache.put(routeNode, httpMethod, format, path, parameters);
+      }
     }
     else
     {

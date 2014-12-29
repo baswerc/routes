@@ -1,6 +1,8 @@
 package org.baswell.routes;
 
 
+import org.baswell.routes.cache.RoutesCache;
+
 public class RoutesConfig
 {
   private String rootPath;
@@ -20,6 +22,8 @@ public class RoutesConfig
   private RouteFromMethodScheme routeFromMethodScheme = new SimpleRouteFromMethodScheme();
 
   private String routesMetaPath;
+
+  private RoutesCache cache;
   
   public String getRootPath()
   {
@@ -116,4 +120,13 @@ public class RoutesConfig
     this.routeFromMethodScheme = routeFromMethodScheme;
   }
 
+  public RoutesCache getCache()
+  {
+    return cache;
+  }
+
+  public void setCache(RoutesCache cache)
+  {
+    this.cache = cache;
+  }
 }
