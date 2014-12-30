@@ -64,7 +64,7 @@ public class RoutesFilter implements Filter
           pipeline = new RouteRequestPipeline(RoutingTable.routingTable.routesConfig);
         }
 
-        if (RoutingTable.routingTable.routesConfig.hasRoutesMetaPath())
+        if (RoutingTable.routingTable.routesConfig.hasMetaPath())
         {
           webHandler = new MetaHandler(RoutingTable.routingTable, RoutingTable.routingTable.routesConfig);
         }

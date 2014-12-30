@@ -7,5 +7,6 @@ dependencies {
     compile 'javax.servlet:javax.servlet-api:3.0.+'
     compile 'com.google.code.gson:gson:2.+'
     compile 'com.googlecode.json-simple:json-simple:1.+'
+    compile 'commons-codec:commons-codec:1.10'
     testCompile 'org.testng:testng:6.+'
 }

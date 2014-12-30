@@ -1,5 +1,7 @@
 package org.baswell.routes;
 
+import org.baswell.routes.meta.MetaAuthenticator;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.ByteArrayOutputStream;
@@ -15,36 +17,46 @@ public class MetaHandler
 
   final RoutesConfig routesConfig;
 
+  final MetaAuthenticator authenticator;
+
   public MetaHandler(RoutingTable routingTable, RoutesConfig routesConfig)
   {
     this.routingTable = routingTable;
     this.routesConfig = routesConfig;
+    authenticator = routesConfig.getMetaAuthenticator();
   }
 
   public boolean handled(HttpServletRequest request, HttpServletResponse response, RequestPath path, RequestParameters parameters, HttpMethod httpMethod, Format format) throws IOException
   {
-    if (path.startsWith(routesConfig.getRoutesMetaPath()))
+    if (path.startsWith(routesConfig.getMetaPath()))
     {
-      path = path.pop();
-
-      if (format.type == Format.Type.HTML)
+      if ((authenticator == null) || authenticator.metaRequestAuthenticated(request, response))
       {
-        if (path.equals(""))
-        {
-          getRoutesPage(response);
-          return true;
-        }
+        path = path.pop();
 
-      }
-      else if (format.type == Format.Type.JSON)
-      {
-        if (path.equals(""))
+        if (format.type == Format.Type.HTML)
         {
-          getRoutes(response, parameters);
-          return true;
+          if (path.equals(""))
+          {
+            getRoutesPage(response);
+            return true;
+          }
+
         }
+        else if (format.type == Format.Type.JSON)
+        {
+          if (path.equals(""))
+          {
+            getRoutes(response, parameters);
+            return true;
+          }
+        }
+        return false;
       }
-      return false;
+      else
+      {
+        return true;
+      }
     }
 
     return false;

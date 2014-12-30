@@ -1,6 +1,8 @@
 package org.baswell.routes;
 
 
+import org.baswell.routes.meta.MetaAuthenticator;
+
 public class RoutesConfig
 {
   private String rootPath;
@@ -19,7 +21,9 @@ public class RoutesConfig
   
   private RouteFromMethodScheme routeFromMethodScheme = new SimpleRouteFromMethodScheme();
 
-  private String routesMetaPath;
+  private String metaPath;
+
+  private MetaAuthenticator metaAuthenticator;
   
   public String getRootPath()
   {
@@ -76,19 +80,29 @@ public class RoutesConfig
     return routeInstanceFactory;
   }
 
-  public boolean hasRoutesMetaPath()
+  public boolean hasMetaPath()
   {
-    return (routesMetaPath != null) && !routesMetaPath.isEmpty();
+    return (metaPath != null) && !metaPath.isEmpty();
   }
 
-  public String getRoutesMetaPath()
+  public String getMetaPath()
   {
-    return routesMetaPath;
+    return metaPath;
   }
 
-  public void setRoutesMetaPath(String routesMetaPath)
+  public void setMetaPath(String metaPath)
   {
-    this.routesMetaPath = routesMetaPath == null ? null : routesMetaPath.trim();
+    this.metaPath = metaPath == null ? null : metaPath.trim();
+  }
+
+  public MetaAuthenticator getMetaAuthenticator()
+  {
+    return metaAuthenticator;
+  }
+
+  public void setMetaAuthenticator(MetaAuthenticator metaAuthenticator)
+  {
+    this.metaAuthenticator = metaAuthenticator;
   }
 
   public void setRouteInstanceFactory(RouteInstanceFactory routeInstanceFactory)
@@ -115,5 +129,4 @@ public class RoutesConfig
   {
     this.routeFromMethodScheme = routeFromMethodScheme;
   }
-
 }
