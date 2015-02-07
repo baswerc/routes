@@ -12,6 +12,8 @@ public class RequestPath
 {
   private final List<String> segments;
 
+  private final String path;
+
   public RequestPath(HttpServletRequest servletRequest)
   {
     this(parseUrlSegments(servletRequest.getRequestURI(), servletRequest.getContextPath()));
@@ -25,6 +27,12 @@ public class RequestPath
   public RequestPath(List<String> segments)
   {
     this.segments = segments == null ? new ArrayList<String>() : segments;
+    StringBuilder pathBuilder = new StringBuilder();
+    for (int i = 0; i < segments.size(); i++)
+    {
+      pathBuilder.append('/').append(segments.get(i));
+    }
+    path = pathBuilder.toString();
   }
 
   public int size()
@@ -111,9 +119,16 @@ public class RequestPath
     return this.segments.equals(segments);
   }
 
+  @Override
   public boolean equals(Object object)
   {
     return (object instanceof RequestPath) && ((RequestPath)object).segments.equals(segments);
+  }
+
+  @Override
+  public String toString()
+  {
+    return path;
   }
 
   static List<String> parseUrlSegments(String url)

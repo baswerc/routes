@@ -139,8 +139,9 @@ public class RouteConfig
 
     if ((route != null) && !route.value().trim().isEmpty())
     {
-      if (!routePath.isEmpty() && !routePath.endsWith("/")) routePath += "/";
-      routePath += route.value().trim();
+      String routeValue = route.value().trim();
+      if (!routePath.isEmpty() && !routePath.endsWith("/") && !routeValue.startsWith("/")) routePath += "/";
+      routePath += routeValue;
     }
     else
     {
