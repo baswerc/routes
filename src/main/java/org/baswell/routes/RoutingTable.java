@@ -115,7 +115,7 @@ public class RoutingTable
         {
           RouteConfig routeConfig = new RouteConfig(method, routesConfig);
           RouteTree tree = parser.parse(routeConfig.route);
-          RouteInstance routeInstance = instanceIsClass ? new RouteInstance(routesClass, routesConfig.getRouteInstanceFactory()) : new RouteInstance(addedObject);
+          RouteInstance routeInstance = instanceIsClass ? new RouteInstance(routesClass, routesConfig.routeInstanceFactory) : new RouteInstance(addedObject);
           RouteCriteria criteria = criteriaBuilder.buildCriteria(method, tree, symbolToPatterns, routeConfig, routesConfig);
           List<RouteMethodParameter> parameters = parametersBuilder.buildParameters(method, tree);
           RouteResponseType responseType = returnTypeMapper.mapResponseType(method, routeConfig);

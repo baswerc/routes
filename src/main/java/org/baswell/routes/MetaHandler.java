@@ -17,20 +17,17 @@ public class MetaHandler
 
   final RoutesConfig routesConfig;
 
-  final MetaAuthenticator authenticator;
-
   public MetaHandler(RoutingTable routingTable, RoutesConfig routesConfig)
   {
     this.routingTable = routingTable;
     this.routesConfig = routesConfig;
-    authenticator = routesConfig.getMetaAuthenticator();
   }
 
   public boolean handled(HttpServletRequest request, HttpServletResponse response, RequestPath path, RequestParameters parameters, HttpMethod httpMethod, Format format) throws IOException
   {
-    if (path.startsWith(routesConfig.getMetaPath()))
+    if (path.startsWith(routesConfig.routesMetaPath))
     {
-      if ((authenticator == null) || authenticator.metaRequestAuthenticated(request, response))
+      if ((routesConfig.metaAuthenticator == null) || routesConfig.metaAuthenticator.metaRequestAuthenticated(request, response))
       {
         path = path.pop();
 

@@ -34,8 +34,8 @@ public class RouteConfig
     Routes routes = method.getDeclaringClass().getAnnotation(Routes.class);
     Route route = method.getAnnotation(Route.class);
 
-    httpMethods = getHttpMethods(routes, route, method, routesConfig.getRouteFromMethodScheme());
-    this.route = buildRoutePath(routesConfig.getRootPath(), routes, route, method, routesConfig.getRouteFromMethodScheme());
+    httpMethods = getHttpMethods(routes, route, method, routesConfig.routeFromMethodScheme);
+    this.route = buildRoutePath(routesConfig.rootPath, routes, route, method, routesConfig.routeFromMethodScheme);
     acceptedFormats = new HashSet<Format.Type>();
     defaultParameters = new HashMap<String, List<String>>();
 
@@ -53,7 +53,7 @@ public class RouteConfig
       forwardPath = routes.forwardPath();
       if (!forwardPath.startsWith("/"))
       {
-        String rootForwardPath = routesConfig.getRootForwardPath();
+        String rootForwardPath = routesConfig.rootForwardPath;
         if (rootForwardPath != null)
         {
           if (!rootForwardPath.endsWith("/")) rootForwardPath += "/";
@@ -64,7 +64,7 @@ public class RouteConfig
     }
     else
     {
-      forwardPath = routesConfig.getRootForwardPath();
+      forwardPath = routesConfig.rootForwardPath;
       if (forwardPath == null) forwardPath = "/";
     }
 
@@ -74,14 +74,14 @@ public class RouteConfig
 
     if (route == null)
     {
-      contentType = ((routes == null) || (routes.defaultContentType().length() == 0)) ? routesConfig.getDefaultContentType() : routes.defaultContentType();
-      responseIsBody = ((routes == null) || (routes.defaultResponseIsBody().length == 0)) ? routesConfig.isDefaultResponseIsBody() : routes.defaultResponseIsBody()[0];
+      contentType = ((routes == null) || (routes.defaultContentType().length() == 0)) ? routesConfig.defaultContentType : routes.defaultContentType();
+      responseIsBody = ((routes == null) || (routes.defaultResponseIsBody().length == 0)) ? routesConfig.defaultResponseIsBody : routes.defaultResponseIsBody()[0];
     }
     else
     {
       if (route.contentType().length() == 0)
       {
-        contentType = ((routes == null) || (routes.defaultContentType().length() == 0)) ? routesConfig.getDefaultContentType() : routes.defaultContentType();
+        contentType = ((routes == null) || (routes.defaultContentType().length() == 0)) ? routesConfig.defaultContentType : routes.defaultContentType();
       }
       else
       {
@@ -115,7 +115,7 @@ public class RouteConfig
       }
       else
       {
-        responseIsBody = ((routes == null) || (routes.defaultResponseIsBody().length == 0)) ? routesConfig.isDefaultResponseIsBody() : routes.defaultResponseIsBody()[0];
+        responseIsBody = ((routes == null) || (routes.defaultResponseIsBody().length == 0)) ? routesConfig.defaultResponseIsBody : routes.defaultResponseIsBody()[0];
       }
       
       tags.addAll(Arrays.asList(route.tags()));

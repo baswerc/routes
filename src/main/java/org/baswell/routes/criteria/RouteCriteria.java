@@ -73,7 +73,7 @@ public class RouteCriteria
           return false;
         }
         
-        if (routesConfig.isCaseInsensitive())
+        if (routesConfig.caseInsensitive)
         {
           for (int i = 0; i < parameterValues.size(); i++)
           {
@@ -84,7 +84,7 @@ public class RouteCriteria
         switch (parameterCriterion.type)
         {
           case FIXED:
-            String value = routesConfig.isCaseInsensitive() ? parameterCriterion.value.toLowerCase() : parameterCriterion.value;
+            String value = routesConfig.caseInsensitive ? parameterCriterion.value.toLowerCase() : parameterCriterion.value;
             if (!parameterValues.contains(value))
             {
               return false;
@@ -142,11 +142,11 @@ public class RouteCriteria
       switch (criterion.type)
       {
         case FIXED:
-          if (config.isCaseInsensitive() && !segment.equalsIgnoreCase(criterion.value))
+          if (config.caseInsensitive && !segment.equalsIgnoreCase(criterion.value))
           {
             return false;
           }
-          else if (!config.isCaseInsensitive() && !segment.equals(criterion.value))
+          else if (!config.caseInsensitive && !segment.equals(criterion.value))
           {
             return false;
           }

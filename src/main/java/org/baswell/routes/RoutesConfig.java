@@ -1,119 +1,32 @@
 package org.baswell.routes;
 
 
+import org.baswell.routes.meta.MetaAuthenticator;
+
 public class RoutesConfig
 {
-  private String rootPath;
-  
-  private String rootForwardPath = "/WEB-INF/jsps";
-  
-  private boolean caseInsensitive;
-  
-  private String defaultContentType;
-  
-  private boolean defaultResponseIsBody;
-  
-  private int streamBufferSize = 16 * 1024;
+  public String rootPath;
 
-  private RouteInstanceFactory routeInstanceFactory = new DefaultRouteInstanceFactory();
-  
-  private RouteFromMethodScheme routeFromMethodScheme = new SimpleRouteFromMethodScheme();
+  public String rootForwardPath = "/WEB-INF/jsps";
 
-  private String routesMetaPath;
-  
-  public String getRootPath()
-  {
-    return rootPath;
-  }
+  public boolean caseInsensitive;
 
-  public void setRootPath(String rootPath)
-  {
-    this.rootPath = rootPath;
-  }
+  public String defaultContentType;
 
-  public String getRootForwardPath()
-  {
-    return rootForwardPath;
-  }
+  public boolean defaultResponseIsBody;
 
-  public void setRootForwardPath(String rootForwardPath)
-  {
-    this.rootForwardPath = rootForwardPath;
-  }
+  public int streamBufferSize = 16 * 1024;
 
-  public boolean isCaseInsensitive()
-  {
-    return caseInsensitive;
-  }
+  public RouteInstanceFactory routeInstanceFactory = new DefaultRouteInstanceFactory();
 
-  public void setCaseInsensitive(boolean caseInsensitive)
-  {
-    this.caseInsensitive = caseInsensitive;
-  }
+  public RouteFromMethodScheme routeFromMethodScheme = new SimpleRouteFromMethodScheme();
 
-  public String getDefaultContentType()
-  {
-    return defaultContentType;
-  }
+  public String routesMetaPath;
 
-  public void setDefaultContentType(String defaultContentType)
-  {
-    this.defaultContentType = defaultContentType;
-  }
-
-  public boolean isDefaultResponseIsBody()
-  {
-    return defaultResponseIsBody;
-  }
-
-  public void setDefaultResponseIsBody(boolean defaultResponseIsBody)
-  {
-    this.defaultResponseIsBody = defaultResponseIsBody;
-  }
-
-  public RouteInstanceFactory getRouteInstanceFactory()
-  {
-    return routeInstanceFactory;
-  }
+  public MetaAuthenticator metaAuthenticator;
 
   public boolean hasRoutesMetaPath()
   {
     return (routesMetaPath != null) && !routesMetaPath.isEmpty();
   }
-
-  public String getRoutesMetaPath()
-  {
-    return routesMetaPath;
-  }
-
-  public void setRoutesMetaPath(String routesMetaPath)
-  {
-    this.routesMetaPath = routesMetaPath == null ? null : routesMetaPath.trim();
-  }
-
-  public void setRouteInstanceFactory(RouteInstanceFactory routeInstanceFactory)
-  {
-    this.routeInstanceFactory = routeInstanceFactory;
-  }
-
-  public int getStreamBufferSize()
-  {
-    return streamBufferSize;
-  }
-
-  public void setStreamBufferSize(int streamBufferSize)
-  {
-    this.streamBufferSize = streamBufferSize;
-  }
-
-  public RouteFromMethodScheme getRouteFromMethodScheme()
-  {
-    return routeFromMethodScheme;
-  }
-
-  public void setRouteFromMethodScheme(RouteFromMethodScheme routeFromMethodScheme)
-  {
-    this.routeFromMethodScheme = routeFromMethodScheme;
-  }
-
 }

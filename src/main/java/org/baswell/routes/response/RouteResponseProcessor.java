@@ -52,7 +52,7 @@ public class RouteResponseProcessor
           break;
 
         case STREAM_CONTENT:
-          fastChannelCopy((InputStream)response, servletResponse.getOutputStream(), routesConfig.getStreamBufferSize());
+          fastChannelCopy((InputStream)response, servletResponse.getOutputStream(), routesConfig.streamBufferSize);
           break;
           
         case STRING_CONTENT:
