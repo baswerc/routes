@@ -33,7 +33,7 @@ public @interface Routes
   /**
    * Should public methods of this class be candidates for HTTP routes if they aren't annotated with Route?
    */
-  boolean routeUnannoatedPublicMethods() default false;
+  boolean[] routeUnannoatedPublicMethods() default {};
 
   
   /**

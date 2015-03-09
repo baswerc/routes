@@ -105,7 +105,8 @@ public class RoutingTable
       List<AfterRouteNode> classAfterNodes = getAfterRouteNodes(routesClass);
       
       Routes routesAnnotation = (Routes)routesClass.getAnnotation(Routes.class);
-      boolean routeUnannotatedPublicMethods = (routesAnnotation == null) ? false : routesAnnotation.routeUnannoatedPublicMethods();
+      boolean routeUnannotatedPublicMethods = (routesAnnotation == null) || (routesAnnotation.routeUnannoatedPublicMethods().length == 0) ? routesConfig.routeUnannoatedPublicMethods : routesAnnotation.routeUnannoatedPublicMethods()[0];
+
       List<RouteNode> classRoutes = new ArrayList<RouteNode>();
       
       for (Method method : routesClass.getMethods())

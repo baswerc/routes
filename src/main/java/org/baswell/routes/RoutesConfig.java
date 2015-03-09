@@ -25,6 +25,8 @@ public class RoutesConfig
 
   public MetaAuthenticator metaAuthenticator;
 
+  public boolean routeUnannoatedPublicMethods;
+
   public boolean hasRoutesMetaPath()
   {
     return (routesMetaPath != null) && !routesMetaPath.isEmpty();
