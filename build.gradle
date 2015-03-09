@@ -3,6 +3,10 @@ apply plugin: 'java'
 version = 1.0
 sourceCompatibility = 1.6
 
+jar {
+    from sourceSets.main.allSource
+}
+
 dependencies {
     compile 'javax.servlet:javax.servlet-api:3.0.+'
     compile 'com.google.code.gson:gson:2.+'
