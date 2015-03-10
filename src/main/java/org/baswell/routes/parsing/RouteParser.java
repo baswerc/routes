@@ -47,7 +47,7 @@ public class RouteParser
       {
         pathTerminals.add(new SymbolPathTerminal(routeIndex++, i, pathSegment.substring(1, pathSegment.length())));
       }
-      else
+      else if (!pathSegment.isEmpty())
       {
         pathTerminals.add(new ExactPathTerminal(routeIndex++, i, pathSegment));
       }

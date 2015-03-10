@@ -36,9 +36,11 @@ abstract public class EndToEndTest
   
   protected RequestParameters parameters;
 
+  protected RoutesConfig routesConfig;
+
   protected void buildRoutingTable(Object... routesInstancesClassesSymbolsOrPatterns)
   {
-    routingTable = new RoutingTable();
+    routingTable = new RoutingTable(routesConfig);
     
     String symbolName = null;
     for (Object object : routesInstancesClassesSymbolsOrPatterns)

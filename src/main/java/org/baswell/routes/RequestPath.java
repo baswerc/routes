@@ -136,7 +136,7 @@ public class RequestPath
     return parseUrlSegments(url, "");
   }
 
-    static List<String> parseUrlSegments(String url, String contextPath)
+  static List<String> parseUrlSegments(String url, String contextPath)
   {
     if (url.startsWith(contextPath))
     {
