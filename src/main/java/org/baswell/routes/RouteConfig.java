@@ -28,14 +28,16 @@ public class RouteConfig
   public final Set<String> tags;
   
   public final String forwardPath;
-  
+
   public RouteConfig(Method method, RoutesConfig routesConfig)
   {
-    Routes routes = method.getDeclaringClass().getAnnotation(Routes.class);
-    Route route = method.getAnnotation(Route.class);
+    this(method, routesConfig, method.getDeclaringClass().getAnnotation(Routes.class), method.getAnnotation(Route.class), 0);
+  }
 
+  public RouteConfig(Method method, RoutesConfig routesConfig, Routes routes, Route route, int routesPathIndex)
+  {
     httpMethods = getHttpMethods(routes, route, method, routesConfig.routeFromMethodScheme);
-    this.route = buildRoutePath(routesConfig.rootPath, routes, route, method, routesConfig.routeFromMethodScheme);
+    this.route = buildRoutePath(routesConfig.rootPath, routes, route, method, routesConfig.routeFromMethodScheme, routesPathIndex);
     acceptedFormats = new HashSet<Format.Type>();
     defaultParameters = new HashMap<String, List<String>>();
 
@@ -123,7 +125,7 @@ public class RouteConfig
     }
   }
   
-  static String buildRoutePath(String rootPath, Routes routes, Route route, Method method, RouteFromMethodScheme routeFromMethodScheme)
+  static String buildRoutePath(String rootPath, Routes routes, Route route, Method method, RouteFromMethodScheme routeFromMethodScheme, int routesPathIndex)
   {
     String routePath = "";
     if (rootPath != null)
@@ -131,10 +133,10 @@ public class RouteConfig
       routePath = rootPath;
     }
     
-    if ((routes != null) && (routes.value().length > 0) && !routes.value()[0].trim().isEmpty())
+    if ((routes != null) && (routes.value().length > routesPathIndex) && !routes.value()[routesPathIndex].trim().isEmpty())
     {
       if (!routePath.isEmpty() && !routePath.endsWith("/")) routePath += "/";
-      routePath += routes.value()[0].trim();
+      routePath += routes.value()[routesPathIndex].trim();
     }
 
     if ((route != null) && !route.value().trim().isEmpty())

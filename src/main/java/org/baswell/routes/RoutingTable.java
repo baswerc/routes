@@ -105,7 +105,20 @@ public class RoutingTable
       List<AfterRouteNode> classAfterNodes = getAfterRouteNodes(routesClass);
       
       Routes routesAnnotation = (Routes)routesClass.getAnnotation(Routes.class);
-      boolean routeUnannotatedPublicMethods = (routesAnnotation == null) || (routesAnnotation.routeUnannoatedPublicMethods().length == 0) ? routesConfig.routeUnannoatedPublicMethods : routesAnnotation.routeUnannoatedPublicMethods()[0];
+
+      int numRoutesPaths;
+      boolean routeUnannotatedPublicMethods;
+
+      if (routesAnnotation == null)
+      {
+        numRoutesPaths = 1;
+        routeUnannotatedPublicMethods = routesConfig.routeUnannoatedPublicMethods;
+      }
+      else
+      {
+        numRoutesPaths = routesAnnotation.value().length;
+        routeUnannotatedPublicMethods = routesAnnotation.routeUnannoatedPublicMethods().length == 0 ? routesConfig.routeUnannoatedPublicMethods : routesAnnotation.routeUnannoatedPublicMethods()[0];
+      }
 
       List<RouteNode> classRoutes = new ArrayList<RouteNode>();
       
@@ -114,33 +127,36 @@ public class RoutingTable
         Route routeAnnotation = method.getAnnotation(Route.class);
         if ((routeAnnotation != null) || (routeUnannotatedPublicMethods && Modifier.isPublic(method.getModifiers()) && (method.getDeclaringClass() == routesClass)))
         {
-          RouteConfig routeConfig = new RouteConfig(method, routesConfig);
-          RouteTree tree = parser.parse(routeConfig.route);
-          RouteInstance routeInstance = instanceIsClass ? new RouteInstance(routesClass, routesConfig.routeInstanceFactory) : new RouteInstance(addedObject);
-          RouteCriteria criteria = criteriaBuilder.buildCriteria(method, tree, symbolToPatterns, routeConfig, routesConfig);
-          List<RouteMethodParameter> parameters = parametersBuilder.buildParameters(method, tree);
-          RouteResponseType responseType = returnTypeMapper.mapResponseType(method, routeConfig);
-          
-          List<BeforeRouteNode> beforeNodes = new ArrayList<BeforeRouteNode>();
-          for (BeforeRouteNode beforeNode : classBeforeNodes)
+
+          for (int i = 0; i < numRoutesPaths; i++)
           {
-            if ((beforeNode.onlyTags.isEmpty() || containsOne(beforeNode.onlyTags, routeConfig.tags)) && (beforeNode.exceptTags.isEmpty() || !containsOne(beforeNode.exceptTags, routeConfig.tags)))
+            RouteConfig routeConfig = new RouteConfig(method, routesConfig, routesAnnotation, routeAnnotation, i);
+            RouteTree tree = parser.parse(routeConfig.route);
+            RouteInstance routeInstance = instanceIsClass ? new RouteInstance(routesClass, routesConfig.routeInstanceFactory) : new RouteInstance(addedObject);
+            RouteCriteria criteria = criteriaBuilder.buildCriteria(method, tree, symbolToPatterns, routeConfig, routesConfig);
+            List<RouteMethodParameter> parameters = parametersBuilder.buildParameters(method, tree);
+            RouteResponseType responseType = returnTypeMapper.mapResponseType(method, routeConfig);
+
+            List<BeforeRouteNode> beforeNodes = new ArrayList<BeforeRouteNode>();
+            for (BeforeRouteNode beforeNode : classBeforeNodes)
             {
-              beforeNodes.add(beforeNode);
+              if ((beforeNode.onlyTags.isEmpty() || containsOne(beforeNode.onlyTags, routeConfig.tags)) && (beforeNode.exceptTags.isEmpty() || !containsOne(beforeNode.exceptTags, routeConfig.tags)))
+              {
+                beforeNodes.add(beforeNode);
+              }
             }
-          }
-          
-          List<AfterRouteNode> afterNodes = new ArrayList<AfterRouteNode>();
-          for (AfterRouteNode afterNode : classAfterNodes)
-          {
-            if ((afterNode.onlyTags.isEmpty() || containsOne(afterNode.onlyTags, routeConfig.tags)) && (afterNode.exceptTags.isEmpty() || !containsOne(afterNode.exceptTags, routeConfig.tags)))
+
+            List<AfterRouteNode> afterNodes = new ArrayList<AfterRouteNode>();
+            for (AfterRouteNode afterNode : classAfterNodes)
             {
-              afterNodes.add(afterNode);
+              if ((afterNode.onlyTags.isEmpty() || containsOne(afterNode.onlyTags, routeConfig.tags)) && (afterNode.exceptTags.isEmpty() || !containsOne(afterNode.exceptTags, routeConfig.tags)))
+              {
+                afterNodes.add(afterNode);
+              }
             }
+
+            classRoutes.add(new RouteNode(method, routeConfig, routeInstance, criteria, parameters, responseType, beforeNodes, afterNodes));
           }
-          
-          classRoutes.add(new RouteNode(method, routeConfig, routeInstance, criteria, parameters, responseType, beforeNodes, afterNodes));
-          
         }
       }
       

@@ -1,5 +1,6 @@
 package org.baswell.routes;
 
+import org.baswell.routes.testroutes.BaseRoutes;
 import org.baswell.routes.testroutes.RoutesFromMethods;
 import org.baswell.routes.utils.http.TestHttpServletRequest;
 import org.testng.annotations.BeforeTest;
@@ -23,5 +24,15 @@ public class RootTest extends EndToEndTest
   public void testGet() throws IOException, ServletException
   {
     invoke(new TestHttpServletRequest("GET", "/", "/"), "get");
+    invoke(new TestHttpServletRequest("GET", "/", "/test"), "get");
+  }
+
+  @Routes({"/", "/test"})
+  static public class RootRoute extends BaseRoutes
+  {
+    public void get()
+    {
+      methodsCalled.add("get");
+    }
   }
 }
