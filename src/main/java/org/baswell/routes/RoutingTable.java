@@ -99,12 +99,12 @@ public class RoutingTable
     for (Object addedObject : addedObjects)
     {
       boolean instanceIsClass = (addedObject instanceof Class);
-      Class routesClass = instanceIsClass ? (Class)addedObject : addedObject.getClass();
-      
+      Class routesClass = instanceIsClass ? (Class) addedObject : addedObject.getClass();
+
       List<BeforeRouteNode> classBeforeNodes = getBeforeRouteNodes(routesClass);
       List<AfterRouteNode> classAfterNodes = getAfterRouteNodes(routesClass);
-      
-      Routes routesAnnotation = (Routes)routesClass.getAnnotation(Routes.class);
+
+      Routes routesAnnotation = (Routes) routesClass.getAnnotation(Routes.class);
 
       int numRoutesPaths;
       boolean routeUnannotatedPublicMethods;
@@ -121,7 +121,7 @@ public class RoutingTable
       }
 
       List<RouteNode> classRoutes = new ArrayList<RouteNode>();
-      
+
       for (Method method : routesClass.getMethods())
       {
         Route routeAnnotation = method.getAnnotation(Route.class);
@@ -155,11 +155,11 @@ public class RoutingTable
               }
             }
 
-            classRoutes.add(new RouteNode(method, routeConfig, routeInstance, criteria, parameters, responseType, beforeNodes, afterNodes));
+            classRoutes.add(new RouteNode(routeNodes.size(), method, routeConfig, routeInstance, criteria, parameters, responseType, beforeNodes, afterNodes));
           }
         }
       }
-      
+
       if (!classRoutes.isEmpty())
       {
         routeNodes.addAll(classRoutes);
@@ -168,7 +168,9 @@ public class RoutingTable
       {
         throw new InvalidRouteException("Route class: " + routesClass + " has no routes.");
       }
+
     }
+    Collections.sort(routeNodes);
   }
   
   RouteNode find(RequestPath path, RequestParameters parameters, HttpMethod httpMethod, Format format)

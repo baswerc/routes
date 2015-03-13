@@ -83,7 +83,7 @@ abstract public class EndToEndTest
     assertNull(find());
   }
   
-  protected void invoke(TestHttpServletRequest servletRequest, String... expectedMethodsCalled) throws IOException, ServletException
+  protected Format invoke(TestHttpServletRequest servletRequest, String... expectedMethodsCalled) throws IOException, ServletException
   {
     initializeRequest(servletRequest);
     invoke();
@@ -96,6 +96,7 @@ abstract public class EndToEndTest
       }
       assertEquals(methodsCalled.size(), expectedMethodsCalled.length);
     }
+    return null;
   }
   
   protected RouteNode find()

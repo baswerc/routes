@@ -10,7 +10,7 @@ import org.baswell.routes.RouteConfig;
 import org.baswell.routes.RoutesConfig;
 import org.baswell.routes.criteria.RequestPathSegmentCriterion.RequestPathSegmentCrierionType;
 
-public class RouteCriteria
+public class RouteCriteria implements Comparable<RouteCriteria>
 {
   final List<RequestPathSegmentCriterion> pathCriteria;
   
@@ -19,6 +19,10 @@ public class RouteCriteria
   final RouteConfig routeConfig;
   
   final RoutesConfig routesConfig;
+
+  final boolean allCriteriaFixed;
+
+  final boolean hasPattern;
   
   final boolean hasMultiPathCriterion;
   
@@ -28,19 +32,26 @@ public class RouteCriteria
     this.parameterCriteria = parameterCriteria;
     this.routeConfig = routeConfig;
     this.routesConfig = routesConfig;
-    
+
+    boolean hasPattern = false;
     boolean hasMultiPathCriterion = false;
     if (pathCriteria != null)
     {
       for (RequestPathSegmentCriterion pathCriterion : pathCriteria)
       {
-        if (pathCriterion.type == RequestPathSegmentCrierionType.MULTI)
+        if (pathCriterion.type == RequestPathSegmentCrierionType.PATTERN)
+        {
+          hasPattern = true;
+        }
+        else if (pathCriterion.type == RequestPathSegmentCrierionType.MULTI)
         {
           hasMultiPathCriterion = true;
         }
       }
     }
+    this.hasPattern = hasPattern;
     this.hasMultiPathCriterion = hasMultiPathCriterion;
+    this.allCriteriaFixed = !this.hasPattern && !this.hasMultiPathCriterion;
   }
 
   public boolean matches(HttpMethod httpMethod, Format format, RequestPath path, RequestParameters parameters)
@@ -112,7 +123,24 @@ public class RouteCriteria
     
     return true;
   }
-  
+
+  @Override
+  public int compareTo(RouteCriteria routeCriteria)
+  {
+    if (allCriteriaFixed && !routeCriteria.allCriteriaFixed)
+    {
+      return -1;
+    }
+    else if (!allCriteriaFixed && routeCriteria.allCriteriaFixed)
+    {
+      return 1;
+    }
+    else
+    {
+      return 0;
+    }
+  }
+
   static boolean matchSegments(int pathIndex, RequestPath path, int criteriaIndex, List<RequestPathSegmentCriterion> criteria, RoutesConfig config)
   {
     if ((pathIndex >= path.size()) && (criteriaIndex >= criteria.size()))

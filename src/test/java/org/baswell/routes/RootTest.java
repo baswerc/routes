@@ -7,6 +7,7 @@ import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
 
 import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 
 import static org.testng.Assert.assertEquals;
@@ -34,9 +35,28 @@ public class RootTest extends EndToEndTest
     invoke(new TestHttpServletRequest("GET", "/", "/test/one"), "getOne");
   }
 
+  static String expectedName;
+
+  @Test
+  public void testName() throws IOException, ServletException
+  {
+
+    expectedName = "blahblahblah";
+    invoke(new TestHttpServletRequest("GET", "/", "/" + expectedName), "getName");
+    expectedName = "abc";
+    invoke(new TestHttpServletRequest("GET", "/", "/test/" + expectedName), "getName");
+  }
+
   @Routes({"/", "/test"})
   static public class RootRoute extends BaseRoutes
   {
+    @Route("*")
+    public void getName(String name, Format format, HttpServletRequest request)
+    {
+      assertEquals(name, expectedName);
+      methodsCalled.add("getName");
+    }
+
     public void get()
     {
       methodsCalled.add("get");
