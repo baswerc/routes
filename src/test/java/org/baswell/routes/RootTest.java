@@ -27,12 +27,24 @@ public class RootTest extends EndToEndTest
     invoke(new TestHttpServletRequest("GET", "/", "/test"), "get");
   }
 
+  @Test
+  public void testOne() throws IOException, ServletException
+  {
+    invoke(new TestHttpServletRequest("GET", "/", "/one"), "getOne");
+    invoke(new TestHttpServletRequest("GET", "/", "/test/one"), "getOne");
+  }
+
   @Routes({"/", "/test"})
   static public class RootRoute extends BaseRoutes
   {
     public void get()
     {
       methodsCalled.add("get");
+    }
+
+    public void getOne()
+    {
+      methodsCalled.add("getOne");
     }
   }
 }

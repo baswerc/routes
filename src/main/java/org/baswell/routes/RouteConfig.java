@@ -147,7 +147,12 @@ public class RouteConfig
     }
     else
     {
-      routePath += routeFromMethodScheme.getRoute(method);
+      String methodNameRoute = routeFromMethodScheme.getRoute(method);
+      if (!methodNameRoute.isEmpty())
+      {
+        if (!routePath.isEmpty() && !routePath.endsWith("/")) routePath += "/";
+        routePath += methodNameRoute;
+      }
     }
 
     if (!routePath.startsWith("/")) routePath = "/" + routePath;
