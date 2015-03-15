@@ -14,6 +14,8 @@ public class Format
     ATOM("ATOM"),
     ICS("ICS"),
     TEXT("Text"),
+    EXCEL("Excel"),
+    WORD("Word"),
     OTHER("Other");
 
     public final String name;
@@ -78,6 +80,14 @@ public class Format
       else if (mimeType.contains("text"))
       {
         type = Type.TEXT;
+      }
+      else if (mimeType.contains("excel") || mimeType.contains("xls"))
+      {
+        type = Type.EXCEL;
+      }
+      else if (mimeType.contains("doc"))
+      {
+        type = Type.WORD;
       }
       else
       {
