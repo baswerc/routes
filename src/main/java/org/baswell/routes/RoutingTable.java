@@ -124,6 +124,8 @@ public class RoutingTable
 
       for (Method method : routesClass.getMethods())
       {
+        if (isMain(method)) continue;
+
         Route routeAnnotation = method.getAnnotation(Route.class);
         if ((routeAnnotation != null) || (routeUnannotatedPublicMethods && Modifier.isPublic(method.getModifiers()) && (method.getDeclaringClass() == routesClass)))
         {
@@ -247,5 +249,25 @@ public class RoutingTable
       if (set.contains(string)) return true;
     }
     return false;
+  }
+
+  static boolean isMain(Method method)
+  {
+    if (method.getName().equals("main") && Modifier.isPublic(method.getModifiers()) && Modifier.isStatic(method.getModifiers()))
+    {
+      if (method.getReturnType() == void.class)
+      {
+        Class[] parameters = method.getParameterTypes();
+        return (parameters.length == 1) && (parameters[0] == String[].class);
+      }
+      else
+      {
+        return false;
+      }
+    }
+    else
+    {
+      return false;
+    }
   }
 }
