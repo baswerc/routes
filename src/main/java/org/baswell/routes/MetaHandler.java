@@ -25,11 +25,14 @@ public class MetaHandler
 
   public boolean handled(HttpServletRequest request, HttpServletResponse response, RequestPath path, RequestParameters parameters, HttpMethod httpMethod, Format format) throws IOException
   {
-    if (path.startsWith(routesConfig.routesMetaPath))
+    String routesMetaPath = routesConfig.routesMetaPath;
+    if (!routesMetaPath.startsWith("/")) routesMetaPath = "/" + routesMetaPath;
+
+    if (path.startsWith(routesMetaPath))
     {
       if ((routesConfig.metaAuthenticator == null) || routesConfig.metaAuthenticator.metaRequestAuthenticated(request, response))
       {
-        path = path.pop();
+        path = path.substring(routesMetaPath.length());
 
         if (format.type == Format.Type.HTML)
         {

@@ -85,6 +85,11 @@ public class RequestPath
     return startsWith(parseUrlSegments(path));
   }
 
+  public RequestPath pop(int numberSegments)
+  {
+    return new RequestPath(segments.subList(numberSegments, segments.size()));
+  }
+
   public RequestPath pop()
   {
     return new RequestPath(segments.subList(1, segments.size()));
@@ -107,6 +112,11 @@ public class RequestPath
       }
       return true;
     }
+  }
+
+  public RequestPath substring(int index)
+  {
+    return new RequestPath(path.substring(index));
   }
 
   public boolean equals(String path)
