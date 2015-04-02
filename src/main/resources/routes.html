@@ -32,6 +32,7 @@
     <script>
       $(function() {
         loadAll();
+        $("#searchText").focus();
       });
 
       var xhr = null;
@@ -109,10 +110,16 @@
   <body>
     <div class="container-fluid" style="margin-top: 15px;">
       <div class="row">
-        <div class="col-md-4">
+        <div class="col-md-5">
+
           <div class="form-group">
             <label for="searchText">Path</label>
-            <input type="text" class="form-control" id="searchText" placeholder="ex. /helloworld" onkeyup="onSearch()">
+            <div class="input-group">
+              <input type="text" class="form-control" id="searchText" placeholder="ex. /helloworld" onkeyup="onSearch()" style="width: 100%">
+              <span class="input-group-btn">
+                <button class="btn btn-primary" onclick="loadAll()">Load All</button>
+              </span>
+            </div>
           </div>
         </div>
         <div class="col-md-4">
@@ -123,7 +130,7 @@
         </div>
         <div class="col-md-1">
           <div class="form-group">
-            <label for="methodSelect">Http Method</label>
+            <label for="methodSelect" style="white-space: nowrap">Http Method</label>
             <select id="methodSelect" class="form-control" onchange="onSearch()">
               <option>GET</option>
               <option>POST</option>
@@ -139,12 +146,6 @@
             <input type="text" class="form-control" id="acceptText" placeholder="Default is text/html" onkeyup="onSearch()">
           </div>
         </div>
-        <div class="col-md-1">
-          <div class="form-group" style="margin-top: 25px;">
-            <button class="btn btn-primary" onclick="loadAll()">Load All</button>
-          </div>
-        </div>
-
       </div>
 
 
