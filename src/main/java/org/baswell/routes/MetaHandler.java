@@ -47,7 +47,7 @@ public class MetaHandler
         {
           if (path.equals(""))
           {
-            getRoutes(response, parameters);
+            getRoutes(request, response, parameters);
             return true;
           }
         }
@@ -67,7 +67,7 @@ public class MetaHandler
     response.getOutputStream().write(getIndexHtml("routes.html"));
   }
 
-  void getRoutes(HttpServletResponse response, RequestParameters parameters) throws IOException
+  void getRoutes(HttpServletRequest request, HttpServletResponse response, RequestParameters parameters) throws IOException
   {
     List<RouteTableRow> rows = new ArrayList<RouteTableRow>();
     if (parameters.contains("path"))
@@ -81,7 +81,7 @@ public class MetaHandler
       {
         if ((routeNode.criteria.matches(httpMethod, new Format(acceptType), requestPath, requestParameters)))
         {
-          rows.add(new RouteTableRow((routeNode)));
+          rows.add(new RouteTableRow(routeNode, request));
         }
       }
     }
@@ -89,7 +89,7 @@ public class MetaHandler
     {
       for (RouteNode routeNode : routingTable.getRouteNodes())
       {
-        rows.add(new RouteTableRow((routeNode)));
+        rows.add(new RouteTableRow(routeNode, request));
       }
     }
 
@@ -127,6 +127,8 @@ public class MetaHandler
 
   class RouteTableRow
   {
+    String link;
+
     String path;
 
     String httpMethods;
@@ -135,9 +137,10 @@ public class MetaHandler
 
     String classMethod;
 
-    RouteTableRow(RouteNode routeNode)
+    RouteTableRow(RouteNode routeNode, HttpServletRequest request)
     {
       path = routeNode.routeConfig.route;
+      link = request.getContextPath() + path;
 
       if ((routeNode.routeConfig.httpMethods == null) || routeNode.routeConfig.httpMethods.isEmpty())
       {
@@ -182,7 +185,7 @@ public class MetaHandler
 
     void toJson(PrintWriter writer) throws IOException
     {
-      writer.write("{\"path\": \"" + path + "\", \"httpMethods\": \"" + httpMethods + "\", \"acceptFormats\": \"" + acceptFormats + "\", \"classMethod\": \"" + classMethod + "\"}");
+      writer.write("{\"link\": \"" + link + "\", \"path\": \"" + path + "\", \"httpMethods\": \"" + httpMethods + "\", \"acceptFormats\": \"" + acceptFormats + "\", \"classMethod\": \"" + classMethod + "\"}");
     }
   }
 

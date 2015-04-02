@@ -97,7 +97,7 @@
         for (var i = 0; i < rows.length; i++)
         {
           var row = rows[i];
-          html += "<tr><td>" + row.path + "</td><td>" + row.httpMethods + "</td><td>" + row.acceptFormats + "</td><td>" + row.classMethod + "</td></tr>";
+          html += "<tr><td><a href='" + row.link + "' target='_blank'>" + row.path + "</a></td><td>" + row.httpMethods + "</td><td>" + row.acceptFormats + "</td><td>" + row.classMethod + "</td></tr>";
         }
         $("#routesTable tbody").html(html);
         $(".routesSpinner").hide();
