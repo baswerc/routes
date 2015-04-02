@@ -40,25 +40,28 @@ public class RequestParameters
     queryString = queryStringBuilder.toString();
   }
 
-  public RequestParameters(String parametersString)
+  public RequestParameters(String queryString)
   {
     parameters = new HashMap<String, List<String>>();
-    String[] parameterValues = parametersString.split(",");
+    String[] parameterValues = queryString.split("&");
     for (String parameterValue : parameterValues)
     {
-      String[] parameter = parameterValue.split("=");
-      if (parameter.length == 2)
+      if (!parameterValue.trim().isEmpty())
       {
-        String key = parameter[0].trim();
-        String value = parameter[1].trim();
-        if (!parameters.containsKey(key))
+        String[] parameter = parameterValue.split("=");
+        if (parameter.length == 2)
         {
-          parameters.put(key, new ArrayList<String>());
+          String key = parameter[0].trim();
+          String value = parameter[1].trim();
+          if (!parameters.containsKey(key))
+          {
+            parameters.put(key, new ArrayList<String>());
+          }
+          parameters.get(key).add(value);
         }
-        parameters.get(key).add(value);
       }
     }
-    queryString = parametersString;
+    this.queryString = queryString;
   }
 
   void initializeForRoute(RouteConfig routeConfig)

@@ -117,15 +117,9 @@
             <div class="input-group">
               <input type="text" class="form-control" id="searchText" placeholder="ex. /helloworld" onkeyup="onSearch()" style="width: 100%">
               <span class="input-group-btn">
-                <button class="btn btn-primary" onclick="loadAll()">Load All</button>
+                <button class="btn btn-default" onclick="loadAll()">Load All</button>
               </span>
             </div>
-          </div>
-        </div>
-        <div class="col-md-4">
-          <div class="form-group">
-            <label for="parametersText">Parameters (comma separated)</label>
-            <input type="text" class="form-control" id="parametersText" placeholder="ex. name=value" onkeyup="onSearch()">
           </div>
         </div>
         <div class="col-md-1">
@@ -138,6 +132,12 @@
               <option>DELETE</option>
               <option>HEAD</option>
             </select>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="form-group">
+            <label for="parametersText">Query String</label>
+            <input type="text" class="form-control" id="parametersText" placeholder="ex. one=two&three=four" onkeyup="onSearch()">
           </div>
         </div>
         <div class="col-md-2">
