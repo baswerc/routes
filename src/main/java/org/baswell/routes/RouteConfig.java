@@ -143,7 +143,14 @@ public class RouteConfig
     {
       String routeValue = route.value().trim();
       if (!routePath.isEmpty() && !routePath.endsWith("/") && !routeValue.startsWith("/")) routePath += "/";
-      routePath += routeValue;
+      if (routePath.endsWith("/") && routeValue.startsWith("/"))
+      {
+        routePath += routeValue.substring(1);
+      }
+      else
+      {
+        routePath += routeValue;
+      }
     }
     else
     {
