@@ -6,7 +6,7 @@ public class PatternPathTerminal extends PathTerminal
   
   public PatternPathTerminal(int routeIndex, int pathIndex, String pattern)
   {
-    super(routeIndex, pathIndex, true);
+    super(routeIndex, pathIndex);
     this.pattern = pattern;
   }
 

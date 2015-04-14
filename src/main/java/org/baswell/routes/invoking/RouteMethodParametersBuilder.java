@@ -6,11 +6,12 @@ import org.baswell.routes.RequestContext;
 import org.baswell.routes.RequestParameters;
 import org.baswell.routes.RequestPath;
 import org.baswell.routes.criteria.InvalidRouteException;
+import org.baswell.routes.criteria.RequestParameterCriterion;
+import org.baswell.routes.criteria.RequestPathSegmentCriterion;
+import org.baswell.routes.criteria.RouteCriteria;
 import org.baswell.routes.invoking.RouteMethodParameter.RouteMethodParameterType;
 import org.baswell.routes.parsing.ParameterTerminal;
 import org.baswell.routes.parsing.PathTerminal;
-import org.baswell.routes.parsing.RouteTree;
-import org.baswell.routes.utils.RoutesMethods;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -31,12 +32,16 @@ public class RouteMethodParametersBuilder
     return buildParameters(method, null);
   }
   
-  public List<RouteMethodParameter> buildParameters(Method method, RouteTree routeTree) throws InvalidRouteException
+  public List<RouteMethodParameter> buildParameters(Method method, RouteCriteria routeCriteria) throws InvalidRouteException
   {
     List<RouteMethodParameter> routeParameters = new ArrayList<RouteMethodParameter>();
     Type[] parameters = method.getGenericParameterTypes();
 
     int routeIndex = 0;
+    int groupIndex = 0;
+    RequestPathSegmentCriterion currentPathSegmentCriteron = null;
+    RequestParameterCriterion currentParameterCriteron = null;
+
     boolean pathSegmentsProcessed = false;
     
     PARAMETERS_LOOP: for (int i = 0; i < parameters.length; i++)
@@ -80,68 +85,90 @@ public class RouteMethodParametersBuilder
         }
         else
         {
-          throw new InvalidRouteException("Unsupported Map parameter: " + parameter + " in method: " + method);
+          throw new InvalidRouteException("Unsupported Map parameter: " + parameter+ " at index: " + i + " in method: " + method);
         }
       }
-      else if (routeTree != null)
+      else if (routeCriteria != null)
       {
         RoutePathParameterType routePathParameterType = getRouteMethodParameterType(parameter);
+
         if (routePathParameterType != null)
         {
           if (!pathSegmentsProcessed)
           {
-            while (routeIndex < routeTree.pathTerminals.size())
+            if ((currentPathSegmentCriteron == null) || (groupIndex >= currentPathSegmentCriteron.numberPatternGroups))
             {
-              PathTerminal pathTerminal = routeTree.pathTerminals.get(routeIndex);
-              ++routeIndex;
-              if (pathTerminal.canBeMappedToMethodParameter)
+              currentPathSegmentCriteron = null;
+              groupIndex = 0;
+
+              while (routeIndex < routeCriteria.pathCriteria.size())
               {
-                if (parameterClass != List.class)
+                RequestPathSegmentCriterion pathSegmentCriterion = routeCriteria.pathCriteria.get(routeIndex++);
+                if (pathSegmentCriterion.type == RequestPathSegmentCriterion.RequestPathSegmentCrierionType.PATTERN)
                 {
-                  routeParameters.add(new RouteMethodParameter(RouteMethodParameterType.ROUTE_PATH, pathTerminal.pathIndex, routePathParameterType));
-                  continue PARAMETERS_LOOP;
-                }
-                else
-                {
-                  throw new InvalidRouteException("List method parameter: " + parameter + " in method: " + method + " is mapped to path segment (" + pathTerminal.pathIndex + "). Path segments cannot be mapped to lists only parameters.");
-                  
+                  currentPathSegmentCriteron = pathSegmentCriterion;
+                  break;
                 }
               }
             }
-            
-            pathSegmentsProcessed = true;
-            routeIndex = 0;
-          }
-          
-          while (routeIndex < routeTree.parameterTerminals.size())
-          {
-            ParameterTerminal parameterTerminal = routeTree.parameterTerminals.get(routeIndex);
-            ++routeIndex;
-            if (parameterTerminal.canBeMappedToMethodParameter)
+
+            if (currentPathSegmentCriteron != null)
             {
-              if (!parameterTerminal.optional || !parameterClass.isPrimitive())
+              if (parameterClass != List.class)
               {
-                RouteMethodParameterType routeMethodParameterType = parameterClass == List.class ? RouteMethodParameterType.ROUTE_PARAMETERS : RouteMethodParameterType.ROUTE_PARAMETER;
-                routeParameters.add(new RouteMethodParameter(routeMethodParameterType, parameterTerminal.name, routePathParameterType));
+                routeParameters.add(new RouteMethodParameter(RouteMethodParameterType.ROUTE_PATH, currentPathSegmentCriteron.index, currentPathSegmentCriteron.numberPatternGroups > 0 ? groupIndex++ : null, routePathParameterType));
                 continue PARAMETERS_LOOP;
               }
               else
               {
-                throw new InvalidRoutesMethodDeclaration("Primitive method parameter: " + parameter + " cannot be mapped to optional parameters in method: " + method);
+                throw new InvalidRouteException("List method parameter: " + parameter+ " at index: " + i + " in method: " + method + " is mapped to path segment (" + currentPathSegmentCriteron.index + "). Path segments cannot be mapped to lists only parameters.");
+              }
+            }
+
+            pathSegmentsProcessed = true;
+            routeIndex = groupIndex =0;
+          }
+
+          if ((currentParameterCriteron == null) || groupIndex >= currentParameterCriteron.numberPatternGroups)
+          {
+            currentParameterCriteron = null;
+            groupIndex = 0;
+
+            while (routeIndex < routeCriteria.parameterCriteria.size())
+            {
+              RequestParameterCriterion parameterCriterion = routeCriteria.parameterCriteria.get(routeIndex++);
+              if (parameterCriterion.type == RequestParameterCriterion.RequestParameterType.PATTERN)
+              {
+                currentParameterCriteron = parameterCriterion;
+                break;
               }
             }
           }
-          
-          throw new InvalidRoutesMethodDeclaration("Unmapped method parameter: " + parameter + " in method: " + method);
+
+          if (currentParameterCriteron != null)
+          {
+            if (currentParameterCriteron.presenceRequired || !parameterClass.isPrimitive())
+            {
+              RouteMethodParameterType routeMethodParameterType = parameterClass == List.class ? RouteMethodParameterType.ROUTE_PARAMETERS : RouteMethodParameterType.ROUTE_PARAMETER;
+              routeParameters.add(new RouteMethodParameter(routeMethodParameterType, currentParameterCriteron.name, groupIndex++, routePathParameterType));
+              continue PARAMETERS_LOOP;
+            }
+            else
+            {
+              throw new InvalidRoutesMethodDeclaration("Primitive method parameter: " + parameter + " at index " + i + " cannot be mapped to optional parameters in method: " + method);
+            }
+          }
+
+          throw new InvalidRoutesMethodDeclaration("Unmapped method parameter: " + parameter + " at index: " + i + " in method: " + method);
         }
         else
         {
-          throw new InvalidRoutesMethodDeclaration("Unsupported method parameter: " + parameter + " in method: " + method);
+          throw new InvalidRoutesMethodDeclaration("Unsupported method parameter: " + parameter+ " at index: " + i + " in method: " + method);
         }
       }
       else
       {
-        throw new InvalidRoutesMethodDeclaration("Unsupported method parameter: " + parameter + " in method: " + method);
+        throw new InvalidRoutesMethodDeclaration("Unsupported method parameter: " + parameter+ " at index: " + i + " in method: " + method);
       }
     }
     

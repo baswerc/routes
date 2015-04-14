@@ -1,7 +1,5 @@
 package org.baswell.routes;
 
-import static org.baswell.routes.utils.RoutesMethods.*;
-
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
@@ -12,11 +10,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.regex.Pattern;
-import java.util.regex.PatternSyntaxException;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import java.util.regex.Matcher;
 
 import org.baswell.routes.criteria.RouteCriteria;
 import org.baswell.routes.criteria.RouteCriteriaBuilder;
@@ -33,8 +27,6 @@ public class RoutingTable
 
   final RoutesConfig routesConfig;
   
-  private Map<String, Pattern> symbolToPatterns = new HashMap<String, Pattern>();
-  
   private List<Object> addedObjects = new ArrayList<Object>();
   
   private List<RouteNode> routeNodes;
@@ -48,31 +40,6 @@ public class RoutingTable
   {
     this.routesConfig = routesConfig == null ? new RoutesConfig() : routesConfig;
     RoutingTable.routingTable = this;
-  }
-  
-  public RoutingTable defineSymbol(String symbol, Class clazz) throws InvalidPatternException
-  {
-    if (typesToPatterns.containsKey(clazz))
-    {
-      return defineSymbol(symbol, typesToPatterns.get(clazz));
-    }
-    else
-    {
-      throw new InvalidPatternException("Invalid pattern class: " + clazz);
-    }
-  }
-  
-  public RoutingTable defineSymbol(String symbol, String pattern) throws InvalidPatternException
-  {
-    try
-    {
-      symbolToPatterns.put(symbol, Pattern.compile(pattern));
-      return this;
-    }
-    catch (PatternSyntaxException e)
-    {
-      throw new InvalidPatternException("Invalid pattern: " + pattern);
-    }
   }
 
   public List<RouteNode> getRouteNodes()
@@ -133,8 +100,8 @@ public class RoutingTable
             RouteConfig routeConfig = new RouteConfig(method, routesConfig, routesAnnotation, routeAnnotation, i);
             RouteTree tree = parser.parse(routeConfig.route);
             RouteInstance routeInstance = instanceIsClass ? new RouteInstance(routesClass, routesConfig.routeInstanceFactory) : new RouteInstance(addedObject);
-            RouteCriteria criteria = criteriaBuilder.buildCriteria(method, tree, symbolToPatterns, routeConfig, routesConfig);
-            List<RouteMethodParameter> parameters = parametersBuilder.buildParameters(method, tree);
+            RouteCriteria criteria = criteriaBuilder.buildCriteria(method, tree, routeConfig, routesConfig);
+            List<RouteMethodParameter> parameters = parametersBuilder.buildParameters(method, criteria);
             RouteResponseType responseType = returnTypeMapper.mapResponseType(method, routeConfig);
 
             List<BeforeRouteNode> beforeNodes = new ArrayList<BeforeRouteNode>();
@@ -172,14 +139,18 @@ public class RoutingTable
     }
     Collections.sort(routeNodes);
   }
-  
-  RouteNode find(RequestPath path, RequestParameters parameters, HttpMethod httpMethod, Format format)
+
+  MatchedRoute find(RequestPath path, RequestParameters parameters, HttpMethod httpMethod, Format format)
   {
+    List<Matcher> pathMatchers = new ArrayList<Matcher>();
+    Map<String, Matcher> parameterMatchers = new HashMap<String, Matcher>();
     for (RouteNode routeNode : routeNodes)
     {
-      if (routeNode.criteria.matches(httpMethod, format, path, parameters))
+      pathMatchers.clear();
+      parameterMatchers.clear();
+      if (routeNode.criteria.matches(httpMethod, format, path, parameters, pathMatchers, parameterMatchers))
       {
-        return routeNode;
+        return new MatchedRoute(routeNode, pathMatchers, parameterMatchers);
       }
     }
     return null;

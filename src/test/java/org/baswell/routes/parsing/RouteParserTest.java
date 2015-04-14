@@ -1,8 +1,8 @@
 package org.baswell.routes.parsing;
 
-import static org.testng.Assert.*;
+import org.junit.Test;
 
-import org.testng.annotations.Test;
+import static org.junit.Assert.*;
 
 public class RouteParserTest
 {

@@ -8,8 +8,8 @@ import org.baswell.routes.Route;
 import org.baswell.routes.RouteConfig;
 import org.baswell.routes.RoutesConfig;
 import org.baswell.routes.criteria.RequestPathSegmentCriterion.RequestPathSegmentCrierionType;
-import org.testng.annotations.BeforeTest;
-import org.testng.annotations.Test;
+import org.junit.Before;
+import org.junit.Test;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -19,7 +19,7 @@ import java.util.regex.Pattern;
 
 import static org.baswell.routes.utils.RoutesMethods.*;
 import static org.baswell.routes.utils.TestMethods.*;
-import static org.testng.Assert.*;
+import static org.junit.Assert.*;
 
 public class RouteCriteriaTest
 {
@@ -35,7 +35,7 @@ public class RouteCriteriaTest
   public void getAndPost()
   {}
 
-  @BeforeTest
+  @Before
   public void setupTest() throws NoSuchMethodException
   {
     getRouteConfig = new RouteConfig(getClass().getMethod("getOnly"), new RoutesConfig());

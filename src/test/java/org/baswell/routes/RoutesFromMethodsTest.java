@@ -6,12 +6,12 @@ import javax.servlet.ServletException;
 
 import org.baswell.routes.testroutes.RoutesFromMethods;
 import org.baswell.routes.utils.http.TestHttpServletRequest;
-import org.testng.annotations.BeforeTest;
-import org.testng.annotations.Test;
+import org.junit.Before;
+import org.junit.Test;
 
 public class RoutesFromMethodsTest extends EndToEndTest
 {
-  @BeforeTest
+  @Before
   public void setupRoutingTable()
   {
     buildRoutingTable(RoutesFromMethods.class);

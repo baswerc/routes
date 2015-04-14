@@ -3,17 +3,17 @@ package org.baswell.routes;
 import com.google.gson.Gson;
 import org.baswell.routes.testroutes.ReturnTypes;
 import org.baswell.routes.utils.http.TestHttpServletRequest;
-import org.testng.annotations.BeforeTest;
-import org.testng.annotations.Test;
+import org.junit.Before;
+import org.junit.Test;
 
 import javax.servlet.ServletException;
 import java.io.IOException;
 
-import static org.testng.Assert.*;
+import static org.junit.Assert.*;
 
 public class ReturnTypesTest extends EndToEndTest
 {
-  @BeforeTest
+  @Before
   public void setupRoutingTable()
   {
     buildRoutingTable(ReturnTypes.class);

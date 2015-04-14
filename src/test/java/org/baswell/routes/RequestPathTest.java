@@ -1,10 +1,10 @@
 package org.baswell.routes;
 
-import static org.testng.Assert.*;
-
-import org.testng.annotations.Test;
+import org.junit.Test;
 
 import java.util.Arrays;
+
+import static org.junit.Assert.*;
 
 public class RequestPathTest
 {

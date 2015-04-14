@@ -2,22 +2,24 @@ package org.baswell.routes.criteria;
 
 import java.util.regex.Pattern;
 
-class RequestPathSegmentCriterion
+public class RequestPathSegmentCriterion
 {
-  static enum RequestPathSegmentCrierionType
+  public static enum RequestPathSegmentCrierionType
   {
     FIXED,
     PATTERN,
     MULTI;
   }
   
-  final int index;
-  
-  final String value;
-  
-  final RequestPathSegmentCrierionType type;
-  
-  final Pattern pattern;
+  public final int index;
+
+  public final String value;
+
+  public final RequestPathSegmentCrierionType type;
+
+  public final Pattern pattern;
+
+  public final int numberPatternGroups;
   
   RequestPathSegmentCriterion(int index, String value, RequestPathSegmentCrierionType type, Pattern pattern)
   {
@@ -25,5 +27,6 @@ class RequestPathSegmentCriterion
     this.value = value;
     this.type = type;
     this.pattern = pattern;
+    numberPatternGroups = pattern == null ? 0 : pattern.matcher("").groupCount();
   }
 }

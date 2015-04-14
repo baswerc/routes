@@ -3,12 +3,9 @@ package org.baswell.routes.parsing;
 abstract public class RouteTerminal
 {
   public final int routeIndex;
-  
-  public final boolean canBeMappedToMethodParameter;
-  
-  public RouteTerminal(int routeIndex, boolean canBeMappedToMethodParameter)
+
+  public RouteTerminal(int routeIndex)
   {
     this.routeIndex = routeIndex;
-    this.canBeMappedToMethodParameter = canBeMappedToMethodParameter;
   }
 }

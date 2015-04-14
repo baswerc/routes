@@ -6,7 +6,7 @@ public class SymbolPathTerminal extends PathTerminal
   
   public SymbolPathTerminal(int routeIndex, int pathIndex, String symbol)
   {
-    super(routeIndex, pathIndex, true);
+    super(routeIndex, pathIndex);
     this.symbol = symbol;
   }
 

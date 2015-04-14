@@ -1,7 +1,7 @@
 package org.baswell.routes.invoking;
 
 import static org.baswell.routes.invoking.RouteMethodParametersBuilder.*;
-import static org.testng.Assert.*;
+import static org.junit.Assert.*;
 
 import java.lang.reflect.Method;
 import java.util.List;
@@ -16,10 +16,13 @@ import org.baswell.routes.RequestContext;
 import org.baswell.routes.RequestParameters;
 import org.baswell.routes.RequestPath;
 import org.baswell.routes.Route;
+import org.baswell.routes.RoutesConfig;
+import org.baswell.routes.criteria.RouteCriteria;
+import org.baswell.routes.criteria.RouteCriteriaBuilder;
 import org.baswell.routes.invoking.RouteMethodParameter.RouteMethodParameterType;
 import org.baswell.routes.parsing.RouteParser;
 import org.baswell.routes.parsing.RouteTree;
-import org.testng.annotations.Test;
+import org.junit.Test;
 
 public class RouteMethodParamtersBuilderTest
 {
@@ -103,8 +106,12 @@ public class RouteMethodParamtersBuilderTest
     RouteParser parser = new RouteParser();
     Method routeMethod = RouteTest.class.getMethod("routeOne", String.class, boolean.class, HttpServletRequest.class, List.class);
     RouteTree routeTree = parser.parse(routeMethod.getAnnotation(Route.class).value());
-    
-    parameters = builder.buildParameters(routeMethod, routeTree);
+
+    RoutesConfig routesConfig = new RoutesConfig();
+    RouteCriteriaBuilder criteriaBuilder = new RouteCriteriaBuilder();
+    RouteCriteria criteria = criteriaBuilder.buildCriteria(routeMethod, routeTree, null, routesConfig);
+
+    parameters = builder.buildParameters(routeMethod, criteria);
     
     assertEquals(parameters.size(), 4);
     assertEquals(parameters.get(0).type, RouteMethodParameterType.ROUTE_PATH);

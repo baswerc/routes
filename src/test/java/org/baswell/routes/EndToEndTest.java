@@ -1,22 +1,13 @@
 package org.baswell.routes;
 
-import static org.testng.Assert.*;
-
 import java.io.IOException;
-import java.util.Map;
 import java.util.Set;
 
 import javax.servlet.ServletException;
 
-import org.baswell.routes.Format;
-import org.baswell.routes.HttpMethod;
-import org.baswell.routes.RequestParameters;
-import org.baswell.routes.RequestPath;
-import org.baswell.routes.RouteNode;
-import org.baswell.routes.RouteRequestPipeline;
-import org.baswell.routes.RoutingTable;
 import org.baswell.routes.utils.http.TestHttpServletRequest;
 import org.baswell.routes.utils.http.TestHttpServletResponse;
+import static org.junit.Assert.*;
 
 abstract public class EndToEndTest
 {
@@ -53,7 +44,7 @@ abstract public class EndToEndTest
         }
         else
         {
-          routingTable.defineSymbol(symbolName, (String)object);
+          routesConfig.defineSymbol(symbolName, (String)object);
           symbolName = null;
         }
       }
@@ -72,7 +63,7 @@ abstract public class EndToEndTest
     this.servletRequest = servletRequest;
     servletResponse = new TestHttpServletResponse();
     httpMethod = HttpMethod.fromServletMethod(servletRequest.getMethod());
-    format = new Format(servletRequest.getContentType());
+    format = new Format(servletRequest.getContentType(), new RequestPath(servletRequest));
     path = new RequestPath(servletRequest);
     parameters = new RequestParameters(servletRequest);
   }
@@ -99,16 +90,16 @@ abstract public class EndToEndTest
     return null;
   }
   
-  protected RouteNode find()
+  protected MatchedRoute find()
   {
     return routingTable.find(path, parameters, httpMethod, format);
   }
   
   protected void invoke() throws IOException, ServletException
   {
-    RouteNode node = find();
+    MatchedRoute node = find();
     assertNotNull(node);
-    pipeline.invoke(node, servletRequest, servletResponse, httpMethod, format, path, parameters);
+    pipeline.invoke(node.routeNode, servletRequest, servletResponse, httpMethod, format, path, parameters, node.pathMatchers, node.parameterMatchers);
     servletResponse.writer.close();
   }
   

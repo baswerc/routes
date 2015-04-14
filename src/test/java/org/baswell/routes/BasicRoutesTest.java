@@ -1,19 +1,18 @@
 package org.baswell.routes;
 
-import static org.testng.Assert.*;
-
 import java.io.IOException;
 
 import javax.servlet.ServletException;
 
 import org.baswell.routes.testroutes.BasicRoutes;
 import org.baswell.routes.utils.http.TestHttpServletRequest;
-import org.testng.annotations.BeforeTest;
-import org.testng.annotations.Test;
+import org.junit.Before;
+import org.junit.Test;
+import static org.junit.Assert.*;
 
 public class BasicRoutesTest extends EndToEndTest
 {
-  @BeforeTest
+  @Before
   public void setupRoutingTable()
   {
     buildRoutingTable(BasicRoutes.class);

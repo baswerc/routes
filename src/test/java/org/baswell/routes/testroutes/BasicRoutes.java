@@ -1,13 +1,13 @@
 package org.baswell.routes.testroutes;
 
-import static org.testng.Assert.*;
-
 import org.baswell.routes.BeforeRoute;
 import org.baswell.routes.RedirectTo;
 import org.baswell.routes.RequestContext;
 import org.baswell.routes.RequestPath;
 import org.baswell.routes.ReturnHttpResponseCode;
 import org.baswell.routes.Route;
+
+import static org.junit.Assert.*;
 
 public class BasicRoutes extends BaseRoutes
 {

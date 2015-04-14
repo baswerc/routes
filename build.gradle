@@ -12,5 +12,5 @@ dependencies {
     compile 'com.google.code.gson:gson:2.+'
     compile 'com.googlecode.json-simple:json-simple:1.+'
     compile 'commons-codec:commons-codec:1.10'
-    testCompile 'org.testng:testng:6.+'
+    testCompile group: 'junit', name: 'junit', version: '[4.0,)'
 }

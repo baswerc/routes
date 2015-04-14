@@ -6,7 +6,7 @@ public class SymbolParameterTerminal extends ParameterTerminal
   
   public SymbolParameterTerminal(int routeIndex, String name, String symbol, boolean optional)
   {
-    super(routeIndex, name, optional, true);
+    super(routeIndex, name, optional);
     
     this.symbol = symbol;
   }

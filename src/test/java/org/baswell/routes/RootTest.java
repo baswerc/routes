@@ -1,20 +1,19 @@
 package org.baswell.routes;
 
 import org.baswell.routes.testroutes.BaseRoutes;
-import org.baswell.routes.testroutes.RoutesFromMethods;
 import org.baswell.routes.utils.http.TestHttpServletRequest;
-import org.testng.annotations.BeforeTest;
-import org.testng.annotations.Test;
+import org.junit.Before;
+import org.junit.Test;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 
-import static org.testng.Assert.assertEquals;
+import static org.junit.Assert.*;
 
 public class RootTest extends EndToEndTest
 {
-  @BeforeTest
+  @Before
   public void setupRoutingTable()
   {
     routesConfig = new RoutesConfig();

@@ -5,6 +5,7 @@ import java.lang.reflect.Method;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -50,7 +51,7 @@ public class RouteInvoker
     this.routeConfig = routeConfig;
   }
   
-  public Object invoke(Object routeInstance, Method method, List<RouteMethodParameter> routeMethodParameters) throws RouteMappingException, InvocationTargetException 
+  public Object invoke(Object routeInstance, Method method, List<RouteMethodParameter> routeMethodParameters, List<Matcher> pathMatchers, Map<String, Matcher> parameterMatchers) throws RouteMappingException, InvocationTargetException
   {
     Object[] invokeParameters = new Object[routeMethodParameters.size()];
     for (int i = 0; i < routeMethodParameters.size(); i++)
@@ -112,6 +113,16 @@ public class RouteInvoker
             switch (routeMethodParameter.routhPathParameterType)
             {
               case STRING:
+                if (routeMethodParameter.groupIndex != null)
+                {
+                  Matcher matcher = pathMatchers.get(routeMethodParameter.segmentIndex);
+                  if ((matcher != null) && (routeMethodParameter.groupIndex < matcher.groupCount()))
+                  {
+                    invokeParameters[i] = matcher.group(routeMethodParameter.groupIndex + 1);
+                    break;
+                  }
+                }
+
                 invokeParameters[i] = requestPath.get(routeMethodParameter.segmentIndex);
                 break;
                 

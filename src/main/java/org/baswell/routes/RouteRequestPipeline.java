@@ -2,6 +2,9 @@ package org.baswell.routes;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
+import java.util.List;
+import java.util.Map;
+import java.util.regex.Matcher;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -22,7 +25,8 @@ class RouteRequestPipeline
     responseProcessor = new RouteResponseProcessor(routesConfig);
   }
   
-  void invoke(RouteNode routeNode, HttpServletRequest servletRequest, HttpServletResponse servletResponse, HttpMethod httpMethod, Format format, RequestPath path, RequestParameters parameters) throws IOException, ServletException
+  void invoke(RouteNode routeNode, HttpServletRequest servletRequest, HttpServletResponse servletResponse, HttpMethod httpMethod,
+              Format format, RequestPath path, RequestParameters parameters, List<Matcher> pathMatchers, Map<String, Matcher> parameterMatchers) throws IOException, ServletException
   {
     RouteInvoker invoker = new RouteInvoker(servletRequest, servletResponse, httpMethod, path, parameters, format, routeNode.routeConfig);
     Object routeInstance = routeNode.instance.create();
@@ -31,19 +35,19 @@ class RouteRequestPipeline
     {
       for (BeforeRouteNode beforeNode : routeNode.beforeRouteNodes)
       {
-        Object beforeResponse = invoker.invoke(routeInstance, beforeNode.method, beforeNode.parameters);
+        Object beforeResponse = invoker.invoke(routeInstance, beforeNode.method, beforeNode.parameters, pathMatchers, parameterMatchers);
         if (beforeNode.returnsBoolean && (beforeResponse != null) && (!(Boolean)beforeResponse))
         {
           return;
         }
       }
 
-      Object response = invoker.invoke(routeInstance, routeNode.method, routeNode.parameters);
+      Object response = invoker.invoke(routeInstance, routeNode.method, routeNode.parameters, pathMatchers, parameterMatchers);
       responseProcessor.processResponse(routeNode.responseType, response, format, routeNode.routeConfig, servletRequest, servletResponse);
       
       for (AfterRouteNode afterNode : routeNode.afterRouteNodes)
       {
-        invoker.invoke(routeInstance, afterNode.method, afterNode.parameters);
+        invoker.invoke(routeInstance, afterNode.method, afterNode.parameters, pathMatchers, parameterMatchers);
       }
     }
     catch (InvocationTargetException e)

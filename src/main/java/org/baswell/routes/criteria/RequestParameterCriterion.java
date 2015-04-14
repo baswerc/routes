@@ -2,23 +2,25 @@ package org.baswell.routes.criteria;
 
 import java.util.regex.Pattern;
 
-class RequestParameterCriterion
+public class RequestParameterCriterion
 {
-  static enum RequestParameterType
+  public static enum RequestParameterType
   {
     FIXED,
     PATTERN;
   }
   
-  final String name;
-  
-  final String value;
-  
-  final RequestParameterType type;
-  
-  final boolean presenceRequired;
-  
-  final Pattern pattern;
+  public final String name;
+
+  public final String value;
+
+  public final RequestParameterType type;
+
+  public final boolean presenceRequired;
+
+  public final Pattern pattern;
+
+  public final int numberPatternGroups;
   
   RequestParameterCriterion(String name, String value, RequestParameterType type, boolean presenceRequired, Pattern pattern)
   {
@@ -27,5 +29,6 @@ class RequestParameterCriterion
     this.type = type;
     this.presenceRequired = presenceRequired;
     this.pattern = pattern;
+    numberPatternGroups = pattern == null ? 0 : pattern.matcher("").groupCount();
   }
 }

@@ -6,7 +6,7 @@ public class ExactPathTerminal extends PathTerminal
   
   public ExactPathTerminal(int routeIndex, int pathIndex, String segment)
   {
-    super(routeIndex, pathIndex, false);
+    super(routeIndex, pathIndex);
     this.segment = segment;
   }
 }

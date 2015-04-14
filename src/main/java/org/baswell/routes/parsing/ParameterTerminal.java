@@ -6,9 +6,9 @@ abstract public class ParameterTerminal extends RouteTerminal
   
   public final boolean optional;
   
-  public ParameterTerminal(int routeIndex, String name, boolean optional, boolean canBeMappedToMethodParameter)
+  public ParameterTerminal(int routeIndex, String name, boolean optional)
   {
-    super(routeIndex, canBeMappedToMethodParameter);
+    super(routeIndex);
     
     this.name = name;
     this.optional = optional;

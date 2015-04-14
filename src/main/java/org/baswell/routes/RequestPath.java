@@ -5,6 +5,7 @@ import org.omg.CORBA.Request;
 import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -39,7 +40,34 @@ public class RequestPath
   {
     return segments.size();
   }
-  
+
+  public String getFileName()
+  {
+    if (segments.isEmpty())
+    {
+      return null;
+    }
+    else
+    {
+      String fileNameCandidate = segments.get(segments.size() - 1);
+      int lastIndex = fileNameCandidate.lastIndexOf('.');
+      return lastIndex > 0 && lastIndex < fileNameCandidate.length() ? fileNameCandidate : null;
+    }
+  }
+
+  public String getFileExtension()
+  {
+    String fileName = getFileName();
+    if (fileName != null)
+    {
+      return fileName.substring(fileName.lastIndexOf('.') + 1, fileName.length());
+    }
+    else
+    {
+      return null;
+    }
+  }
+
   public String get(int index) throws IndexOutOfBoundsException
   {
     return segments.get(index);

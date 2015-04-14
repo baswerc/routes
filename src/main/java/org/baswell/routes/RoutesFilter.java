@@ -74,12 +74,12 @@ public class RoutesFilter implements Filter
     RequestPath path = new RequestPath(servletRequest);
     RequestParameters parameters = new RequestParameters(servletRequest);
     HttpMethod httpMethod = HttpMethod.fromServletMethod(servletRequest.getMethod());
-    Format format = new Format(servletRequest.getHeader("Accept"));
+    Format format = new Format(servletRequest.getHeader("Accept"), path);
 
-    RouteNode routeNode = RoutingTable.routingTable.find(path, parameters, httpMethod, format);
-    if (routeNode != null)
+    MatchedRoute matchedRoute = RoutingTable.routingTable.find(path, parameters, httpMethod, format);
+    if (matchedRoute != null)
     {
-      pipeline.invoke(routeNode, servletRequest, servletResponse, httpMethod, format, path, parameters);
+      pipeline.invoke(matchedRoute.routeNode, servletRequest, servletResponse, httpMethod, format, path, parameters, matchedRoute.pathMatchers, matchedRoute.parameterMatchers);
     }
     else
     {

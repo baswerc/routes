@@ -1,6 +1,10 @@
 package org.baswell.routes.criteria;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.regex.Matcher;
 
 import org.baswell.routes.Format;
 import org.baswell.routes.HttpMethod;
@@ -12,9 +16,9 @@ import org.baswell.routes.criteria.RequestPathSegmentCriterion.RequestPathSegmen
 
 public class RouteCriteria implements Comparable<RouteCriteria>
 {
-  final List<RequestPathSegmentCriterion> pathCriteria;
+  public final List<RequestPathSegmentCriterion> pathCriteria;
   
-  final List<RequestParameterCriterion> parameterCriteria;
+  public final List<RequestParameterCriterion> parameterCriteria;
 
   final RouteConfig routeConfig;
   
@@ -56,6 +60,11 @@ public class RouteCriteria implements Comparable<RouteCriteria>
 
   public boolean matches(HttpMethod httpMethod, Format format, RequestPath path, RequestParameters parameters)
   {
+    return matches(httpMethod, format, path, parameters, new ArrayList<Matcher>(), new HashMap<String, Matcher>());
+  }
+
+  public boolean matches(HttpMethod httpMethod, Format format, RequestPath path, RequestParameters parameters, List<Matcher> pathMatchers, Map<String, Matcher> parameterMatchers)
+  {
     if (!routeConfig.httpMethods.contains(httpMethod))
     {
       return false;
@@ -68,7 +77,7 @@ public class RouteCriteria implements Comparable<RouteCriteria>
     {
       return false;
     }
-    else if (!matchSegments(0, path, 0, pathCriteria, routesConfig))
+    else if (!matchSegments(0, path, 0, pathCriteria, routesConfig, pathMatchers))
     {
       return false;
     }
@@ -106,8 +115,10 @@ public class RouteCriteria implements Comparable<RouteCriteria>
             boolean matchFound = false;
             for (String parameterValue : parameterValues)
             {
-              if (parameterCriterion.pattern.matcher(parameterValue).matches())
+              Matcher matcher = parameterCriterion.pattern.matcher(parameterValue);
+              if (matcher.matches())
               {
+                parameterMatchers.put(parameterCriterion.name, matcher);
                 matchFound = true;
                 break;
               }
@@ -141,7 +152,7 @@ public class RouteCriteria implements Comparable<RouteCriteria>
     }
   }
 
-  static boolean matchSegments(int pathIndex, RequestPath path, int criteriaIndex, List<RequestPathSegmentCriterion> criteria, RoutesConfig config)
+  static boolean matchSegments(int pathIndex, RequestPath path, int criteriaIndex, List<RequestPathSegmentCriterion> criteria, RoutesConfig config, List<Matcher> matchers)
   {
     if ((pathIndex >= path.size()) && (criteriaIndex >= criteria.size()))
     {
@@ -180,17 +191,20 @@ public class RouteCriteria implements Comparable<RouteCriteria>
           }
           else
           {
-            return matchSegments(pathIndex + 1, path, criteriaIndex + 1, criteria, config);
+            matchers.add(null);
+            return matchSegments(pathIndex + 1, path, criteriaIndex + 1, criteria, config, matchers);
           }
   
         case PATTERN:
-          if (!criterion.pattern.matcher(segment).matches())
+          Matcher matcher = criterion.pattern.matcher(segment);
+          if (!matcher.matches())
           {
             return false;
           }
           else
           {
-            return matchSegments(pathIndex + 1, path, criteriaIndex + 1, criteria, config);
+            matchers.add(matcher);
+            return matchSegments(pathIndex + 1, path, criteriaIndex + 1, criteria, config, matchers);
           }
           
         case MULTI:
@@ -204,8 +218,11 @@ public class RouteCriteria implements Comparable<RouteCriteria>
             int nextCriteriaIndex = criteriaIndex + 1;
             for (int nextPathIndex = pathIndex; nextPathIndex < path.size(); nextPathIndex++)
             {
-              if (matchSegments(nextPathIndex, path, nextCriteriaIndex, criteria, config))
+              List<Matcher> subMatchers = new ArrayList<Matcher>();
+              subMatchers.add(null);
+              if (matchSegments(nextPathIndex, path, nextCriteriaIndex, criteria, config, subMatchers))
               {
+                matchers.addAll(subMatchers);
                 return true;
               }
             }

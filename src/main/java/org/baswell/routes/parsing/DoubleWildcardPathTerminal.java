@@ -4,6 +4,6 @@ public class DoubleWildcardPathTerminal extends PathTerminal
 {
   public DoubleWildcardPathTerminal(int routeIndex, int pathIndex)
   {
-    super(routeIndex, pathIndex, false);
+    super(routeIndex, pathIndex);
   }
 }
