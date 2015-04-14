@@ -46,9 +46,7 @@ public class RoutingTable
 
   public RoutingTable(RoutesConfig routesConfig)
   {
-    assert  RoutingTable.routingTable == null;
-
-    this.routesConfig = routesConfig;
+    this.routesConfig = routesConfig == null ? new RoutesConfig() : routesConfig;
     RoutingTable.routingTable = this;
   }
   
@@ -116,7 +114,7 @@ public class RoutingTable
       }
       else
       {
-        numRoutesPaths = routesAnnotation.value().length;
+        numRoutesPaths = Math.max(1, routesAnnotation.value().length);
         routeUnannotatedPublicMethods = routesAnnotation.routeUnannoatedPublicMethods().length == 0 ? routesConfig.routeUnannoatedPublicMethods : routesAnnotation.routeUnannoatedPublicMethods()[0];
       }
 
