@@ -3,7 +3,6 @@ package org.baswell.routes.response;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.PrintWriter;
 import java.nio.ByteBuffer;
 import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
@@ -14,9 +13,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
@@ -25,20 +22,19 @@ import javax.xml.transform.stream.StreamResult;
 import com.google.gson.Gson;
 import org.baswell.routes.Format;
 import org.baswell.routes.RouteConfig;
-import org.baswell.routes.RoutesConfig;
+import org.baswell.routes.RoutesConfiguration;
 import org.json.simple.JSONObject;
 import org.w3c.dom.Node;
-import org.xml.sax.SAXException;
 
 public class RouteResponseProcessor
 {
-  private final RoutesConfig routesConfig;
+  private final RoutesConfiguration routesConfiguration;
 
   private final AvailableLibraries availableLibraries = new AvailableLibraries();
 
-  public RouteResponseProcessor(RoutesConfig routesConfig)
+  public RouteResponseProcessor(RoutesConfiguration routesConfiguration)
   {
-    this.routesConfig = routesConfig;
+    this.routesConfiguration = routesConfiguration;
   }
   
   public void processResponse(RouteResponseType routeResponseType, Object response, Format format, RouteConfig routeConfig, HttpServletRequest servletRequest, HttpServletResponse servletResponse) throws IOException, ServletException
@@ -52,7 +48,7 @@ public class RouteResponseProcessor
           break;
 
         case STREAM_CONTENT:
-          fastChannelCopy((InputStream)response, servletResponse.getOutputStream(), routesConfig.streamBufferSize);
+          fastChannelCopy((InputStream)response, servletResponse.getOutputStream(), routesConfiguration.streamBufferSize);
           break;
           
         case STRING_CONTENT:

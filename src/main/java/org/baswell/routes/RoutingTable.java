@@ -25,7 +25,7 @@ public class RoutingTable
 {
   public static RoutingTable routingTable;
 
-  final RoutesConfig routesConfig;
+  final RoutesConfiguration routesConfiguration;
   
   private List<Object> addedObjects = new ArrayList<Object>();
   
@@ -33,12 +33,12 @@ public class RoutingTable
 
   public RoutingTable()
   {
-    this(new RoutesConfig());
+    this(new RoutesConfiguration());
   }
 
-  public RoutingTable(RoutesConfig routesConfig)
+  public RoutingTable(RoutesConfiguration routesConfiguration)
   {
-    this.routesConfig = routesConfig == null ? new RoutesConfig() : routesConfig;
+    this.routesConfiguration = routesConfiguration == null ? new RoutesConfiguration() : routesConfiguration;
     RoutingTable.routingTable = this;
   }
 
@@ -77,12 +77,12 @@ public class RoutingTable
       if (routesAnnotation == null)
       {
         numRoutesPaths = 1;
-        routeUnannotatedPublicMethods = routesConfig.routeUnannoatedPublicMethods;
+        routeUnannotatedPublicMethods = routesConfiguration.routeUnannoatedPublicMethods;
       }
       else
       {
         numRoutesPaths = Math.max(1, routesAnnotation.value().length);
-        routeUnannotatedPublicMethods = routesAnnotation.routeUnannoatedPublicMethods().length == 0 ? routesConfig.routeUnannoatedPublicMethods : routesAnnotation.routeUnannoatedPublicMethods()[0];
+        routeUnannotatedPublicMethods = routesAnnotation.routeUnannoatedPublicMethods().length == 0 ? routesConfiguration.routeUnannoatedPublicMethods : routesAnnotation.routeUnannoatedPublicMethods()[0];
       }
 
       List<RouteNode> classRoutes = new ArrayList<RouteNode>();
@@ -97,10 +97,10 @@ public class RoutingTable
 
           for (int i = 0; i < numRoutesPaths; i++)
           {
-            RouteConfig routeConfig = new RouteConfig(method, routesConfig, routesAnnotation, routeAnnotation, i);
+            RouteConfig routeConfig = new RouteConfig(method, routesConfiguration, routesAnnotation, routeAnnotation, i);
             RouteTree tree = parser.parse(routeConfig.route);
-            RouteInstance routeInstance = instanceIsClass ? new RouteInstance(routesClass, routesConfig.routeInstanceFactory) : new RouteInstance(addedObject);
-            RouteCriteria criteria = criteriaBuilder.buildCriteria(method, tree, routeConfig, routesConfig);
+            RouteInstance routeInstance = instanceIsClass ? new RouteInstance(routesClass, routesConfiguration.routeInstanceFactory) : new RouteInstance(addedObject);
+            RouteCriteria criteria = criteriaBuilder.buildCriteria(method, tree, routeConfig, routesConfiguration);
             List<RouteMethodParameter> parameters = parametersBuilder.buildParameters(method, criteria);
             RouteResponseType responseType = returnTypeMapper.mapResponseType(method, routeConfig);
 

@@ -27,11 +27,11 @@ abstract public class EndToEndTest
   
   protected RequestParameters parameters;
 
-  protected RoutesConfig routesConfig;
+  protected RoutesConfiguration routesConfiguration;
 
   protected void buildRoutingTable(Object... routesInstancesClassesSymbolsOrPatterns)
   {
-    routingTable = new RoutingTable(routesConfig);
+    routingTable = new RoutingTable(routesConfiguration);
     
     String symbolName = null;
     for (Object object : routesInstancesClassesSymbolsOrPatterns)
@@ -44,7 +44,7 @@ abstract public class EndToEndTest
         }
         else
         {
-          routesConfig.defineSymbol(symbolName, (String)object);
+          routesConfiguration.defineSymbol(symbolName, (String)object);
           symbolName = null;
         }
       }
@@ -55,7 +55,7 @@ abstract public class EndToEndTest
     }
     
     routingTable.build();
-    pipeline = new RouteRequestPipeline(routingTable.routesConfig);
+    pipeline = new RouteRequestPipeline(routingTable.routesConfiguration);
   }
   
   protected void initializeRequest(TestHttpServletRequest servletRequest)

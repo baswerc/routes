@@ -3,9 +3,15 @@ package org.baswell.routes;
 import java.lang.reflect.Method;
 import java.util.List;
 
+/**
+ *
+ * Scheme for mapping Methods without {@link org.baswell.routes.Route#value()} or {@link org.baswell.routes.Route#httpMethods()}
+ *
+ * @see DefaultRouteFromMethodScheme
+ */
 public interface RouteFromMethodScheme
 {
-  List<HttpMethod> getHttpMethods(Method method);
+  String getHttpPath(Method method);
 
-  String getRoute(Method method);
+  List<HttpMethod> getHttpMethods(Method method);
 }

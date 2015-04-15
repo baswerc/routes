@@ -10,7 +10,7 @@ import java.util.regex.PatternSyntaxException;
 
 import static org.baswell.routes.utils.RoutesMethods.typesToPatterns;
 
-public class RoutesConfig
+public class RoutesConfiguration
 {
   public String rootPath;
 
@@ -26,7 +26,7 @@ public class RoutesConfig
 
   public RouteInstanceFactory routeInstanceFactory = new DefaultRouteInstanceFactory();
 
-  public RouteFromMethodScheme routeFromMethodScheme = new SimpleRouteFromMethodScheme();
+  public RouteFromMethodScheme routeFromMethodScheme = new DefaultRouteFromMethodScheme();
 
   public String routesMetaPath;
 
@@ -42,7 +42,7 @@ public class RoutesConfig
   }
 
 
-  public RoutesConfig defineSymbol(String symbol, Class clazz) throws InvalidPatternException
+  public RoutesConfiguration defineSymbol(String symbol, Class clazz) throws InvalidPatternException
   {
     if (typesToPatterns.containsKey(clazz))
     {
@@ -54,7 +54,7 @@ public class RoutesConfig
     }
   }
 
-  public RoutesConfig defineSymbol(String symbol, String pattern) throws InvalidPatternException
+  public RoutesConfiguration defineSymbol(String symbol, String pattern) throws InvalidPatternException
   {
     try
     {

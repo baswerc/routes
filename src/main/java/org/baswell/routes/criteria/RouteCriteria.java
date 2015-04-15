@@ -11,7 +11,7 @@ import org.baswell.routes.HttpMethod;
 import org.baswell.routes.RequestParameters;
 import org.baswell.routes.RequestPath;
 import org.baswell.routes.RouteConfig;
-import org.baswell.routes.RoutesConfig;
+import org.baswell.routes.RoutesConfiguration;
 import org.baswell.routes.criteria.RequestPathSegmentCriterion.RequestPathSegmentCrierionType;
 
 public class RouteCriteria implements Comparable<RouteCriteria>
@@ -22,7 +22,7 @@ public class RouteCriteria implements Comparable<RouteCriteria>
 
   final RouteConfig routeConfig;
   
-  final RoutesConfig routesConfig;
+  final RoutesConfiguration routesConfiguration;
 
   final boolean allCriteriaFixed;
 
@@ -30,12 +30,12 @@ public class RouteCriteria implements Comparable<RouteCriteria>
   
   final boolean hasMultiPathCriterion;
   
-  public RouteCriteria(List<RequestPathSegmentCriterion> pathCriteria, List<RequestParameterCriterion> parameterCriteria, RouteConfig routeConfig, RoutesConfig routesConfig)
+  public RouteCriteria(List<RequestPathSegmentCriterion> pathCriteria, List<RequestParameterCriterion> parameterCriteria, RouteConfig routeConfig, RoutesConfiguration routesConfiguration)
   {
     this.pathCriteria = pathCriteria;
     this.parameterCriteria = parameterCriteria;
     this.routeConfig = routeConfig;
-    this.routesConfig = routesConfig;
+    this.routesConfiguration = routesConfiguration;
 
     boolean hasPattern = false;
     boolean hasMultiPathCriterion = false;
@@ -77,7 +77,7 @@ public class RouteCriteria implements Comparable<RouteCriteria>
     {
       return false;
     }
-    else if (!matchSegments(0, path, 0, pathCriteria, routesConfig, pathMatchers))
+    else if (!matchSegments(0, path, 0, pathCriteria, routesConfiguration, pathMatchers))
     {
       return false;
     }
@@ -87,47 +87,55 @@ public class RouteCriteria implements Comparable<RouteCriteria>
       for (RequestParameterCriterion parameterCriterion : parameterCriteria)
       {
         List<String> parameterValues = parameters.getValues(parameterCriterion.name);
-        
+
+        if (parameterValues.isEmpty() && routeConfig.defaultParameters.containsKey(parameterCriterion.name))
+        {
+          parameterValues.addAll(routeConfig.defaultParameters.get(parameterCriterion.name));
+        }
+
         if (parameterValues.isEmpty() && parameterCriterion.presenceRequired)
         {
           return false;
         }
-        
-        if (routesConfig.caseInsensitive)
-        {
-          for (int i = 0; i < parameterValues.size(); i++)
-          {
-            parameterValues.set(i, parameterValues.get(i).toLowerCase());
-          }
-        }
 
-        switch (parameterCriterion.type)
+        if (!parameterValues.isEmpty())
         {
-          case FIXED:
-            String value = routesConfig.caseInsensitive ? parameterCriterion.value.toLowerCase() : parameterCriterion.value;
-            if (!parameterValues.contains(value))
+          if (routesConfiguration.caseInsensitive)
+          {
+            for (int i = 0; i < parameterValues.size(); i++)
             {
-              return false;
+              parameterValues.set(i, parameterValues.get(i).toLowerCase());
             }
-            break;
-            
-          case PATTERN:
-            boolean matchFound = false;
-            for (String parameterValue : parameterValues)
-            {
-              Matcher matcher = parameterCriterion.pattern.matcher(parameterValue);
-              if (matcher.matches())
+          }
+
+          switch (parameterCriterion.type)
+          {
+            case FIXED:
+              String value = routesConfiguration.caseInsensitive ? parameterCriterion.value.toLowerCase() : parameterCriterion.value;
+              if (!parameterValues.contains(value))
               {
-                parameterMatchers.put(parameterCriterion.name, matcher);
-                matchFound = true;
-                break;
+                return false;
               }
-            }
-            if (!matchFound)
-            {
-              return false;
-            }
-            break;
+              break;
+
+            case PATTERN:
+              boolean matchFound = false;
+              for (String parameterValue : parameterValues)
+              {
+                Matcher matcher = parameterCriterion.pattern.matcher(parameterValue);
+                if (matcher.matches())
+                {
+                  parameterMatchers.put(parameterCriterion.name, matcher);
+                  matchFound = true;
+                  break;
+                }
+              }
+              if (!matchFound)
+              {
+                return false;
+              }
+              break;
+          }
         }
       }
     }
@@ -152,7 +160,7 @@ public class RouteCriteria implements Comparable<RouteCriteria>
     }
   }
 
-  static boolean matchSegments(int pathIndex, RequestPath path, int criteriaIndex, List<RequestPathSegmentCriterion> criteria, RoutesConfig config, List<Matcher> matchers)
+  static boolean matchSegments(int pathIndex, RequestPath path, int criteriaIndex, List<RequestPathSegmentCriterion> criteria, RoutesConfiguration config, List<Matcher> matchers)
   {
     if ((pathIndex >= path.size()) && (criteriaIndex >= criteria.size()))
     {

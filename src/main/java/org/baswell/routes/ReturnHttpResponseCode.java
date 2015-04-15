@@ -1,5 +1,10 @@
 package org.baswell.routes;
 
+/**
+ * If thrown from {@link org.baswell.routes.BeforeRoute} or {@link org.baswell.routes.Route} methods the current request
+ * will immediately (no further processing) be returned the given {@link #code}. This exception should not be thrown
+ * from {@link org.baswell.routes.AfterRoute} methods since the HTTP response has already been processed.
+ */
 public class ReturnHttpResponseCode extends RuntimeException
 {
   public static ReturnHttpResponseCode OK = new ReturnHttpResponseCode(200);

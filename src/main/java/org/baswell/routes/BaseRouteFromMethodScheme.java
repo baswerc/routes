@@ -4,6 +4,19 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Base route method schema that provides an HTTP method implementation that takes the HTTP method names are taken from
+ * the beginning of the method name. If the method name doesn't start with any HTTP methods then the methods
+ * [GET, POST, PUT, DELETE] are used. For example:
+ *
+ * getMyResource() -> [GET]
+ *
+ * getPostMyResource() -> [GET, POST]
+ *
+ * getPostDeleteAnotherThing() -> [GET, POST, DELETE]
+ *
+ * doSomething() -> [GET, POST, PUT, DELETE]
+ */
 abstract public class BaseRouteFromMethodScheme implements RouteFromMethodScheme
 {
   @Override

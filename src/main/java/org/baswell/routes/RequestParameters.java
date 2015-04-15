@@ -360,4 +360,9 @@ public class RequestParameters
   {
     return queryString;
   }
+
+  void set(String name, List<String> values)
+  {
+    parameters.put(name, values);
+  }
 }

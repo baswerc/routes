@@ -12,6 +12,43 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+/**
+ * Entry point for mapping HTTP servlet requests to route methods. This filter should be placed last in your filter chain.
+ * No filters in the chain below this filter will be processed when route method matches are found (i.e. chain.doFilter is not called).
+ * If no match is found, then chain.doFilter will be called so further processing can occur. This will allow, for example, to still
+ * serve up file resources (ex. html, jsp) directly as long as none of your routes match the file resource URL.
+ *
+ * If your method routes are not the only mechanism for serving content, there are two parameters you can specify
+ * to improve the performance of this filter.
+ *
+ * <code>
+ * <init-param>
+ *   <param-name>ONLY</param-name>
+ *   <param-value>/routes.*</param-value>
+ * </init-param>
+ * </code>
+ *
+ * The <code>ONLY</code> parameter must be a valid Java regular expression. If specified, only request URIs that match
+ * this pattern will be checked to see if they match any route methods. The URI matched against will not include the context
+ * your application is deployed at so do not include that in the pattern.
+ *
+ * The other supported parameter is <code>EXCEPT</code>:
+ *
+ * <code>
+ * <init-param>
+ *   <param-name>EXCEPT</param-name>
+ *   <param-value>.*\.jsp$</param-value>
+ * </init-param>
+ * </code>
+ *
+ * This parameter must also be a valid Java regular expression. If specified, all request URIs will be checked to see if they match
+ * any route method except those that match this pattern. The URI matched against will not include the context
+ * your application is deployed at so do not include that in the pattern.
+ *
+ * The <code>ONLY</code> and <code>EXCEPT</code> parameters are intended to be use exclusively (one or the other). If both
+ * are specified then the route methods will be ignore if the <code>ONLY</code> pattern does not match or the <code>EXCEPT</code>
+ * pattern does match.
+ */
 public class RoutesFilter implements Filter
 {
   private volatile RouteRequestPipeline pipeline;
@@ -52,6 +89,7 @@ public class RoutesFilter implements Filter
       if (((onlyPattern != null) && !onlyPattern.matcher(requestPath).matches()) || ((exceptPattern != null) && exceptPattern.matcher(requestPath).matches()))
       {
         chain.doFilter(servletRequest, servletResponse);
+        return;
       }
     }
     
@@ -61,12 +99,12 @@ public class RoutesFilter implements Filter
       {
         if (pipeline == null)
         {
-          pipeline = new RouteRequestPipeline(RoutingTable.routingTable.routesConfig);
+          pipeline = new RouteRequestPipeline(RoutingTable.routingTable.routesConfiguration);
         }
 
-        if (RoutingTable.routingTable.routesConfig.hasRoutesMetaPath())
+        if (RoutingTable.routingTable.routesConfiguration.hasRoutesMetaPath())
         {
-          webHandler = new MetaHandler(RoutingTable.routingTable, RoutingTable.routingTable.routesConfig);
+          webHandler = new MetaHandler(RoutingTable.routingTable, RoutingTable.routingTable.routesConfiguration);
         }
       }
     }

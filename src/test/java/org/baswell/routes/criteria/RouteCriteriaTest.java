@@ -6,12 +6,11 @@ import org.baswell.routes.RequestParameters;
 import org.baswell.routes.RequestPath;
 import org.baswell.routes.Route;
 import org.baswell.routes.RouteConfig;
-import org.baswell.routes.RoutesConfig;
+import org.baswell.routes.RoutesConfiguration;
 import org.baswell.routes.criteria.RequestPathSegmentCriterion.RequestPathSegmentCrierionType;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -38,8 +37,8 @@ public class RouteCriteriaTest
   @Before
   public void setupTest() throws NoSuchMethodException
   {
-    getRouteConfig = new RouteConfig(getClass().getMethod("getOnly"), new RoutesConfig());
-    getPostRouteConfig = new RouteConfig(getClass().getMethod("getAndPost"), new RoutesConfig());
+    getRouteConfig = new RouteConfig(getClass().getMethod("getOnly"), new RoutesConfiguration());
+    getPostRouteConfig = new RouteConfig(getClass().getMethod("getAndPost"), new RoutesConfiguration());
   }
 
 
@@ -49,7 +48,7 @@ public class RouteCriteriaTest
     List<RequestPathSegmentCriterion> pathCriteria = createPathCriteria(Arrays.asList(RequestPathSegmentCrierionType.FIXED, RequestPathSegmentCrierionType.FIXED, RequestPathSegmentCrierionType.FIXED, RequestPathSegmentCrierionType.FIXED),
                                                                Arrays.asList("a", "b", "c", "d"));
     
-    RouteCriteria routeCriteria = new RouteCriteria(pathCriteria, null, getPostRouteConfig, new RoutesConfig());
+    RouteCriteria routeCriteria = new RouteCriteria(pathCriteria, null, getPostRouteConfig, new RoutesConfiguration());
 
     RequestPath urlPath = new RequestPath(Arrays.asList("a", "b", "c", "d"));
     RequestParameters requestParameters = getRequestParameters();
@@ -74,7 +73,7 @@ public class RouteCriteriaTest
     List<RequestPathSegmentCriterion> pathCriteria = createPathCriteria(Arrays.asList(RequestPathSegmentCrierionType.FIXED, RequestPathSegmentCrierionType.FIXED, RequestPathSegmentCrierionType.FIXED, RequestPathSegmentCrierionType.PATTERN),
                                                                Arrays.asList("a", "b", "c", INTEGER_PATTERN));
 
-    RouteCriteria routeCriteria = new RouteCriteria(pathCriteria, null, getRouteConfig, new RoutesConfig());
+    RouteCriteria routeCriteria = new RouteCriteria(pathCriteria, null, getRouteConfig, new RoutesConfiguration());
     
     RequestPath urlPath = new RequestPath(Arrays.asList("a", "b", "c", "1"));
     RequestParameters requestParameters = getRequestParameters();
@@ -99,7 +98,7 @@ public class RouteCriteriaTest
     List<RequestPathSegmentCriterion> pathCriteria = createPathCriteria(Arrays.asList(RequestPathSegmentCrierionType.FIXED, RequestPathSegmentCrierionType.FIXED, RequestPathSegmentCrierionType.MULTI, RequestPathSegmentCrierionType.PATTERN),
                                                                Arrays.asList("a", "b", "**", INTEGER_PATTERN));
 
-    RouteCriteria routeCriteria = new RouteCriteria(pathCriteria, null, getRouteConfig, new RoutesConfig());
+    RouteCriteria routeCriteria = new RouteCriteria(pathCriteria, null, getRouteConfig, new RoutesConfiguration());
     
     RequestPath urlPath = new RequestPath(Arrays.asList("a", "b", "c", "1"));
     RequestParameters requestParameters = getRequestParameters();

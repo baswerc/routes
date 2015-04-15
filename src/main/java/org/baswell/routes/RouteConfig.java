@@ -29,15 +29,15 @@ public class RouteConfig
   
   public final String forwardPath;
 
-  public RouteConfig(Method method, RoutesConfig routesConfig)
+  public RouteConfig(Method method, RoutesConfiguration routesConfiguration)
   {
-    this(method, routesConfig, method.getDeclaringClass().getAnnotation(Routes.class), method.getAnnotation(Route.class), 0);
+    this(method, routesConfiguration, method.getDeclaringClass().getAnnotation(Routes.class), method.getAnnotation(Route.class), 0);
   }
 
-  public RouteConfig(Method method, RoutesConfig routesConfig, Routes routes, Route route, int routesPathIndex)
+  public RouteConfig(Method method, RoutesConfiguration routesConfiguration, Routes routes, Route route, int routesPathIndex)
   {
-    httpMethods = getHttpMethods(routes, route, method, routesConfig.routeFromMethodScheme);
-    this.route = buildRoutePath(routesConfig.rootPath, routes, route, method, routesConfig.routeFromMethodScheme, routesPathIndex);
+    httpMethods = getHttpMethods(routes, route, method, routesConfiguration.routeFromMethodScheme);
+    this.route = buildRoutePath(routesConfiguration.rootPath, routes, route, method, routesConfiguration.routeFromMethodScheme, routesPathIndex);
     acceptedFormats = new HashSet<Format.Type>();
     defaultParameters = new HashMap<String, List<String>>();
 
@@ -55,7 +55,7 @@ public class RouteConfig
       forwardPath = routes.forwardPath();
       if (!forwardPath.startsWith("/"))
       {
-        String rootForwardPath = routesConfig.rootForwardPath;
+        String rootForwardPath = routesConfiguration.rootForwardPath;
         if (rootForwardPath != null)
         {
           if (!rootForwardPath.endsWith("/")) rootForwardPath += "/";
@@ -66,7 +66,7 @@ public class RouteConfig
     }
     else
     {
-      forwardPath = routesConfig.rootForwardPath;
+      forwardPath = routesConfiguration.rootForwardPath;
       if (forwardPath == null) forwardPath = "/";
     }
 
@@ -76,14 +76,14 @@ public class RouteConfig
 
     if (route == null)
     {
-      contentType = ((routes == null) || (routes.defaultContentType().length() == 0)) ? routesConfig.defaultContentType : routes.defaultContentType();
-      responseIsBody = ((routes == null) || (routes.defaultResponseIsBody().length == 0)) ? routesConfig.defaultResponseIsBody : routes.defaultResponseIsBody()[0];
+      contentType = ((routes == null) || (routes.defaultContentType().length() == 0)) ? routesConfiguration.defaultContentType : routes.defaultContentType();
+      responseIsBody = ((routes == null) || (routes.defaultResponseIsBody().length == 0)) ? routesConfiguration.defaultResponseIsBody : routes.defaultResponseIsBody()[0];
     }
     else
     {
       if (route.contentType().length() == 0)
       {
-        contentType = ((routes == null) || (routes.defaultContentType().length() == 0)) ? routesConfig.defaultContentType : routes.defaultContentType();
+        contentType = ((routes == null) || (routes.defaultContentType().length() == 0)) ? routesConfiguration.defaultContentType : routes.defaultContentType();
       }
       else
       {
@@ -117,7 +117,7 @@ public class RouteConfig
       }
       else
       {
-        responseIsBody = ((routes == null) || (routes.defaultResponseIsBody().length == 0)) ? routesConfig.defaultResponseIsBody : routes.defaultResponseIsBody()[0];
+        responseIsBody = ((routes == null) || (routes.defaultResponseIsBody().length == 0)) ? routesConfiguration.defaultResponseIsBody : routes.defaultResponseIsBody()[0];
       }
       
       tags.addAll(Arrays.asList(route.tags()));
@@ -154,11 +154,11 @@ public class RouteConfig
     }
     else
     {
-      String methodNameRoute = routeFromMethodScheme.getRoute(method);
-      if (!methodNameRoute.isEmpty())
+      String methodNameRoutePath = routeFromMethodScheme.getHttpPath(method);
+      if (!methodNameRoutePath.isEmpty())
       {
         if (!routePath.isEmpty() && !routePath.endsWith("/")) routePath += "/";
-        routePath += methodNameRoute;
+        routePath += methodNameRoutePath;
       }
     }
 
@@ -173,10 +173,6 @@ public class RouteConfig
     if ((route != null) && (route.httpMethods().length > 0))
     {
       for (HttpMethod httpMethod : route.httpMethods()) httpMethods.add(httpMethod);
-    }
-    else if ((routes != null) && (routes.defaultHttpMethods().length > 0))
-    {
-      for (HttpMethod httpMethod : routes.defaultHttpMethods()) httpMethods.add(httpMethod);
     }
     else
     {

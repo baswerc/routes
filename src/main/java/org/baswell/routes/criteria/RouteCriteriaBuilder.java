@@ -10,7 +10,7 @@ import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
 import org.baswell.routes.RouteConfig;
-import org.baswell.routes.RoutesConfig;
+import org.baswell.routes.RoutesConfiguration;
 import org.baswell.routes.criteria.RequestParameterCriterion.RequestParameterType;
 import org.baswell.routes.criteria.RequestPathSegmentCriterion.RequestPathSegmentCrierionType;
 import org.baswell.routes.parsing.DoubleWildcardPathTerminal;
@@ -31,7 +31,7 @@ import org.baswell.routes.utils.Pair;
 
 public class RouteCriteriaBuilder
 {
-  public RouteCriteria buildCriteria(Method method, RouteTree routeTree, RouteConfig routeConfig, RoutesConfig routesConfig) throws InvalidRouteException
+  public RouteCriteria buildCriteria(Method method, RouteTree routeTree, RouteConfig routeConfig, RoutesConfiguration routesConfiguration) throws InvalidRouteException
   {
     List<RequestPathSegmentCriterion> pathCriteria = new ArrayList<RequestPathSegmentCriterion>();
     int urlParameterIndex = 0;
@@ -84,9 +84,9 @@ public class RouteCriteriaBuilder
       else if (pathTerminal instanceof SymbolPathTerminal)
       {
         SymbolPathTerminal symbolTerminal = (SymbolPathTerminal)pathTerminal;
-        if (routesConfig.symbolsToPatterns.containsKey(symbolTerminal.symbol))
+        if (routesConfiguration.symbolsToPatterns.containsKey(symbolTerminal.symbol))
         {
-          RequestPathSegmentCriterion patternCriteria = new RequestPathSegmentCriterion(i, symbolTerminal.symbol, RequestPathSegmentCrierionType.PATTERN, routesConfig.symbolsToPatterns.get(symbolTerminal.symbol));
+          RequestPathSegmentCriterion patternCriteria = new RequestPathSegmentCriterion(i, symbolTerminal.symbol, RequestPathSegmentCrierionType.PATTERN, routesConfiguration.symbolsToPatterns.get(symbolTerminal.symbol));
           urlParameterIndex += Math.min(1, patternCriteria.numberPatternGroups);
           pathCriteria.add(patternCriteria);
         }
@@ -155,9 +155,9 @@ public class RouteCriteriaBuilder
         else if (parameterTerminal instanceof SymbolParameterTerminal)
         {
           SymbolParameterTerminal symbolTerminal = (SymbolParameterTerminal)parameterTerminal;
-          if (routesConfig.symbolsToPatterns.containsKey(symbolTerminal.symbol))
+          if (routesConfiguration.symbolsToPatterns.containsKey(symbolTerminal.symbol))
           {
-            RequestParameterCriterion parameterCriterion = new RequestParameterCriterion(parameterTerminal.name, "", RequestParameterType.PATTERN, !parameterTerminal.optional, routesConfig.symbolsToPatterns.get(symbolTerminal.symbol));
+            RequestParameterCriterion parameterCriterion = new RequestParameterCriterion(parameterTerminal.name, "", RequestParameterType.PATTERN, !parameterTerminal.optional, routesConfiguration.symbolsToPatterns.get(symbolTerminal.symbol));
             urlParameterIndex += Math.min(1, parameterCriterion.numberPatternGroups);
             parameterCriteria.add(parameterCriterion);
           }
@@ -173,7 +173,7 @@ public class RouteCriteriaBuilder
       }
     }
 
-    return new RouteCriteria(pathCriteria, parameterCriteria, routeConfig, routesConfig);
+    return new RouteCriteria(pathCriteria, parameterCriteria, routeConfig, routesConfiguration);
   }
   
   static Pattern compile(String pattern, Method method)

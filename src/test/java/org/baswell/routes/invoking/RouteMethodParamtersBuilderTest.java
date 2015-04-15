@@ -16,7 +16,7 @@ import org.baswell.routes.RequestContext;
 import org.baswell.routes.RequestParameters;
 import org.baswell.routes.RequestPath;
 import org.baswell.routes.Route;
-import org.baswell.routes.RoutesConfig;
+import org.baswell.routes.RoutesConfiguration;
 import org.baswell.routes.criteria.RouteCriteria;
 import org.baswell.routes.criteria.RouteCriteriaBuilder;
 import org.baswell.routes.invoking.RouteMethodParameter.RouteMethodParameterType;
@@ -107,9 +107,9 @@ public class RouteMethodParamtersBuilderTest
     Method routeMethod = RouteTest.class.getMethod("routeOne", String.class, boolean.class, HttpServletRequest.class, List.class);
     RouteTree routeTree = parser.parse(routeMethod.getAnnotation(Route.class).value());
 
-    RoutesConfig routesConfig = new RoutesConfig();
+    RoutesConfiguration routesConfiguration = new RoutesConfiguration();
     RouteCriteriaBuilder criteriaBuilder = new RouteCriteriaBuilder();
-    RouteCriteria criteria = criteriaBuilder.buildCriteria(routeMethod, routeTree, null, routesConfig);
+    RouteCriteria criteria = criteriaBuilder.buildCriteria(routeMethod, routeTree, null, routesConfiguration);
 
     parameters = builder.buildParameters(routeMethod, criteria);
     

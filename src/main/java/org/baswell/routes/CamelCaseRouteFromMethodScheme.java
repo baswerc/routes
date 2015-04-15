@@ -5,7 +5,7 @@ import java.lang.reflect.Method;
 public class CamelCaseRouteFromMethodScheme extends BaseRouteFromMethodScheme
 {
   @Override
-  public String getRoute(Method method)
+  public String getHttpPath(Method method)
   {
     return camelCaseToPath(removeHttpMethodsFromName(method));
   }

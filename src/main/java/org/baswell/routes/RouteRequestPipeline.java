@@ -15,14 +15,14 @@ import org.baswell.routes.response.RouteResponseProcessor;
 
 class RouteRequestPipeline
 {
-  final RoutesConfig routesConfig;
+  final RoutesConfiguration routesConfiguration;
   
   final RouteResponseProcessor responseProcessor;
   
-  RouteRequestPipeline(RoutesConfig routesConfig)
+  RouteRequestPipeline(RoutesConfiguration routesConfiguration)
   {
-    this.routesConfig = routesConfig;
-    responseProcessor = new RouteResponseProcessor(routesConfig);
+    this.routesConfiguration = routesConfiguration;
+    responseProcessor = new RouteResponseProcessor(routesConfiguration);
   }
   
   void invoke(RouteNode routeNode, HttpServletRequest servletRequest, HttpServletResponse servletResponse, HttpMethod httpMethod,
@@ -39,6 +39,20 @@ class RouteRequestPipeline
         if (beforeNode.returnsBoolean && (beforeResponse != null) && (!(Boolean)beforeResponse))
         {
           return;
+        }
+      }
+
+      // If provided set the configured content type. A route method can override this by setting HttpServletResponse.setContentType since we do it before the call.
+      if (routeNode.routeConfig.contentType != null)
+      {
+        servletResponse.setContentType(routeNode.routeConfig.contentType);
+      }
+
+      for (Map.Entry<String, List<String>> entry : routeNode.routeConfig.defaultParameters.entrySet())
+      {
+        if (!parameters.contains(entry.getKey()))
+        {
+          parameters.set(entry.getKey(), entry.getValue());
         }
       }
 

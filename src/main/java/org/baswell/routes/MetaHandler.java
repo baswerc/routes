@@ -1,7 +1,5 @@
 package org.baswell.routes;
 
-import org.baswell.routes.meta.MetaAuthenticator;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.ByteArrayOutputStream;
@@ -9,30 +7,28 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.regex.Matcher;
 
 public class MetaHandler
 {
   final RoutingTable routingTable;
 
-  final RoutesConfig routesConfig;
+  final RoutesConfiguration routesConfiguration;
 
-  public MetaHandler(RoutingTable routingTable, RoutesConfig routesConfig)
+  public MetaHandler(RoutingTable routingTable, RoutesConfiguration routesConfiguration)
   {
     this.routingTable = routingTable;
-    this.routesConfig = routesConfig;
+    this.routesConfiguration = routesConfiguration;
   }
 
   public boolean handled(HttpServletRequest request, HttpServletResponse response, RequestPath path, RequestParameters parameters, HttpMethod httpMethod, Format format) throws IOException
   {
-    String routesMetaPath = routesConfig.routesMetaPath;
+    String routesMetaPath = routesConfiguration.routesMetaPath;
     if (!routesMetaPath.startsWith("/")) routesMetaPath = "/" + routesMetaPath;
 
     if (path.startsWith(routesMetaPath))
     {
-      if ((routesConfig.metaAuthenticator == null) || routesConfig.metaAuthenticator.metaRequestAuthenticated(request, response))
+      if ((routesConfiguration.metaAuthenticator == null) || routesConfiguration.metaAuthenticator.metaRequestAuthenticated(request, response))
       {
         path = path.substring(routesMetaPath.length());
 

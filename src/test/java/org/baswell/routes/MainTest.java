@@ -12,8 +12,8 @@ public class MainTest extends EndToEndTest
   @Before
   public void setupRoutingTable()
   {
-    routesConfig = new RoutesConfig();
-    routesConfig.routeUnannoatedPublicMethods = true;
+    routesConfiguration = new RoutesConfiguration();
+    routesConfiguration.routeUnannoatedPublicMethods = true;
     buildRoutingTable(RoutesWithMain.class);
   }
 
