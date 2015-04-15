@@ -23,10 +23,16 @@ public class RequestPathSegmentCriterion
   
   RequestPathSegmentCriterion(int index, String value, RequestPathSegmentCrierionType type, Pattern pattern)
   {
+    this(index, value, type, pattern, pattern == null ? 0 : pattern.matcher("").groupCount());
+  }
+
+  RequestPathSegmentCriterion(int index, String value, RequestPathSegmentCrierionType type, Pattern pattern, int numberPatternGroups)
+  {
     this.index = index;
     this.value = value;
     this.type = type;
     this.pattern = pattern;
-    numberPatternGroups = pattern == null ? 0 : pattern.matcher("").groupCount();
+    this.numberPatternGroups = numberPatternGroups;
   }
+
 }

@@ -24,11 +24,17 @@ public class RequestParameterCriterion
   
   RequestParameterCriterion(String name, String value, RequestParameterType type, boolean presenceRequired, Pattern pattern)
   {
+    this(name, value, type, presenceRequired, pattern, pattern == null ? 0 : pattern.matcher("").groupCount());
+  }
+
+  RequestParameterCriterion(String name, String value, RequestParameterType type, boolean presenceRequired, Pattern pattern, int numberPatternGroups)
+  {
     this.name = name;
     this.value = value;
     this.type = type;
     this.presenceRequired = presenceRequired;
     this.pattern = pattern;
-    numberPatternGroups = pattern == null ? 0 : pattern.matcher("").groupCount();
+    this.numberPatternGroups = numberPatternGroups;
   }
+
 }

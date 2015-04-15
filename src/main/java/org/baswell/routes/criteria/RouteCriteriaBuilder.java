@@ -73,7 +73,7 @@ public class RouteCriteriaBuilder
           if (typesToPatterns.containsKey(parameter))
           {
             String pattern = typesToPatterns.get(parameter);
-            pathCriteria.add(new RequestPathSegmentCriterion(i, pattern, RequestPathSegmentCrierionType.PATTERN, compile(pattern, method)));
+            pathCriteria.add(new RequestPathSegmentCriterion(i, pattern, RequestPathSegmentCrierionType.PATTERN, compile(pattern, method), 0));
           }
           else
           {
@@ -144,7 +144,7 @@ public class RouteCriteriaBuilder
             if ((parameterClass != null) && typesToPatterns.containsKey(parameterClass))
             {
               String pattern = typesToPatterns.get(parameterClass);
-              parameterCriteria.add(new RequestParameterCriterion(parameterTerminal.name, pattern, RequestParameterType.PATTERN, !parameterTerminal.optional, compile(pattern, method)));
+              parameterCriteria.add(new RequestParameterCriterion(parameterTerminal.name, pattern, RequestParameterType.PATTERN, !parameterTerminal.optional, compile(pattern, method), 0));
             }
             else
             {
