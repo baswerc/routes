@@ -17,7 +17,7 @@ public class RootTest extends EndToEndTest
   public void setupRoutingTable()
   {
     routesConfiguration = new RoutesConfiguration();
-    routesConfiguration.routeUnannoatedPublicMethods = true;
+    routesConfiguration.routeUnannotatedPublicMethods = true;
     buildRoutingTable(RootRoute.class);
   }
   @Test
@@ -50,7 +50,7 @@ public class RootTest extends EndToEndTest
   static public class RootRoute extends BaseRoutes
   {
     @Route("*")
-    public void getName(String name, Format format, HttpServletRequest request)
+    public void getName(String name, RequestFormat requestFormat, HttpServletRequest request)
     {
       assertEquals(name, expectedName);
       methodsCalled.add("getName");

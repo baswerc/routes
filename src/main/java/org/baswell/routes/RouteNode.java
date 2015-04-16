@@ -13,7 +13,7 @@ class RouteNode implements Comparable<RouteNode>
 
   final Method method;
   
-  final RouteConfig routeConfig;
+  final RouteConfiguration routeConfiguration;
 
   final RouteInstance instance;
   
@@ -27,11 +27,11 @@ class RouteNode implements Comparable<RouteNode>
 
   final List<AfterRouteNode> afterRouteNodes;
 
-  RouteNode(int index, Method method, RouteConfig routeConfig, RouteInstance instance, RouteCriteria criteria, List<RouteMethodParameter> parameters, RouteResponseType responseType, List<BeforeRouteNode> beforeRouteNodes, final List<AfterRouteNode> afterRouteNodes)
+  RouteNode(int index, Method method, RouteConfiguration routeConfiguration, RouteInstance instance, RouteCriteria criteria, List<RouteMethodParameter> parameters, RouteResponseType responseType, List<BeforeRouteNode> beforeRouteNodes, final List<AfterRouteNode> afterRouteNodes)
   {
     this.index = index;
     this.method = method;
-    this.routeConfig = routeConfig;
+    this.routeConfiguration = routeConfiguration;
     this.instance = instance;
     this.criteria = criteria;
     this.parameters = parameters;

@@ -21,7 +21,7 @@ public class MetaHandler
     this.routesConfiguration = routesConfiguration;
   }
 
-  public boolean handled(HttpServletRequest request, HttpServletResponse response, RequestPath path, RequestParameters parameters, HttpMethod httpMethod, Format format) throws IOException
+  public boolean handled(HttpServletRequest request, HttpServletResponse response, RequestPath path, RequestParameters parameters, HttpMethod httpMethod, RequestFormat requestFormat) throws IOException
   {
     String routesMetaPath = routesConfiguration.routesMetaPath;
     if (!routesMetaPath.startsWith("/")) routesMetaPath = "/" + routesMetaPath;
@@ -32,7 +32,7 @@ public class MetaHandler
       {
         path = path.substring(routesMetaPath.length());
 
-        if (format.type == Format.Type.HTML)
+        if (requestFormat.type == RequestFormat.Type.HTML)
         {
           if (path.equals(""))
           {
@@ -41,7 +41,7 @@ public class MetaHandler
           }
 
         }
-        else if (format.type == Format.Type.JSON)
+        else if (requestFormat.type == RequestFormat.Type.JSON)
         {
           if (path.equals(""))
           {
@@ -77,7 +77,7 @@ public class MetaHandler
 
       for (RouteNode routeNode : routingTable.getRouteNodes())
       {
-        if ((routeNode.criteria.matches(httpMethod, new Format(acceptType), requestPath, requestParameters)))
+        if ((routeNode.criteria.matches(httpMethod, new RequestFormat(acceptType), requestPath, requestParameters)))
         {
           rows.add(new RouteTableRow(routeNode, request));
         }
@@ -137,16 +137,16 @@ public class MetaHandler
 
     RouteTableRow(RouteNode routeNode, HttpServletRequest request)
     {
-      path = routeNode.routeConfig.route;
+      path = routeNode.routeConfiguration.route;
       link = request.getContextPath() + path;
 
-      if ((routeNode.routeConfig.httpMethods == null) || routeNode.routeConfig.httpMethods.isEmpty())
+      if ((routeNode.routeConfiguration.httpMethods == null) || routeNode.routeConfiguration.httpMethods.isEmpty())
       {
         httpMethods = "";
       }
       else
       {
-        for (HttpMethod httpMethod : routeNode.routeConfig.httpMethods)
+        for (HttpMethod httpMethod : routeNode.routeConfiguration.httpMethods)
         {
           if (httpMethods == null)
           {
@@ -159,13 +159,13 @@ public class MetaHandler
         }
       }
 
-      if ((routeNode.routeConfig.acceptedFormats == null) || routeNode.routeConfig.acceptedFormats.isEmpty())
+      if ((routeNode.routeConfiguration.acceptedFormats == null) || routeNode.routeConfiguration.acceptedFormats.isEmpty())
       {
         acceptFormats = "";
       }
       else
       {
-        for (Format.Type acceptFormat : routeNode.routeConfig.acceptedFormats)
+        for (RequestFormat.Type acceptFormat : routeNode.routeConfiguration.acceptedFormats)
         {
           if (acceptFormats == null)
           {

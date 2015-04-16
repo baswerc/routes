@@ -10,12 +10,12 @@ import java.util.regex.Matcher;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.baswell.routes.Format;
+import org.baswell.routes.RequestFormat;
 import org.baswell.routes.HttpMethod;
 import org.baswell.routes.RequestContext;
 import org.baswell.routes.RequestParameters;
 import org.baswell.routes.RequestPath;
-import org.baswell.routes.RouteConfig;
+import org.baswell.routes.RouteConfiguration;
 import org.baswell.routes.RouteMappingException;
 
 public class RouteInvoker
@@ -30,7 +30,7 @@ public class RouteInvoker
   
   private RequestParameters requestParameters; 
   
-  private RouteConfig routeConfig; 
+  private RouteConfiguration routeConfiguration;
   
   private RequestContext requestContext;
   
@@ -38,17 +38,17 @@ public class RouteInvoker
 
   private Map<String, String> parameterMap;
   
-  private Format format;
+  private RequestFormat requestFormat;
 
-  public RouteInvoker(HttpServletRequest request, HttpServletResponse response, HttpMethod httpMethod, RequestPath requestPath, RequestParameters requestParameters, Format format, RouteConfig routeConfig)
+  public RouteInvoker(HttpServletRequest request, HttpServletResponse response, HttpMethod httpMethod, RequestPath requestPath, RequestParameters requestParameters, RequestFormat requestFormat, RouteConfiguration routeConfiguration)
   {
     this.request = request;
     this.response = response;
     this.httpMethod = httpMethod;
     this.requestPath = requestPath;
     this.requestParameters = requestParameters;
-    this.format = format;
-    this.routeConfig = routeConfig;
+    this.requestFormat = requestFormat;
+    this.routeConfiguration = routeConfiguration;
   }
   
   public Object invoke(Object routeInstance, Method method, List<RouteMethodParameter> routeMethodParameters, List<Matcher> pathMatchers, Map<String, Matcher> parameterMatchers) throws RouteMappingException, InvocationTargetException
@@ -64,7 +64,7 @@ public class RouteInvoker
           case REQUEST_CONTEXT:
             if (requestContext == null)
             {
-              requestContext = new RequestContext(request, response, httpMethod, requestPath, requestParameters, format);
+              requestContext = new RequestContext(request, response, httpMethod, requestPath, requestParameters, requestFormat);
             }
             invokeParameters[i] = requestContext;
             break;
@@ -102,7 +102,7 @@ public class RouteInvoker
             break;
             
           case FORMAT:
-            invokeParameters[i] = format;
+            invokeParameters[i] = requestFormat;
             break;
             
           case REQUEST_PATH:

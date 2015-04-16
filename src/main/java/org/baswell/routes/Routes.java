@@ -26,30 +26,35 @@ public @interface Routes
   /**
    * The default requested format allowed for each method route in this class. Overridden by {@link Route#acceptedFormats()}.
    */
-  Format.Type[] defaultAcceptedFormats() default {};
+  RequestFormat.Type[] defaultAcceptedFormats() default {};
 
   /**
    * Should public methods be candidates for HTTP routes if they aren't annotated with {@link org.baswell.routes.Route}?
    * If true only unannotated, public methods of the immediate class will be used. Public, unannotated methods of extended
    * classes will not be candidates (ex. {@link java.lang.Object#equals(Object)}. If this attribute is not explicitly set
-   * then the {@link org.baswell.routes.RoutesConfiguration#routeUnannoatedPublicMethods}  will be used.
+   * then the {@link org.baswell.routes.RoutesConfiguration#routeUnannotatedPublicMethods}  will be used.
    *
    * This should be used as a single value. Only the first value in the array will be used.
    */
-  boolean[] routeUnannoatedPublicMethods() default {};
+  boolean[] routeUnannotatedPublicMethods() default {};
 
   /**
-   * Default content type returned for routes in this class.
+   * Default content type returned for routes in this class. This can be overridden in {@link Route#contentType()}, or by
+   * explicitly calling {@link javax.servlet.http.HttpServletResponse#setContentType(String)} in the route method.
    */
   String defaultContentType() default "";
   
   /**
-   * If true, all strings returned from routes of this annotated class will be considered the  Are Strings returned from
-   * routes sent directly to the client as the response?
+   *
+   * If true by default strings returned from routes of this annotated class are sent back as the content. If false by default
+   * returned strings are interpreted as file paths that the request is forwarded to. This can be overridden in
+   * {@link Route#responseIsBody()}.
    *
    * This should be used as a single value. Only the first value in the array will be used.
+   *
+   * Default value: <code>false</code>
    */
-  boolean[] defaultResponseIsBody() default {};
+  boolean[] defaultReturnedStringIsContent() default {};
 
   /**
    * Tags to apply to all routes within the annotated class. If a route method defines its own tags, they will be added to

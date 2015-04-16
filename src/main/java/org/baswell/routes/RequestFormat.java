@@ -1,11 +1,14 @@
 package org.baswell.routes;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-public class Format
+/**
+ * The format type of an HTTP request. Taken from the either the Accept-Type header of the request (if present) or the file
+ * extension (if present) of the URL.
+ */
+public class RequestFormat
 {
   public enum Type
   {
@@ -43,23 +46,23 @@ public class Format
     }
   }
 
-  public final String mimeType;
+  public final String acceptType;
 
   public final String fileExtension;
   
   public final Type type;
 
-  public Format(String mimeType)
+  public RequestFormat(String acceptType)
   {
-    this(mimeType, null);
+    this(acceptType, null);
   }
 
-  public Format(String mimeType, RequestPath requestPath)
+  public RequestFormat(String acceptType, RequestPath requestPath)
   {
-    this.mimeType = mimeType;
+    this.acceptType = acceptType;
     fileExtension = requestPath == null ? null : requestPath.getFileExtension();
 
-    if (mimeType == null)
+    if (acceptType == null)
     {
       if (fileExtension != null)
       {
@@ -77,44 +80,44 @@ public class Format
     }
     else
     {
-      mimeType = mimeType.toLowerCase();
-      if (mimeType.contains("json"))
+      acceptType = acceptType.toLowerCase();
+      if (acceptType.contains("json"))
       {
         type = Type.JSON;
       }
-      else if (mimeType.contains("javascript"))
+      else if (acceptType.contains("javascript"))
       {
         type = Type.JAVASCRIPT;
       }
-      else if (mimeType.contains("csv"))
+      else if (acceptType.contains("csv"))
       {
         type = Type.CSV;
       }
-      else if (mimeType.contains("pdf"))
+      else if (acceptType.contains("pdf"))
       {
         type = Type.PDF;
       }
-      else if (mimeType.contains("rss"))
+      else if (acceptType.contains("rss"))
       {
         type = Type.RSS;
       }
-      else if (mimeType.contains("atom"))
+      else if (acceptType.contains("atom"))
       {
         type = Type.ATOM;
       }
-      else if (mimeType.contains("xml"))
+      else if (acceptType.contains("xml"))
       {
         type = Type.XML;
       }
-      else if (mimeType.equals("text/calendar"))
+      else if (acceptType.equals("text/calendar"))
       {
         type = Type.ICS;
       }
-      else if (mimeType.contains("excel") || mimeType.contains("xls"))
+      else if (acceptType.contains("excel") || acceptType.contains("xls"))
       {
         type = Type.EXCEL;
       }
-      else if (mimeType.contains("doc"))
+      else if (acceptType.contains("doc"))
       {
         type = Type.WORD;
       }
@@ -131,11 +134,11 @@ public class Format
             }
           }
         }
-        if (mimeType.contains("html"))
+        if (acceptType.contains("html"))
         {
           type = Type.HTML;
         }
-        else if (mimeType.contains("text"))
+        else if (acceptType.contains("text"))
         {
           type = Type.TEXT;
         }

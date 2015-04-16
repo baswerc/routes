@@ -1,13 +1,12 @@
 package org.baswell.routes.cache;
 
-import org.baswell.routes.Format;
+import org.baswell.routes.RequestFormat;
 import org.baswell.routes.HttpMethod;
 import org.baswell.routes.RequestParameters;
 import org.baswell.routes.RequestPath;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -41,16 +40,16 @@ public class SimpleRoutesCache extends BaseRoutesCache
   }
 
   @Override
-  public Object get(HttpMethod method, Format format, RequestPath path, RequestParameters parameters)
+  public Object get(HttpMethod method, RequestFormat requestFormat, RequestPath path, RequestParameters parameters)
   {
-    RouteCachedNode cachedNode = cachedNodes.get(getKey(method, format, path, parameters));
+    RouteCachedNode cachedNode = cachedNodes.get(getKey(method, requestFormat, path, parameters));
     return cachedNode == null ? null : cachedNode.accessed();
   }
 
   @Override
-  public void put(Object routeNode, HttpMethod method, Format format, RequestPath path, RequestParameters parameters)
+  public void put(Object routeNode, HttpMethod method, RequestFormat requestFormat, RequestPath path, RequestParameters parameters)
   {
-    String key = getKey(method, format, path, parameters);
+    String key = getKey(method, requestFormat, path, parameters);
     cachedNodes.put(key, new RouteCachedNode(key, routeNode));
     if ((System.currentTimeMillis() - lastCleanAt) >= minCleanMSecs)
     {
@@ -58,9 +57,9 @@ public class SimpleRoutesCache extends BaseRoutesCache
     }
   }
 
-  protected String getKey(HttpMethod method, Format format, RequestPath path, RequestParameters parameters)
+  protected String getKey(HttpMethod method, RequestFormat requestFormat, RequestPath path, RequestParameters parameters)
   {
-    return super.getKey(method, format, path, parametersUsedInRouting ? parameters : null);
+    return super.getKey(method, requestFormat, path, parametersUsedInRouting ? parameters : null);
   }
 
   private synchronized void purgeIfNecessary()

@@ -20,8 +20,8 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
 import com.google.gson.Gson;
-import org.baswell.routes.Format;
-import org.baswell.routes.RouteConfig;
+import org.baswell.routes.RequestFormat;
+import org.baswell.routes.RouteConfiguration;
 import org.baswell.routes.RoutesConfiguration;
 import org.json.simple.JSONObject;
 import org.w3c.dom.Node;
@@ -37,7 +37,7 @@ public class RouteResponseProcessor
     this.routesConfiguration = routesConfiguration;
   }
   
-  public void processResponse(RouteResponseType routeResponseType, Object response, Format format, RouteConfig routeConfig, HttpServletRequest servletRequest, HttpServletResponse servletResponse) throws IOException, ServletException
+  public void processResponse(RouteResponseType routeResponseType, Object response, RequestFormat requestFormat, RouteConfiguration routeConfiguration, HttpServletRequest servletRequest, HttpServletResponse servletResponse) throws IOException, ServletException
   {
     if (response != null)
     {
@@ -58,7 +58,7 @@ public class RouteResponseProcessor
           }
           else
           {
-            switch (format.type)
+            switch (requestFormat.type)
             {
               case JSON:
                 sendJson(response, servletResponse);
@@ -79,7 +79,7 @@ public class RouteResponseProcessor
           String path = response.toString();
           if (!path.startsWith("/"))
           {
-            path = routeConfig.forwardPath + path;
+            path = routeConfiguration.forwardPath + path;
           }
           
           servletRequest.getRequestDispatcher(path).forward(servletRequest, servletResponse);

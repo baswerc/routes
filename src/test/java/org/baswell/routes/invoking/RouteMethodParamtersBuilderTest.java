@@ -10,7 +10,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.baswell.routes.Format;
+import org.baswell.routes.RequestFormat;
 import org.baswell.routes.InvalidRoutesMethodDeclaration;
 import org.baswell.routes.RequestContext;
 import org.baswell.routes.RequestParameters;
@@ -70,7 +70,7 @@ public class RouteMethodParamtersBuilderTest
     
     class RouteTest
     {
-      public void testMethod(RequestParameters parameters, RequestPath path, RequestContext context, Format format, HttpServletRequest request, HttpServletResponse response, Map<String, String> paramMap, Map<String, List<String>> paramMapList)
+      public void testMethod(RequestParameters parameters, RequestPath path, RequestContext context, RequestFormat format, HttpServletRequest request, HttpServletResponse response, Map<String, String> paramMap, Map<String, List<String>> paramMapList)
       {}
       
       public void testInvalidMethod(HttpServletRequest request, HttpServletResponse response, boolean invalid)
@@ -83,7 +83,7 @@ public class RouteMethodParamtersBuilderTest
     
     RouteMethodParametersBuilder builder = new RouteMethodParametersBuilder();
     
-    List<RouteMethodParameter> parameters = builder.buildParameters(RouteTest.class.getMethod("testMethod", RequestParameters.class, RequestPath.class, RequestContext.class, Format.class, HttpServletRequest.class, HttpServletResponse.class, Map.class, Map.class));
+    List<RouteMethodParameter> parameters = builder.buildParameters(RouteTest.class.getMethod("testMethod", RequestParameters.class, RequestPath.class, RequestContext.class, RequestFormat.class, HttpServletRequest.class, HttpServletResponse.class, Map.class, Map.class));
     assertNotNull(parameters);
     assertEquals(parameters.size(), 8);
     assertEquals(parameters.get(0).type, RouteMethodParameterType.REQUEST_PARAMETERS);

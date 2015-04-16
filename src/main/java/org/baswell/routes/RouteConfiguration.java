@@ -9,19 +9,17 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.baswell.routes.criteria.InvalidRouteException;
-
-public class RouteConfig
+public class RouteConfiguration
 {
   public final String route;
 
   public final List<HttpMethod> httpMethods;
   
-  public final Set<Format.Type> acceptedFormats;
+  public final Set<RequestFormat.Type> acceptedFormats;
   
   public final String contentType;
   
-  public final boolean responseIsBody;
+  public final boolean returnedStringIsContent;
 
   public final Map<String, List<String>> defaultParameters;
   
@@ -29,16 +27,16 @@ public class RouteConfig
   
   public final String forwardPath;
 
-  public RouteConfig(Method method, RoutesConfiguration routesConfiguration)
+  public RouteConfiguration(Method method, RoutesConfiguration routesConfiguration)
   {
     this(method, routesConfiguration, method.getDeclaringClass().getAnnotation(Routes.class), method.getAnnotation(Route.class), 0);
   }
 
-  public RouteConfig(Method method, RoutesConfiguration routesConfiguration, Routes routes, Route route, int routesPathIndex)
+  public RouteConfiguration(Method method, RoutesConfiguration routesConfiguration, Routes routes, Route route, int routesPathIndex)
   {
     httpMethods = getHttpMethods(routes, route, method, routesConfiguration.routeFromMethodScheme);
     this.route = buildRoutePath(routesConfiguration.rootPath, routes, route, method, routesConfiguration.routeFromMethodScheme, routesPathIndex);
-    acceptedFormats = new HashSet<Format.Type>();
+    acceptedFormats = new HashSet<RequestFormat.Type>();
     defaultParameters = new HashMap<String, List<String>>();
 
     tags = new HashSet<String>();
@@ -77,7 +75,7 @@ public class RouteConfig
     if (route == null)
     {
       contentType = ((routes == null) || (routes.defaultContentType().length() == 0)) ? routesConfiguration.defaultContentType : routes.defaultContentType();
-      responseIsBody = ((routes == null) || (routes.defaultResponseIsBody().length == 0)) ? routesConfiguration.defaultResponseIsBody : routes.defaultResponseIsBody()[0];
+      returnedStringIsContent = ((routes == null) || (routes.defaultReturnedStringIsContent().length == 0)) ? routesConfiguration.defaultReturnedStringIsContent : routes.defaultReturnedStringIsContent()[0];
     }
     else
     {
@@ -97,7 +95,7 @@ public class RouteConfig
           String[] vals = parameter.split("=");
           if (vals.length != 2)
           {
-            throw new InvalidRouteException("Invalid default parameter: " + parameter + " for method: " + method);
+            throw new RoutesException("Invalid default parameter: " + parameter + " for method: " + method);
           }
           else
           {
@@ -113,11 +111,11 @@ public class RouteConfig
       
       if (route.responseIsBody().length > 0)
       {
-        responseIsBody = route.responseIsBody()[0];
+        returnedStringIsContent = route.responseIsBody()[0];
       }
       else
       {
-        responseIsBody = ((routes == null) || (routes.defaultResponseIsBody().length == 0)) ? routesConfiguration.defaultResponseIsBody : routes.defaultResponseIsBody()[0];
+        returnedStringIsContent = ((routes == null) || (routes.defaultReturnedStringIsContent().length == 0)) ? routesConfiguration.defaultReturnedStringIsContent : routes.defaultReturnedStringIsContent()[0];
       }
       
       tags.addAll(Arrays.asList(route.tags()));

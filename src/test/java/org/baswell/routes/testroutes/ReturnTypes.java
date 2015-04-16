@@ -1,10 +1,10 @@
 package org.baswell.routes.testroutes;
 
-import org.baswell.routes.Format;
+import org.baswell.routes.RequestFormat;
 import org.baswell.routes.Route;
 import org.baswell.routes.Routes;
 
-@Routes(defaultResponseIsBody = true)
+@Routes(defaultReturnedStringIsContent = true)
 public class ReturnTypes extends BaseRoutes
 {
   @Route("/helloworld")
@@ -14,7 +14,7 @@ public class ReturnTypes extends BaseRoutes
     return "Hello World";
   }
 
-  @Route(value = "/gson", acceptedFormats = Format.Type.JSON)
+  @Route(value = "/gson", acceptedFormats = RequestFormat.Type.JSON)
   public GsonResponse gson()
   {
     methodsCalled.add("gson");

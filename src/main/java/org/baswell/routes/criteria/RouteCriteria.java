@@ -6,11 +6,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 
-import org.baswell.routes.Format;
+import org.baswell.routes.RequestFormat;
 import org.baswell.routes.HttpMethod;
 import org.baswell.routes.RequestParameters;
 import org.baswell.routes.RequestPath;
-import org.baswell.routes.RouteConfig;
+import org.baswell.routes.RouteConfiguration;
 import org.baswell.routes.RoutesConfiguration;
 import org.baswell.routes.criteria.RequestPathSegmentCriterion.RequestPathSegmentCrierionType;
 
@@ -20,7 +20,7 @@ public class RouteCriteria implements Comparable<RouteCriteria>
   
   public final List<RequestParameterCriterion> parameterCriteria;
 
-  final RouteConfig routeConfig;
+  final RouteConfiguration routeConfiguration;
   
   final RoutesConfiguration routesConfiguration;
 
@@ -30,11 +30,11 @@ public class RouteCriteria implements Comparable<RouteCriteria>
   
   final boolean hasMultiPathCriterion;
   
-  public RouteCriteria(List<RequestPathSegmentCriterion> pathCriteria, List<RequestParameterCriterion> parameterCriteria, RouteConfig routeConfig, RoutesConfiguration routesConfiguration)
+  public RouteCriteria(List<RequestPathSegmentCriterion> pathCriteria, List<RequestParameterCriterion> parameterCriteria, RouteConfiguration routeConfiguration, RoutesConfiguration routesConfiguration)
   {
     this.pathCriteria = pathCriteria;
     this.parameterCriteria = parameterCriteria;
-    this.routeConfig = routeConfig;
+    this.routeConfiguration = routeConfiguration;
     this.routesConfiguration = routesConfiguration;
 
     boolean hasPattern = false;
@@ -58,18 +58,18 @@ public class RouteCriteria implements Comparable<RouteCriteria>
     this.allCriteriaFixed = !this.hasPattern && !this.hasMultiPathCriterion;
   }
 
-  public boolean matches(HttpMethod httpMethod, Format format, RequestPath path, RequestParameters parameters)
+  public boolean matches(HttpMethod httpMethod, RequestFormat requestFormat, RequestPath path, RequestParameters parameters)
   {
-    return matches(httpMethod, format, path, parameters, new ArrayList<Matcher>(), new HashMap<String, Matcher>());
+    return matches(httpMethod, requestFormat, path, parameters, new ArrayList<Matcher>(), new HashMap<String, Matcher>());
   }
 
-  public boolean matches(HttpMethod httpMethod, Format format, RequestPath path, RequestParameters parameters, List<Matcher> pathMatchers, Map<String, Matcher> parameterMatchers)
+  public boolean matches(HttpMethod httpMethod, RequestFormat requestFormat, RequestPath path, RequestParameters parameters, List<Matcher> pathMatchers, Map<String, Matcher> parameterMatchers)
   {
-    if (!routeConfig.httpMethods.contains(httpMethod))
+    if (!routeConfiguration.httpMethods.contains(httpMethod))
     {
       return false;
     }
-    else if (!routeConfig.acceptedFormats.isEmpty() && !routeConfig.acceptedFormats.contains(format.type))
+    else if (!routeConfiguration.acceptedFormats.isEmpty() && !routeConfiguration.acceptedFormats.contains(requestFormat.type))
     {
       return false;
     }
@@ -88,9 +88,9 @@ public class RouteCriteria implements Comparable<RouteCriteria>
       {
         List<String> parameterValues = parameters.getValues(parameterCriterion.name);
 
-        if (parameterValues.isEmpty() && routeConfig.defaultParameters.containsKey(parameterCriterion.name))
+        if (parameterValues.isEmpty() && routeConfiguration.defaultParameters.containsKey(parameterCriterion.name))
         {
-          parameterValues.addAll(routeConfig.defaultParameters.get(parameterCriterion.name));
+          parameterValues.addAll(routeConfiguration.defaultParameters.get(parameterCriterion.name));
         }
 
         if (parameterValues.isEmpty() && parameterCriterion.presenceRequired)

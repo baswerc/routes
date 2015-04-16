@@ -21,16 +21,35 @@ import org.baswell.routes.parsing.RouteTree;
 import org.baswell.routes.response.RouteResponseType;
 import org.baswell.routes.response.RouteResponseTypeMapper;
 
+/**
+ * Hub for all routes. The RoutingTable should be treated as a singleton and only constructed once in your application.
+ *
+ * Routes can be added to the RoutingTable in the following ways:
+ *
+ * 1. As class objects. Routes added as class objects are instantiated on each matched HTTP request. Once the HTTP request
+ * is processed, the instantiated route object is discarded. Every HTTP request gets its own route object instance. The
+ * route class does not have to be thread safe.
+ *
+ * 2. As instances of the route class. In this case the same route object will get used for every matched HTTP request. The
+ * route class must be thread safe as it can process multiple HTTP requests concurrently.
+ *
+ * After
+ */
 public class RoutingTable
 {
-  public static RoutingTable routingTable;
+  static RoutingTable theRoutingTable;
 
   final RoutesConfiguration routesConfiguration;
-  
+
+  volatile boolean built;
+
   private List<Object> addedObjects = new ArrayList<Object>();
   
   private List<RouteNode> routeNodes;
 
+  /**
+   * The default {@link org.baswell.routes.RoutesConfiguration} will be used.
+   */
   public RoutingTable()
   {
     this(new RoutesConfiguration());
@@ -39,21 +58,30 @@ public class RoutingTable
   public RoutingTable(RoutesConfiguration routesConfiguration)
   {
     this.routesConfiguration = routesConfiguration == null ? new RoutesConfiguration() : routesConfiguration;
-    RoutingTable.routingTable = this;
+    RoutingTable.theRoutingTable = this;
   }
 
-  public List<RouteNode> getRouteNodes()
+  /**
+   * Adds to the given objects to the routing table. Objects can be either the route class object or a route instance
+   * object.
+   *
+   * @param instancesOrClasses Route class or instance objects.
+   * @return This RoutingTable
+   */
+  public synchronized RoutingTable add(Object... instancesOrClasses)
   {
-    return new ArrayList<RouteNode>(routeNodes);
-  }
-
-  public RoutingTable add(Object... instancesOrClasses)
-  {
+    built = false;
     for (Object obj : instancesOrClasses) addedObjects.add(obj);
     return this;
   }
-  
-  public void build() throws InvalidRouteException
+
+  /**
+   * Builds the routing table from the added route objects. This will typically only be called once after all route objects
+   * have been added in your application's bootstrap.
+   *
+   * @throws RoutesException If an added route class cannot be parsed.
+   */
+  public synchronized void build() throws RoutesException
   {
     RouteParser parser = new RouteParser();
     RouteCriteriaBuilder criteriaBuilder = new RouteCriteriaBuilder();
@@ -77,12 +105,12 @@ public class RoutingTable
       if (routesAnnotation == null)
       {
         numRoutesPaths = 1;
-        routeUnannotatedPublicMethods = routesConfiguration.routeUnannoatedPublicMethods;
+        routeUnannotatedPublicMethods = routesConfiguration.routeUnannotatedPublicMethods;
       }
       else
       {
         numRoutesPaths = Math.max(1, routesAnnotation.value().length);
-        routeUnannotatedPublicMethods = routesAnnotation.routeUnannoatedPublicMethods().length == 0 ? routesConfiguration.routeUnannoatedPublicMethods : routesAnnotation.routeUnannoatedPublicMethods()[0];
+        routeUnannotatedPublicMethods = routesAnnotation.routeUnannotatedPublicMethods().length == 0 ? routesConfiguration.routeUnannotatedPublicMethods : routesAnnotation.routeUnannotatedPublicMethods()[0];
       }
 
       List<RouteNode> classRoutes = new ArrayList<RouteNode>();
@@ -97,17 +125,17 @@ public class RoutingTable
 
           for (int i = 0; i < numRoutesPaths; i++)
           {
-            RouteConfig routeConfig = new RouteConfig(method, routesConfiguration, routesAnnotation, routeAnnotation, i);
-            RouteTree tree = parser.parse(routeConfig.route);
+            RouteConfiguration routeConfiguration = new RouteConfiguration(method, routesConfiguration, routesAnnotation, routeAnnotation, i);
+            RouteTree tree = parser.parse(routeConfiguration.route);
             RouteInstance routeInstance = instanceIsClass ? new RouteInstance(routesClass, routesConfiguration.routeInstanceFactory) : new RouteInstance(addedObject);
-            RouteCriteria criteria = criteriaBuilder.buildCriteria(method, tree, routeConfig, routesConfiguration);
+            RouteCriteria criteria = criteriaBuilder.buildCriteria(method, tree, routeConfiguration, routesConfiguration);
             List<RouteMethodParameter> parameters = parametersBuilder.buildParameters(method, criteria);
-            RouteResponseType responseType = returnTypeMapper.mapResponseType(method, routeConfig);
+            RouteResponseType responseType = returnTypeMapper.mapResponseType(method, routeConfiguration);
 
             List<BeforeRouteNode> beforeNodes = new ArrayList<BeforeRouteNode>();
             for (BeforeRouteNode beforeNode : classBeforeNodes)
             {
-              if ((beforeNode.onlyTags.isEmpty() || containsOne(beforeNode.onlyTags, routeConfig.tags)) && (beforeNode.exceptTags.isEmpty() || !containsOne(beforeNode.exceptTags, routeConfig.tags)))
+              if ((beforeNode.onlyTags.isEmpty() || containsOne(beforeNode.onlyTags, routeConfiguration.tags)) && (beforeNode.exceptTags.isEmpty() || !containsOne(beforeNode.exceptTags, routeConfiguration.tags)))
               {
                 beforeNodes.add(beforeNode);
               }
@@ -116,13 +144,13 @@ public class RoutingTable
             List<AfterRouteNode> afterNodes = new ArrayList<AfterRouteNode>();
             for (AfterRouteNode afterNode : classAfterNodes)
             {
-              if ((afterNode.onlyTags.isEmpty() || containsOne(afterNode.onlyTags, routeConfig.tags)) && (afterNode.exceptTags.isEmpty() || !containsOne(afterNode.exceptTags, routeConfig.tags)))
+              if ((afterNode.onlyTags.isEmpty() || containsOne(afterNode.onlyTags, routeConfiguration.tags)) && (afterNode.exceptTags.isEmpty() || !containsOne(afterNode.exceptTags, routeConfiguration.tags)))
               {
                 afterNodes.add(afterNode);
               }
             }
 
-            classRoutes.add(new RouteNode(routeNodes.size(), method, routeConfig, routeInstance, criteria, parameters, responseType, beforeNodes, afterNodes));
+            classRoutes.add(new RouteNode(routeNodes.size(), method, routeConfiguration, routeInstance, criteria, parameters, responseType, beforeNodes, afterNodes));
           }
         }
       }
@@ -133,14 +161,15 @@ public class RoutingTable
       }
       else
       {
-        throw new InvalidRouteException("Route class: " + routesClass + " has no routes.");
+        throw new RoutesException("Route class: " + routesClass + " has no routes.");
       }
 
     }
     Collections.sort(routeNodes);
+    built = true;
   }
 
-  MatchedRoute find(RequestPath path, RequestParameters parameters, HttpMethod httpMethod, Format format)
+  MatchedRoute find(RequestPath path, RequestParameters parameters, HttpMethod httpMethod, RequestFormat requestFormat)
   {
     List<Matcher> pathMatchers = new ArrayList<Matcher>();
     Map<String, Matcher> parameterMatchers = new HashMap<String, Matcher>();
@@ -148,17 +177,20 @@ public class RoutingTable
     {
       pathMatchers.clear();
       parameterMatchers.clear();
-      if (routeNode.criteria.matches(httpMethod, format, path, parameters, pathMatchers, parameterMatchers))
+      if (routeNode.criteria.matches(httpMethod, requestFormat, path, parameters, pathMatchers, parameterMatchers))
       {
         return new MatchedRoute(routeNode, pathMatchers, parameterMatchers);
       }
     }
     return null;
   }
-  
-  
-  
-  static List<BeforeRouteNode> getBeforeRouteNodes(Class clazz) throws InvalidRoutesMethodDeclaration
+
+  List<RouteNode> getRouteNodes()
+  {
+    return new ArrayList<RouteNode>(routeNodes);
+  }
+
+  static List<BeforeRouteNode> getBeforeRouteNodes(Class clazz) throws RoutesException
   {
     List<BeforeRouteNode> nodes = new ArrayList<BeforeRouteNode>();
     for (Method method : clazz.getMethods())
@@ -176,7 +208,7 @@ public class RoutingTable
         }
         else
         {
-          throw new InvalidRoutesMethodDeclaration("Before method: " + method + " must have return type of boolean or void.");
+          throw new RoutesException("Before method: " + method + " must have return type of boolean or void.");
         } 
       }
     }
@@ -185,7 +217,7 @@ public class RoutingTable
     return nodes;
   }
 
-  static List<AfterRouteNode> getAfterRouteNodes(Class clazz) throws InvalidRoutesMethodDeclaration
+  static List<AfterRouteNode> getAfterRouteNodes(Class clazz) throws RoutesException
   {
     List<AfterRouteNode> nodes = new ArrayList<AfterRouteNode>();
     for (Method method : clazz.getMethods())
@@ -202,7 +234,7 @@ public class RoutingTable
         }
         else
         {
-          throw new InvalidRoutesMethodDeclaration("After method: " + method + " must have void return type.");
+          throw new RoutesException("After method: " + method + " must have void return type.");
         }
       }
     }

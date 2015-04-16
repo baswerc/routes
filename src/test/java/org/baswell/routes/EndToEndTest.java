@@ -21,7 +21,7 @@ abstract public class EndToEndTest
   
   protected HttpMethod httpMethod;
 
-  protected Format format;
+  protected RequestFormat requestFormat;
   
   protected RequestPath path;
   
@@ -63,7 +63,7 @@ abstract public class EndToEndTest
     this.servletRequest = servletRequest;
     servletResponse = new TestHttpServletResponse();
     httpMethod = HttpMethod.fromServletMethod(servletRequest.getMethod());
-    format = new Format(servletRequest.getContentType(), new RequestPath(servletRequest));
+    requestFormat = new RequestFormat(servletRequest.getContentType(), new RequestPath(servletRequest));
     path = new RequestPath(servletRequest);
     parameters = new RequestParameters(servletRequest);
   }
@@ -74,7 +74,7 @@ abstract public class EndToEndTest
     assertNull(find());
   }
   
-  protected Format invoke(TestHttpServletRequest servletRequest, String... expectedMethodsCalled) throws IOException, ServletException
+  protected RequestFormat invoke(TestHttpServletRequest servletRequest, String... expectedMethodsCalled) throws IOException, ServletException
   {
     initializeRequest(servletRequest);
     invoke();
@@ -92,14 +92,14 @@ abstract public class EndToEndTest
   
   protected MatchedRoute find()
   {
-    return routingTable.find(path, parameters, httpMethod, format);
+    return routingTable.find(path, parameters, httpMethod, requestFormat);
   }
   
   protected void invoke() throws IOException, ServletException
   {
     MatchedRoute node = find();
     assertNotNull(node);
-    pipeline.invoke(node.routeNode, servletRequest, servletResponse, httpMethod, format, path, parameters, node.pathMatchers, node.parameterMatchers);
+    pipeline.invoke(node.routeNode, servletRequest, servletResponse, httpMethod, requestFormat, path, parameters, node.pathMatchers, node.parameterMatchers);
     servletResponse.writer.close();
   }
   

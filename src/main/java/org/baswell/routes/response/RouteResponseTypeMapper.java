@@ -3,11 +3,11 @@ package org.baswell.routes.response;
 import java.io.InputStream;
 import java.lang.reflect.Method;
 
-import org.baswell.routes.RouteConfig;
+import org.baswell.routes.RouteConfiguration;
 
 public class RouteResponseTypeMapper
 {
-  public RouteResponseType mapResponseType(Method method, RouteConfig routeConfig)
+  public RouteResponseType mapResponseType(Method method, RouteConfiguration routeConfiguration)
   {
     Class returnType = method.getReturnType();
     if ((returnType == void.class) ||(returnType == Void.class))
@@ -22,7 +22,7 @@ public class RouteResponseTypeMapper
     {
       return RouteResponseType.STREAM_CONTENT;
     }
-    else if ((returnType == String.class) && !routeConfig.responseIsBody)
+    else if ((returnType == String.class) && !routeConfiguration.returnedStringIsContent)
     {
       return RouteResponseType.FORWARD_DISPATCH;
     }

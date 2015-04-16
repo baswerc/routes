@@ -3,12 +3,12 @@ package org.baswell.routes.parsing;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.baswell.routes.InvalidRouteException;
+import org.baswell.routes.RoutesException;
 
 public class RouteParser
 {
 
-  public RouteTree parse(String route) throws InvalidRouteException
+  public RouteTree parse(String route) throws RoutesException
   {
     List<PathTerminal> pathTerminals = new ArrayList<PathTerminal>();
     List<ParameterTerminal> parameterTerminals = new ArrayList<ParameterTerminal>();

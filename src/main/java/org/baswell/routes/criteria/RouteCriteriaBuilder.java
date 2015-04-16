@@ -9,7 +9,8 @@ import java.util.List;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
-import org.baswell.routes.RouteConfig;
+import org.baswell.routes.RoutesException;
+import org.baswell.routes.RouteConfiguration;
 import org.baswell.routes.RoutesConfiguration;
 import org.baswell.routes.criteria.RequestParameterCriterion.RequestParameterType;
 import org.baswell.routes.criteria.RequestPathSegmentCriterion.RequestPathSegmentCrierionType;
@@ -31,7 +32,7 @@ import org.baswell.routes.utils.Pair;
 
 public class RouteCriteriaBuilder
 {
-  public RouteCriteria buildCriteria(Method method, RouteTree routeTree, RouteConfig routeConfig, RoutesConfiguration routesConfiguration) throws InvalidRouteException
+  public RouteCriteria buildCriteria(Method method, RouteTree routeTree, RouteConfiguration routeConfiguration, RoutesConfiguration routesConfiguration) throws RoutesException
   {
     List<RequestPathSegmentCriterion> pathCriteria = new ArrayList<RequestPathSegmentCriterion>();
     int urlParameterIndex = 0;
@@ -65,7 +66,7 @@ public class RouteCriteriaBuilder
         Pair<Type, Integer> parameterIndex = findDynamicParameterAndIndex(method, urlParameterIndex++);
         if (parameterIndex == null)
         {
-          throw new InvalidRouteException("Route path pattern {} at index: " + (urlParameterIndex - 1) + " has no matching method parameter for method: " + method);
+          throw new RoutesException("Route path pattern {} at index: " + (urlParameterIndex - 1) + " has no matching method parameter for method: " + method);
         }
         else
         {
@@ -77,7 +78,7 @@ public class RouteCriteriaBuilder
           }
           else
           {
-            throw new InvalidRouteException("Invalid route parameter: " + parameter + " for method: " + method);
+            throw new RoutesException("Invalid route parameter: " + parameter + " for method: " + method);
           }
         }
       }
@@ -92,12 +93,12 @@ public class RouteCriteriaBuilder
         }
         else
         {
-          throw new InvalidRouteException("Invalid symbol: " + symbolTerminal.symbol + " in method: " + method);
+          throw new RoutesException("Invalid symbol: " + symbolTerminal.symbol + " in method: " + method);
         }
       }
       else
       {
-        throw new InvalidRouteException("Unsupported PathTerminal class: " + pathTerminal.getClass());
+        throw new RoutesException("Unsupported PathTerminal class: " + pathTerminal.getClass());
       }
     }
     
@@ -130,7 +131,7 @@ public class RouteCriteriaBuilder
           Pair<Type, Integer> parameterIndex = findDynamicParameterAndIndex(method, urlParameterIndex++);
           if (parameterIndex == null)
           {
-            throw new InvalidRouteException("Route parameter pattern {} at index: " + (urlParameterIndex - 1) + " has no matching method parameter for method: " + method);
+            throw new RoutesException("Route parameter pattern {} at index: " + (urlParameterIndex - 1) + " has no matching method parameter for method: " + method);
           }
           else
           {
@@ -148,7 +149,7 @@ public class RouteCriteriaBuilder
             }
             else
             {
-              throw new InvalidRouteException("Invalid route parameter: " + parameter + " for method: " + method);
+              throw new RoutesException("Invalid route parameter: " + parameter + " for method: " + method);
             }
           }
         }
@@ -163,17 +164,17 @@ public class RouteCriteriaBuilder
           }
           else
           {
-            throw new InvalidRouteException("Invalid parameter symbol: " + symbolTerminal.symbol + " in method: " + method);
+            throw new RoutesException("Invalid parameter symbol: " + symbolTerminal.symbol + " in method: " + method);
           }
         }
         else
         {
-          throw new InvalidRouteException("Unsupported ParameterTerminal class: " + parameterTerminal.getClass());
+          throw new RoutesException("Unsupported ParameterTerminal class: " + parameterTerminal.getClass());
         }
       }
     }
 
-    return new RouteCriteria(pathCriteria, parameterCriteria, routeConfig, routesConfiguration);
+    return new RouteCriteria(pathCriteria, parameterCriteria, routeConfiguration, routesConfiguration);
   }
   
   static Pattern compile(String pattern, Method method)
@@ -184,7 +185,7 @@ public class RouteCriteriaBuilder
     }
     catch (PatternSyntaxException e)
     {
-      throw new InvalidRouteException("Invalid pattern: " + pattern + " for method: " + method);
+      throw new RoutesException("Invalid pattern: " + pattern + " for method: " + method);
     }
   }
   

@@ -12,6 +12,8 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import static org.baswell.routes.RoutingTable.*;
+
 /**
  * Entry point for mapping HTTP servlet requests to route methods. This filter should be placed last in your filter chain.
  * No filters in the chain below this filter will be processed when route method matches are found (i.e. chain.doFilter is not called).
@@ -57,7 +59,7 @@ public class RoutesFilter implements Filter
   
   private Pattern exceptPattern;
 
-  private MetaHandler webHandler;
+  private MetaHandler metaHandler;
   
   @Override
   public void init(FilterConfig config) throws ServletException
@@ -78,8 +80,6 @@ public class RoutesFilter implements Filter
   @Override
   public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException
   {
-    assert RoutingTable.routingTable != null;
-
     HttpServletRequest servletRequest = (HttpServletRequest)request;
     HttpServletResponse servletResponse = (HttpServletResponse)response;
     
@@ -92,6 +92,19 @@ public class RoutesFilter implements Filter
         return;
       }
     }
+
+    assert theRoutingTable != null;
+
+    if (!theRoutingTable.built)
+    {
+      synchronized (this)
+      {
+        if (!theRoutingTable.built)
+        {
+          theRoutingTable.build();
+        }
+      }
+    }
     
     if (pipeline == null)
     {
@@ -99,12 +112,12 @@ public class RoutesFilter implements Filter
       {
         if (pipeline == null)
         {
-          pipeline = new RouteRequestPipeline(RoutingTable.routingTable.routesConfiguration);
+          pipeline = new RouteRequestPipeline(theRoutingTable.routesConfiguration);
         }
 
-        if (RoutingTable.routingTable.routesConfiguration.hasRoutesMetaPath())
+        if (theRoutingTable.routesConfiguration.hasRoutesMetaPath())
         {
-          webHandler = new MetaHandler(RoutingTable.routingTable, RoutingTable.routingTable.routesConfiguration);
+          metaHandler = new MetaHandler(theRoutingTable, theRoutingTable.routesConfiguration);
         }
       }
     }
@@ -112,19 +125,16 @@ public class RoutesFilter implements Filter
     RequestPath path = new RequestPath(servletRequest);
     RequestParameters parameters = new RequestParameters(servletRequest);
     HttpMethod httpMethod = HttpMethod.fromServletMethod(servletRequest.getMethod());
-    Format format = new Format(servletRequest.getHeader("Accept"), path);
+    RequestFormat requestFormat = new RequestFormat(servletRequest.getHeader("Accept"), path);
 
-    MatchedRoute matchedRoute = RoutingTable.routingTable.find(path, parameters, httpMethod, format);
+    MatchedRoute matchedRoute = theRoutingTable.find(path, parameters, httpMethod, requestFormat);
     if (matchedRoute != null)
     {
-      pipeline.invoke(matchedRoute.routeNode, servletRequest, servletResponse, httpMethod, format, path, parameters, matchedRoute.pathMatchers, matchedRoute.parameterMatchers);
+      pipeline.invoke(matchedRoute.routeNode, servletRequest, servletResponse, httpMethod, requestFormat, path, parameters, matchedRoute.pathMatchers, matchedRoute.parameterMatchers);
     }
-    else
+    else if ((metaHandler == null ) || !metaHandler.handled(servletRequest, servletResponse, path, parameters, httpMethod, requestFormat))
     {
-      if ((webHandler == null ) || !webHandler.handled(servletRequest, servletResponse, path, parameters, httpMethod, format))
-      {
-        chain.doFilter(servletRequest, servletResponse);
-      }
+      chain.doFilter(servletRequest, servletResponse);
     }
   }
 

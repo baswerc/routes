@@ -1,4 +1,4 @@
-package org.baswell.routes.meta;
+package org.baswell.routes;
 
 import org.apache.commons.codec.binary.Base64;
 
@@ -6,6 +6,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
+/**
+ * A MetaAuthenticator that uses HTTP basic authentication. Once a user has successfully logged in ({@link #validCredentials(String, String)}
+ * returns true) a session attribute is set and this user is allowed through for the lifetime of the session.
+ */
 abstract public class BasicMetaAuthenticator implements MetaAuthenticator
 {
   abstract protected boolean validCredentials(String userName, String password);

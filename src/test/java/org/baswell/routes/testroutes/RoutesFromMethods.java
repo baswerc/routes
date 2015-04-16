@@ -2,7 +2,7 @@ package org.baswell.routes.testroutes;
 
 import org.baswell.routes.Routes;
 
-@Routes(routeUnannoatedPublicMethods=true)
+@Routes(routeUnannotatedPublicMethods =true)
 public class RoutesFromMethods extends BaseRoutes
 {
   public void getTest()

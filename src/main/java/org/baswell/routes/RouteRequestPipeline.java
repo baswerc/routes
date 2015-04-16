@@ -26,9 +26,9 @@ class RouteRequestPipeline
   }
   
   void invoke(RouteNode routeNode, HttpServletRequest servletRequest, HttpServletResponse servletResponse, HttpMethod httpMethod,
-              Format format, RequestPath path, RequestParameters parameters, List<Matcher> pathMatchers, Map<String, Matcher> parameterMatchers) throws IOException, ServletException
+              RequestFormat requestFormat, RequestPath path, RequestParameters parameters, List<Matcher> pathMatchers, Map<String, Matcher> parameterMatchers) throws IOException, ServletException
   {
-    RouteInvoker invoker = new RouteInvoker(servletRequest, servletResponse, httpMethod, path, parameters, format, routeNode.routeConfig);
+    RouteInvoker invoker = new RouteInvoker(servletRequest, servletResponse, httpMethod, path, parameters, requestFormat, routeNode.routeConfiguration);
     Object routeInstance = routeNode.instance.create();
     
     try
@@ -43,12 +43,12 @@ class RouteRequestPipeline
       }
 
       // If provided set the configured content type. A route method can override this by setting HttpServletResponse.setContentType since we do it before the call.
-      if (routeNode.routeConfig.contentType != null)
+      if (routeNode.routeConfiguration.contentType != null)
       {
-        servletResponse.setContentType(routeNode.routeConfig.contentType);
+        servletResponse.setContentType(routeNode.routeConfiguration.contentType);
       }
 
-      for (Map.Entry<String, List<String>> entry : routeNode.routeConfig.defaultParameters.entrySet())
+      for (Map.Entry<String, List<String>> entry : routeNode.routeConfiguration.defaultParameters.entrySet())
       {
         if (!parameters.contains(entry.getKey()))
         {
@@ -57,7 +57,7 @@ class RouteRequestPipeline
       }
 
       Object response = invoker.invoke(routeInstance, routeNode.method, routeNode.parameters, pathMatchers, parameterMatchers);
-      responseProcessor.processResponse(routeNode.responseType, response, format, routeNode.routeConfig, servletRequest, servletResponse);
+      responseProcessor.processResponse(routeNode.responseType, response, requestFormat, routeNode.routeConfiguration, servletRequest, servletResponse);
       
       for (AfterRouteNode afterNode : routeNode.afterRouteNodes)
       {
@@ -87,6 +87,18 @@ class RouteRequestPipeline
       else
       {
         throw new RuntimeException(targetException);
+      }
+    }
+    finally
+    {
+      if (routeNode.instance.createdFromFactory)
+      {
+        try
+        {
+          routeNode.instance.factory.doneUsing(routeInstance);
+        }
+        catch (Exception e)
+        {}
       }
     }
   }

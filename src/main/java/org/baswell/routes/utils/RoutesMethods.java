@@ -11,7 +11,7 @@ import java.util.Set;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.baswell.routes.Format;
+import org.baswell.routes.RequestFormat;
 import org.baswell.routes.RequestContext;
 import org.baswell.routes.RequestParameters;
 import org.baswell.routes.RequestPath;
@@ -117,7 +117,7 @@ public class RoutesMethods
     routesParameterTypes.add(RequestContext.class);
     routesParameterTypes.add(RequestPath.class);
     routesParameterTypes.add(RequestParameters.class);
-    routesParameterTypes.add(Format.class);
+    routesParameterTypes.add(RequestFormat.class);
   }
 
 }

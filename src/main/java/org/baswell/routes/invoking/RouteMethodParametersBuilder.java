@@ -1,17 +1,14 @@
 package org.baswell.routes.invoking;
 
-import org.baswell.routes.Format;
-import org.baswell.routes.InvalidRoutesMethodDeclaration;
+import org.baswell.routes.RequestFormat;
 import org.baswell.routes.RequestContext;
 import org.baswell.routes.RequestParameters;
 import org.baswell.routes.RequestPath;
-import org.baswell.routes.criteria.InvalidRouteException;
+import org.baswell.routes.RoutesException;
 import org.baswell.routes.criteria.RequestParameterCriterion;
 import org.baswell.routes.criteria.RequestPathSegmentCriterion;
 import org.baswell.routes.criteria.RouteCriteria;
 import org.baswell.routes.invoking.RouteMethodParameter.RouteMethodParameterType;
-import org.baswell.routes.parsing.ParameterTerminal;
-import org.baswell.routes.parsing.PathTerminal;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -23,7 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import static org.baswell.routes.utils.RoutesMethods.typeToClass;
+import static org.baswell.routes.utils.RoutesMethods.*;
 
 public class RouteMethodParametersBuilder
 {
@@ -32,7 +29,7 @@ public class RouteMethodParametersBuilder
     return buildParameters(method, null);
   }
   
-  public List<RouteMethodParameter> buildParameters(Method method, RouteCriteria routeCriteria) throws InvalidRouteException
+  public List<RouteMethodParameter> buildParameters(Method method, RouteCriteria routeCriteria) throws RoutesException
   {
     List<RouteMethodParameter> routeParameters = new ArrayList<RouteMethodParameter>();
     Type[] parameters = method.getGenericParameterTypes();
@@ -72,7 +69,7 @@ public class RouteMethodParametersBuilder
       {
         routeParameters.add(new RouteMethodParameter(RouteMethodParameterType.REQUEST_PARAMETERS));
       }
-      else if (parameterClass == Format.class)
+      else if (parameterClass == RequestFormat.class)
       {
         routeParameters.add(new RouteMethodParameter(RouteMethodParameterType.FORMAT));
       }
@@ -85,7 +82,7 @@ public class RouteMethodParametersBuilder
         }
         else
         {
-          throw new InvalidRouteException("Unsupported Map parameter: " + parameter+ " at index: " + i + " in method: " + method);
+          throw new RoutesException("Unsupported Map parameter: " + parameter+ " at index: " + i + " in method: " + method);
         }
       }
       else if (routeCriteria != null)
@@ -121,7 +118,7 @@ public class RouteMethodParametersBuilder
               }
               else
               {
-                throw new InvalidRouteException("List method parameter: " + parameter+ " at index: " + i + " in method: " + method + " is mapped to path segment (" + currentPathSegmentCriteron.index + "). Path segments cannot be mapped to lists only parameters.");
+                throw new RoutesException("List method parameter: " + parameter+ " at index: " + i + " in method: " + method + " is mapped to path segment (" + currentPathSegmentCriteron.index + "). Path segments cannot be mapped to lists only parameters.");
               }
             }
 
@@ -155,20 +152,20 @@ public class RouteMethodParametersBuilder
             }
             else
             {
-              throw new InvalidRoutesMethodDeclaration("Primitive method parameter: " + parameter + " at index " + i + " cannot be mapped to optional parameters in method: " + method);
+              throw new RoutesException("Primitive method parameter: " + parameter + " at index " + i + " cannot be mapped to optional parameters in method: " + method);
             }
           }
 
-          throw new InvalidRoutesMethodDeclaration("Unmapped method parameter: " + parameter + " at index: " + i + " in method: " + method);
+          throw new RoutesException("Unmapped method parameter: " + parameter + " at index: " + i + " in method: " + method);
         }
         else
         {
-          throw new InvalidRoutesMethodDeclaration("Unsupported method parameter: " + parameter+ " at index: " + i + " in method: " + method);
+          throw new RoutesException("Unsupported method parameter: " + parameter+ " at index: " + i + " in method: " + method);
         }
       }
       else
       {
-        throw new InvalidRoutesMethodDeclaration("Unsupported method parameter: " + parameter+ " at index: " + i + " in method: " + method);
+        throw new RoutesException("Unsupported method parameter: " + parameter+ " at index: " + i + " in method: " + method);
       }
     }
     

@@ -27,7 +27,7 @@ public @interface Route
    * The type for formats this route method accepts. If not provided the format of request will not be used as a match filter
    * for this route.
    */
-  Format.Type[] acceptedFormats() default {};
+  RequestFormat.Type[] acceptedFormats() default {};
 
   /**
    * The content type to set for this route. This can be overridden by calling {@link javax.servlet.http.HttpServletResponse#setContentType(String)}
