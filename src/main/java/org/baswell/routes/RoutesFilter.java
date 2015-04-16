@@ -122,17 +122,33 @@ public class RoutesFilter implements Filter
       }
     }
     
-    RequestPath path = new RequestPath(servletRequest);
-    RequestParameters parameters = new RequestParameters(servletRequest);
+    RequestPath requestPath = new RequestPath(servletRequest);
+    RequestParameters requestParameters = new RequestParameters(servletRequest);
     HttpMethod httpMethod = HttpMethod.fromServletMethod(servletRequest.getMethod());
-    RequestFormat requestFormat = new RequestFormat(servletRequest.getHeader("Accept"), path);
+    RequestFormat requestFormat = new RequestFormat(servletRequest.getHeader("Accept"), requestPath);
 
-    MatchedRoute matchedRoute = theRoutingTable.find(path, parameters, httpMethod, requestFormat);
+    MatchedRoute matchedRoute = null;
+
+    if (theRoutingTable.routesConfiguration.routesCache != null)
+    {
+      matchedRoute = (MatchedRoute)theRoutingTable.routesConfiguration.routesCache.get(httpMethod, requestFormat, requestPath, requestParameters);
+    }
+
+    if (matchedRoute == null)
+    {
+      matchedRoute = theRoutingTable.find(requestPath, requestParameters, httpMethod, requestFormat);
+    }
+
     if (matchedRoute != null)
     {
-      pipeline.invoke(matchedRoute.routeNode, servletRequest, servletResponse, httpMethod, requestFormat, path, parameters, matchedRoute.pathMatchers, matchedRoute.parameterMatchers);
+      pipeline.invoke(matchedRoute.routeNode, servletRequest, servletResponse, httpMethod, requestFormat, requestPath, requestParameters, matchedRoute.pathMatchers, matchedRoute.parameterMatchers);
+
+      if (theRoutingTable.routesConfiguration.routesCache != null)
+      {
+        theRoutingTable.routesConfiguration.routesCache.put(matchedRoute, httpMethod, requestFormat, requestPath, requestParameters);
+      }
     }
-    else if ((metaHandler == null ) || !metaHandler.handled(servletRequest, servletResponse, path, parameters, httpMethod, requestFormat))
+    else if ((metaHandler == null ) || !metaHandler.handled(servletRequest, servletResponse, requestPath, requestParameters, httpMethod, requestFormat))
     {
       chain.doFilter(servletRequest, servletResponse);
     }

@@ -9,30 +9,30 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public class RouteConfiguration
+class RouteConfiguration
 {
-  public final String route;
+  final String route;
 
-  public final List<HttpMethod> httpMethods;
+  final List<HttpMethod> httpMethods;
   
-  public final Set<RequestFormat.Type> acceptedFormats;
+  final Set<RequestFormat.Type> acceptedFormats;
   
-  public final String contentType;
+  final String contentType;
   
-  public final boolean returnedStringIsContent;
+  final boolean returnedStringIsContent;
 
-  public final Map<String, List<String>> defaultParameters;
+  final Map<String, List<String>> defaultParameters;
   
-  public final Set<String> tags;
+  final Set<String> tags;
   
-  public final String forwardPath;
+  final String forwardPath;
 
-  public RouteConfiguration(Method method, RoutesConfiguration routesConfiguration)
+  RouteConfiguration(Method method, RoutesConfiguration routesConfiguration)
   {
     this(method, routesConfiguration, method.getDeclaringClass().getAnnotation(Routes.class), method.getAnnotation(Route.class), 0);
   }
 
-  public RouteConfiguration(Method method, RoutesConfiguration routesConfiguration, Routes routes, Route route, int routesPathIndex)
+  RouteConfiguration(Method method, RoutesConfiguration routesConfiguration, Routes routes, Route route, int routesPathIndex)
   {
     httpMethods = getHttpMethods(routes, route, method, routesConfiguration.routeFromMethodScheme);
     this.route = buildRoutePath(routesConfiguration.rootPath, routes, route, method, routesConfiguration.routeFromMethodScheme, routesPathIndex);
