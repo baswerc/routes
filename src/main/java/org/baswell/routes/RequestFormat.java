@@ -150,4 +150,9 @@ public class RequestFormat
     }
   }
 
+  @Override
+  public String toString()
+  {
+    return type.name;
+  }
 }

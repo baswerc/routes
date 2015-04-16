@@ -53,7 +53,7 @@ import static org.baswell.routes.RoutingTable.*;
  */
 public class RoutesFilter implements Filter
 {
-  private volatile RouteRequestPipeline pipeline;
+  private volatile MethodPipeline pipeline;
   
   private Pattern onlyPattern;
   
@@ -112,7 +112,7 @@ public class RoutesFilter implements Filter
       {
         if (pipeline == null)
         {
-          pipeline = new RouteRequestPipeline(theRoutingTable.routesConfiguration);
+          pipeline = new MethodPipeline(theRoutingTable.routesConfiguration);
         }
 
         if (theRoutingTable.routesConfiguration.hasRoutesMetaPath())

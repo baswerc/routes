@@ -6,7 +6,7 @@ import java.util.Map;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
-import static org.baswell.routes.utils.RoutesMethods.typesToPatterns;
+import static org.baswell.routes.RoutesMethods.typesToPatterns;
 
 /**
  * Global Routes configuration.

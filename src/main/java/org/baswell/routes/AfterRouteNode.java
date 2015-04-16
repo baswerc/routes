@@ -4,13 +4,11 @@ import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Set;
 
-import org.baswell.routes.invoking.RouteMethodParameter;
-
 class AfterRouteNode implements Comparable<AfterRouteNode>
 {
   final Method method;
 
-  final List<RouteMethodParameter> parameters;
+  final List<MethodParameter> parameters;
 
   final Set<String> onlyTags;
   
@@ -18,7 +16,7 @@ class AfterRouteNode implements Comparable<AfterRouteNode>
   
   final Integer order;
   
-  AfterRouteNode(Method method, List<RouteMethodParameter> parameters, Set<String> onlyTags, Set<String> exceptTags, Integer order)
+  AfterRouteNode(Method method, List<MethodParameter> parameters, Set<String> onlyTags, Set<String> exceptTags, Integer order)
   {
     this.method = method;
     this.parameters = parameters;

@@ -1,6 +1,8 @@
 package org.baswell.routes;
 
-
+/**
+ * Create a new route object each time and discards the object after use.
+ */
 public class DefaultRouteInstanceFactory implements RouteInstanceFactory
 {
   @Override

@@ -3,10 +3,6 @@ package org.baswell.routes;
 import java.lang.reflect.Method;
 import java.util.List;
 
-import org.baswell.routes.criteria.RouteCriteria;
-import org.baswell.routes.invoking.RouteMethodParameter;
-import org.baswell.routes.response.RouteResponseType;
-
 class RouteNode implements Comparable<RouteNode>
 {
   final int index;
@@ -17,17 +13,17 @@ class RouteNode implements Comparable<RouteNode>
 
   final RouteInstance instance;
   
-  final RouteCriteria criteria;
+  final Criteria criteria;
   
-  final List<RouteMethodParameter> parameters;
+  final List<MethodParameter> parameters;
   
-  final RouteResponseType responseType;
+  final ResponseType responseType;
   
   final List<BeforeRouteNode> beforeRouteNodes;
 
   final List<AfterRouteNode> afterRouteNodes;
 
-  RouteNode(int index, Method method, RouteConfiguration routeConfiguration, RouteInstance instance, RouteCriteria criteria, List<RouteMethodParameter> parameters, RouteResponseType responseType, List<BeforeRouteNode> beforeRouteNodes, final List<AfterRouteNode> afterRouteNodes)
+  RouteNode(int index, Method method, RouteConfiguration routeConfiguration, RouteInstance instance, Criteria criteria, List<MethodParameter> parameters, ResponseType responseType, List<BeforeRouteNode> beforeRouteNodes, final List<AfterRouteNode> afterRouteNodes)
   {
     this.index = index;
     this.method = method;

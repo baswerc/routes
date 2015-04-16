@@ -13,7 +13,7 @@ abstract public class EndToEndTest
 {
   protected RoutingTable routingTable;
   
-  protected RouteRequestPipeline pipeline;
+  protected MethodPipeline pipeline;
   
   protected TestHttpServletRequest servletRequest;
   
@@ -55,7 +55,7 @@ abstract public class EndToEndTest
     }
     
     routingTable.build();
-    pipeline = new RouteRequestPipeline(routingTable.routesConfiguration);
+    pipeline = new MethodPipeline(routingTable.routesConfiguration);
   }
   
   protected void initializeRequest(TestHttpServletRequest servletRequest)

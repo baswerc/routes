@@ -12,15 +12,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
 
-import org.baswell.routes.criteria.RouteCriteria;
-import org.baswell.routes.criteria.RouteCriteriaBuilder;
-import org.baswell.routes.invoking.RouteMethodParameter;
-import org.baswell.routes.invoking.RouteMethodParametersBuilder;
-import org.baswell.routes.parsing.RouteParser;
-import org.baswell.routes.parsing.RouteTree;
-import org.baswell.routes.response.RouteResponseType;
-import org.baswell.routes.response.RouteResponseTypeMapper;
-
 /**
  * Hub for all routes. The RoutingTable should be treated as a singleton and only constructed once in your application.
  *
@@ -83,10 +74,10 @@ public class RoutingTable
    */
   public synchronized void build() throws RoutesException
   {
-    RouteParser parser = new RouteParser();
-    RouteCriteriaBuilder criteriaBuilder = new RouteCriteriaBuilder();
-    RouteMethodParametersBuilder parametersBuilder = new RouteMethodParametersBuilder();
-    RouteResponseTypeMapper returnTypeMapper = new RouteResponseTypeMapper();
+    Parser parser = new Parser();
+    CriteriaBuilder criteriaBuilder = new CriteriaBuilder();
+    MethodParametersBuilder parametersBuilder = new MethodParametersBuilder();
+    ResponseTypeMapper returnTypeMapper = new ResponseTypeMapper();
 
     routeNodes = new ArrayList<RouteNode>();
     for (Object addedObject : addedObjects)
@@ -126,11 +117,11 @@ public class RoutingTable
           for (int i = 0; i < numRoutesPaths; i++)
           {
             RouteConfiguration routeConfiguration = new RouteConfiguration(method, routesConfiguration, routesAnnotation, routeAnnotation, i);
-            RouteTree tree = parser.parse(routeConfiguration.route);
+            ParsedRouteTree tree = parser.parse(routeConfiguration.route);
             RouteInstance routeInstance = instanceIsClass ? new RouteInstance(routesClass, routesConfiguration.routeInstanceFactory) : new RouteInstance(addedObject);
-            RouteCriteria criteria = criteriaBuilder.buildCriteria(method, tree, routeConfiguration, routesConfiguration);
-            List<RouteMethodParameter> parameters = parametersBuilder.buildParameters(method, criteria);
-            RouteResponseType responseType = returnTypeMapper.mapResponseType(method, routeConfiguration);
+            Criteria criteria = criteriaBuilder.buildCriteria(method, tree, routeConfiguration, routesConfiguration);
+            List<MethodParameter> parameters = parametersBuilder.buildParameters(method, criteria);
+            ResponseType responseType = returnTypeMapper.mapResponseType(method, routeConfiguration);
 
             List<BeforeRouteNode> beforeNodes = new ArrayList<BeforeRouteNode>();
             for (BeforeRouteNode beforeNode : classBeforeNodes)
@@ -202,7 +193,7 @@ public class RoutingTable
         if ((returnType == boolean.class) || (returnType == Boolean.class) || (returnType == void.class))
         {
           boolean returnsBoolean = returnType != void.class;
-          List<RouteMethodParameter> routeParameters = new RouteMethodParametersBuilder().buildParameters(method);
+          List<MethodParameter> routeParameters = new MethodParametersBuilder().buildParameters(method);
           Integer order = beforeRoute.order().length == 0 ? null : beforeRoute.order()[0];
           nodes.add(new BeforeRouteNode(method, routeParameters, returnsBoolean, new HashSet<String>(Arrays.asList(beforeRoute.onlyTags())), new HashSet<String>(Arrays.asList(beforeRoute.exceptTags())), order));
         }
@@ -228,7 +219,7 @@ public class RoutingTable
         Class returnType = method.getReturnType();
         if (returnType == void.class)
         {
-          List<RouteMethodParameter> routeParameters = new RouteMethodParametersBuilder().buildParameters(method);
+          List<MethodParameter> routeParameters = new MethodParametersBuilder().buildParameters(method);
           Integer order = afterRoute.order().length == 0 ? null : afterRoute.order()[0];
           nodes.add(new AfterRouteNode(method, routeParameters, new HashSet<String>(Arrays.asList(afterRoute.onlyTags())), new HashSet<String>(Arrays.asList(afterRoute.exceptTags())), order));
         }

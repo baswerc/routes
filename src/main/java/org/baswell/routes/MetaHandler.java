@@ -9,19 +9,19 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MetaHandler
+class MetaHandler
 {
   final RoutingTable routingTable;
 
   final RoutesConfiguration routesConfiguration;
 
-  public MetaHandler(RoutingTable routingTable, RoutesConfiguration routesConfiguration)
+  MetaHandler(RoutingTable routingTable, RoutesConfiguration routesConfiguration)
   {
     this.routingTable = routingTable;
     this.routesConfiguration = routesConfiguration;
   }
 
-  public boolean handled(HttpServletRequest request, HttpServletResponse response, RequestPath path, RequestParameters parameters, HttpMethod httpMethod, RequestFormat requestFormat) throws IOException
+  boolean handled(HttpServletRequest request, HttpServletResponse response, RequestPath path, RequestParameters parameters, HttpMethod httpMethod, RequestFormat requestFormat) throws IOException
   {
     String routesMetaPath = routesConfiguration.routesMetaPath;
     if (!routesMetaPath.startsWith("/")) routesMetaPath = "/" + routesMetaPath;

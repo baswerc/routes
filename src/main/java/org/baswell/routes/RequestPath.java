@@ -68,6 +68,17 @@ public class RequestPath
   /**
    *
    * @param index
+   * @return The first character of the segment at the given index.
+   * @throws IndexOutOfBoundsException If index < 0 or index >= {@link #size()}
+   */
+  public char getCharacter(int index) throws IndexOutOfBoundsException
+  {
+    return segments.get(index).charAt(0);
+  }
+
+  /**
+   *
+   * @param index
    * @return The parsed boolean segment at the given index.
    * @throws IndexOutOfBoundsException If index < 0 or index >= {@link #size()}
    */
