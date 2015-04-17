@@ -54,7 +54,7 @@ class MethodPipeline
       }
 
       Object response = invoker.invoke(routeInstance, routeNode.method, routeNode.parameters, pathMatchers, parameterMatchers);
-      responseProcessor.processResponse(routeNode.responseType, response, requestFormat, routeNode.routeConfiguration, servletRequest, servletResponse);
+      responseProcessor.processResponse(routeNode.responseType, routeNode.responseStringWriteStrategy, response, routeNode.routeConfiguration.contentType, routeNode.routeConfiguration, servletRequest, servletResponse);
       
       for (AfterRouteNode afterNode : routeNode.afterRouteNodes)
       {

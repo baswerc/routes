@@ -68,6 +68,41 @@ class RoutesMethods
     }
   }
 
+  static boolean classImplementsInterface(Class clazz, Class interfaze)
+  {
+    if ((clazz == null) || (clazz == Object.class))
+    {
+      return false;
+    }
+
+    Class[] implementedInterfaces = clazz.getInterfaces();
+    for (Class implementedInterface : implementedInterfaces)
+    {
+      if (classInstanceOf(implementedInterface, interfaze))
+      {
+        return true;
+      }
+    }
+
+    return classImplementsInterface(clazz.getSuperclass(), interfaze);
+  }
+
+  static boolean classInstanceOf(Class clazz, Class instanceOf)
+  {
+    if ((clazz == null) || (clazz == Object.class))
+    {
+      return false;
+    }
+    else if (clazz == instanceOf)
+    {
+      return true;
+    }
+    else
+    {
+      return classImplementsInterface(clazz.getSuperclass(), instanceOf);
+    }
+  }
+
   static final String BYTE_PATTERN = "(-?)\\d" + repeat("\\d?", 2);
 
   static final String SHORT_PATTERN = "(-?)\\d" + repeat("\\d?", 4);

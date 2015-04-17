@@ -18,12 +18,14 @@ class RouteNode implements Comparable<RouteNode>
   final List<MethodParameter> parameters;
   
   final ResponseType responseType;
+
+  final ResponseStringWriteStrategy responseStringWriteStrategy;
   
   final List<BeforeRouteNode> beforeRouteNodes;
 
   final List<AfterRouteNode> afterRouteNodes;
 
-  RouteNode(int index, Method method, RouteConfiguration routeConfiguration, RouteInstance instance, Criteria criteria, List<MethodParameter> parameters, ResponseType responseType, List<BeforeRouteNode> beforeRouteNodes, final List<AfterRouteNode> afterRouteNodes)
+  RouteNode(int index, Method method, RouteConfiguration routeConfiguration, RouteInstance instance, Criteria criteria, List<MethodParameter> parameters, ResponseType responseType, ResponseStringWriteStrategy responseStringWriteStrategy, List<BeforeRouteNode> beforeRouteNodes, final List<AfterRouteNode> afterRouteNodes)
   {
     this.index = index;
     this.method = method;
@@ -32,6 +34,7 @@ class RouteNode implements Comparable<RouteNode>
     this.criteria = criteria;
     this.parameters = parameters;
     this.responseType = responseType;
+    this.responseStringWriteStrategy = responseStringWriteStrategy;
     this.beforeRouteNodes = beforeRouteNodes;
     this.afterRouteNodes = afterRouteNodes;
   }

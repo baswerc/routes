@@ -34,7 +34,7 @@ class ResponseProcessor
     this.routesConfiguration = routesConfiguration;
   }
   
-  void processResponse(ResponseType responseType, Object response, RequestFormat requestFormat, RouteConfiguration routeConfiguration, HttpServletRequest servletRequest, HttpServletResponse servletResponse) throws IOException, ServletException
+  void processResponse(ResponseType responseType, ResponseStringWriteStrategy responseStringWriteStrategy, Object response, String contentType, RouteConfiguration routeConfiguration, HttpServletRequest servletRequest, HttpServletResponse servletResponse) throws IOException, ServletException
   {
     if (response != null)
     {
@@ -55,19 +55,41 @@ class ResponseProcessor
           }
           else
           {
-            switch (requestFormat.type)
+            if (responseStringWriteStrategy != null)
             {
-              case JSON:
+              switch (responseStringWriteStrategy)
+              {
+                case JSON:
+                  sendJson(response, servletResponse);
+                  break;
+
+                case XML:
+                  sendXML(response, servletResponse);
+                  break;
+
+                default:
+                  sendText(response, servletResponse);
+                  break;
+              }
+            }
+            else if (contentType != null)
+            {
+              if (contentType.contains("json"))
+              {
                 sendJson(response, servletResponse);
-                break;
-
-              case XML:
+              }
+              else if (contentType.contains("xml"))
+              {
                 sendXML(response, servletResponse);
-                break;
-
-              default:
-                servletResponse.getWriter().write(response.toString());
-                break;
+              }
+              else
+              {
+                sendText(response, servletResponse);
+              }
+            }
+            else
+            {
+              sendText(response, servletResponse);
             }
           }
           break;
@@ -101,7 +123,7 @@ class ResponseProcessor
     }
     else
     {
-      servletResponse.getWriter().write(response.toString());
+      sendText(response, servletResponse);
     }
   }
 
@@ -129,10 +151,18 @@ class ResponseProcessor
         throw new RuntimeException(e);
       }
     }
+    else
+    {
+      sendText(response, servletResponse);
+    }
   }
 
+  void sendText(Object response, HttpServletResponse servletResponse) throws IOException
+  {
+    servletResponse.getWriter().write(response.toString());
+  }
 
-    static void fastChannelCopy(InputStream inStream, OutputStream outStream, int bufferSize) throws IOException
+  static void fastChannelCopy(InputStream inStream, OutputStream outStream, int bufferSize) throws IOException
   {
     final ReadableByteChannel src = Channels.newChannel(inStream);
     final WritableByteChannel dest = Channels.newChannel(outStream);

@@ -122,6 +122,15 @@ public class RoutingTable
             Criteria criteria = criteriaBuilder.buildCriteria(method, tree, routeConfiguration, routesConfiguration);
             List<MethodParameter> parameters = parametersBuilder.buildParameters(method, criteria);
             ResponseType responseType = returnTypeMapper.mapResponseType(method, routeConfiguration);
+            ResponseStringWriteStrategy responseStringWriteStrategy;
+            if (responseType == ResponseType.STRING_CONTENT)
+            {
+
+            }
+            else
+            {
+              responseStringWriteStrategy = null;
+            }
 
             List<BeforeRouteNode> beforeNodes = new ArrayList<BeforeRouteNode>();
             for (BeforeRouteNode beforeNode : classBeforeNodes)
@@ -141,7 +150,7 @@ public class RoutingTable
               }
             }
 
-            classRoutes.add(new RouteNode(routeNodes.size(), method, routeConfiguration, routeInstance, criteria, parameters, responseType, beforeNodes, afterNodes));
+            classRoutes.add(new RouteNode(routeNodes.size(), method, routeConfiguration, routeInstance, criteria, parameters, responseType, responseStringWriteStrategy, beforeNodes, afterNodes));
           }
         }
       }

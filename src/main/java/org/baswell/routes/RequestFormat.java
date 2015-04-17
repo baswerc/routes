@@ -105,10 +105,6 @@ public class RequestFormat
       {
         type = Type.ATOM;
       }
-      else if (acceptType.contains("xml"))
-      {
-        type = Type.XML;
-      }
       else if (acceptType.equals("text/calendar"))
       {
         type = Type.ICS;
@@ -141,6 +137,10 @@ public class RequestFormat
         else if (acceptType.contains("text"))
         {
           type = Type.TEXT;
+        }
+        else if (acceptType.contains("xml"))
+        {
+          type = Type.XML;
         }
         else
         {
