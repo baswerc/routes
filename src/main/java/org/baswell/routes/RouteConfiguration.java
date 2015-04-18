@@ -13,9 +13,9 @@ class RouteConfiguration
 {
   final String route;
 
-  final List<HttpMethod> httpMethods;
+  final List<HttpMethod> respondsToMethods;
   
-  final Set<RequestFormat.Type> acceptedFormats;
+  final Set<MediaType> respondsToMedia;
   
   String contentType;
   
@@ -34,9 +34,9 @@ class RouteConfiguration
 
   RouteConfiguration(Method method, RoutesConfiguration routesConfiguration, Routes routes, Route route, int routesPathIndex)
   {
-    httpMethods = getHttpMethods(routes, route, method, routesConfiguration.routeFromMethodScheme);
+    respondsToMethods = getHttpMethods(routes, route, method, routesConfiguration.routeFromMethodScheme);
     this.route = buildRoutePath(routesConfiguration.rootPath, routes, route, method, routesConfiguration.routeFromMethodScheme, routesPathIndex);
-    acceptedFormats = new HashSet<RequestFormat.Type>();
+    respondsToMedia = new HashSet<MediaType>();
     defaultParameters = new HashMap<String, List<String>>();
 
     tags = new HashSet<String>();
@@ -48,7 +48,7 @@ class RouteConfiguration
     String forwardPath;
     if (routes != null)
     {
-      acceptedFormats.addAll(Arrays.asList(routes.defaultAcceptedFormats()));
+      respondsToMedia.addAll(Arrays.asList(routes.defaultRespondsToMedia()));
 
       forwardPath = routes.forwardPath();
       if (!forwardPath.startsWith("/"))
@@ -109,9 +109,9 @@ class RouteConfiguration
       }
 
       
-      if (route.responseIsBody().length > 0)
+      if (route.returnedStringIsContent().length > 0)
       {
-        returnedStringIsContent = route.responseIsBody()[0];
+        returnedStringIsContent = route.returnedStringIsContent()[0];
       }
       else
       {
@@ -119,7 +119,7 @@ class RouteConfiguration
       }
       
       tags.addAll(Arrays.asList(route.tags()));
-      acceptedFormats.addAll(Arrays.asList(route.acceptedFormats()));
+      respondsToMedia.addAll(Arrays.asList(route.respondsToMedia()));
     }
   }
   
@@ -168,9 +168,9 @@ class RouteConfiguration
   {
     List<HttpMethod> httpMethods = new ArrayList<HttpMethod>();
     
-    if ((route != null) && (route.httpMethods().length > 0))
+    if ((route != null) && (route.respondsToMethods().length > 0))
     {
-      for (HttpMethod httpMethod : route.httpMethods()) httpMethods.add(httpMethod);
+      for (HttpMethod httpMethod : route.respondsToMethods()) httpMethods.add(httpMethod);
     }
     else
     {

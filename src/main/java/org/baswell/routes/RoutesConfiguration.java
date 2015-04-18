@@ -48,7 +48,7 @@ public class RoutesConfiguration
 
   /**
    * If true by default strings returned from route methods are sent back as the content. If false by default returned strings are interpreted as
-   * file paths that the request is forwarded to. This can be overridden in {@link Routes#defaultReturnedStringIsContent()} or {@link Route#responseIsBody()}.
+   * file paths that the request is forwarded to. This can be overridden in {@link Routes#defaultReturnedStringIsContent()} or {@link Route#returnedStringIsContent()}.
    *
    * Default value: <code>false</code>
    */

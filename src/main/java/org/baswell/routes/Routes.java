@@ -24,9 +24,9 @@ public @interface Routes
   String forwardPath() default "";
 
   /**
-   * The default requested format allowed for each method route in this class. Overridden by {@link Route#acceptedFormats()}.
+   * The default type of media all routes in this class know how to serve. Overridden by {@link Route#respondsToMedia()}.
    */
-  RequestFormat.Type[] defaultAcceptedFormats() default {};
+  MediaType[] defaultRespondsToMedia() default {};
 
   /**
    * Should public methods be candidates for HTTP routes if they aren't annotated with {@link org.baswell.routes.Route}?
@@ -48,7 +48,7 @@ public @interface Routes
    *
    * If true by default strings returned from routes of this annotated class are sent back as the content. If false by default
    * returned strings are interpreted as file paths that the request is forwarded to. This can be overridden in
-   * {@link Route#responseIsBody()}.
+   * {@link Route#returnedStringIsContent()}.
    *
    * This should be used as a single value. Only the first value in the array will be used.
    *
@@ -58,7 +58,7 @@ public @interface Routes
 
   /**
    * Tags to apply to all routes within the annotated class. If a route method defines its own tags, they will be added to
-   * the tags defined here.
+   * the tags defined here. Tags defined here will be added to any tags defined explicitly in the Route ({@link org.baswell.routes.Route#tags()}).
    *
    * @see BeforeRoute#exceptTags()
    * @see BeforeRoute#onlyTags()

@@ -5,7 +5,7 @@ import java.util.List;
 
 /**
  *
- * Scheme for mapping Methods without {@link org.baswell.routes.Route#value()} or {@link org.baswell.routes.Route#httpMethods()}
+ * Scheme for mapping Methods without {@link org.baswell.routes.Route#value()} or {@link org.baswell.routes.Route#respondsToMethods()}
  *
  * @see DefaultRouteFromMethodScheme
  */

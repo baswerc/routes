@@ -13,15 +13,16 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
-import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
 import com.google.gson.Gson;
-import org.json.simple.JSONObject;
 import org.w3c.dom.Node;
+
+import static org.baswell.routes.ResponseTypeMapper.*;
+import static org.baswell.routes.RoutesMethods.*;
 
 class ResponseProcessor
 {
@@ -49,6 +50,24 @@ class ResponseProcessor
           break;
           
         case STRING_CONTENT:
+
+          if (responseStringWriteStrategy == null)
+          {
+            Pair<ResponseStringWriteStrategy, String> strategyContentTypePair = mapResponseStringWriteStrategy(response, routeConfiguration.respondsToMedia, routeConfiguration.contentType, availableLibraries);
+            if (strategyContentTypePair == null)
+            {
+              responseStringWriteStrategy = ResponseStringWriteStrategy.TO_STRING;
+            }
+            else
+            {
+              responseStringWriteStrategy = strategyContentTypePair.x;
+              if (nullEmpty(servletResponse.getContentType()) && hasContent(strategyContentTypePair.y))
+              {
+                servletResponse.setContentType(strategyContentTypePair.y);
+              }
+            }
+          }
+
           switch(responseStringWriteStrategy)
           {
             case GSON:

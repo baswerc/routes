@@ -19,11 +19,11 @@ public class CriteriaTest
 
   RouteConfiguration getPostRouteConfiguration;
 
-  @Route(httpMethods = {HttpMethod.GET})
+  @Route(respondsToMethods = {HttpMethod.GET})
   public void getOnly()
   {}
 
-  @Route(httpMethods = {HttpMethod.GET, HttpMethod.POST})
+  @Route(respondsToMethods = {HttpMethod.GET, HttpMethod.POST})
   public void getAndPost()
   {}
 

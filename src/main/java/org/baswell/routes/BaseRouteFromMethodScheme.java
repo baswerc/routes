@@ -72,7 +72,7 @@ abstract public class BaseRouteFromMethodScheme implements RouteFromMethodScheme
   protected String removeHttpMethodsFromName(Method method)
   {
     Route route = method.getAnnotation(Route.class);
-    if ((route == null) || (route.httpMethods().length == 0)) // Are we using the method name to determine the http methods ?
+    if ((route == null) || (route.respondsToMethods().length == 0)) // Are we using the method name to determine the http methods ?
     {
       return removeHttpMethods(method.getName());
     }

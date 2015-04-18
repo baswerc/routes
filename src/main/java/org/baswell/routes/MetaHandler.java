@@ -32,7 +32,7 @@ class MetaHandler
       {
         path = path.substring(routesMetaPath.length());
 
-        if (requestFormat.type == RequestFormat.Type.HTML)
+        if (requestFormat.mediaType == MediaType.HTML)
         {
           if (path.equals(""))
           {
@@ -41,7 +41,7 @@ class MetaHandler
           }
 
         }
-        else if (requestFormat.type == RequestFormat.Type.JSON)
+        else if (requestFormat.mediaType == MediaType.JSON)
         {
           if (path.equals(""))
           {
@@ -140,13 +140,13 @@ class MetaHandler
       path = routeNode.routeConfiguration.route;
       link = request.getContextPath() + path;
 
-      if ((routeNode.routeConfiguration.httpMethods == null) || routeNode.routeConfiguration.httpMethods.isEmpty())
+      if ((routeNode.routeConfiguration.respondsToMethods == null) || routeNode.routeConfiguration.respondsToMethods.isEmpty())
       {
         httpMethods = "";
       }
       else
       {
-        for (HttpMethod httpMethod : routeNode.routeConfiguration.httpMethods)
+        for (HttpMethod httpMethod : routeNode.routeConfiguration.respondsToMethods)
         {
           if (httpMethods == null)
           {
@@ -159,21 +159,21 @@ class MetaHandler
         }
       }
 
-      if ((routeNode.routeConfiguration.acceptedFormats == null) || routeNode.routeConfiguration.acceptedFormats.isEmpty())
+      if ((routeNode.routeConfiguration.respondsToMedia == null) || routeNode.routeConfiguration.respondsToMedia.isEmpty())
       {
         acceptFormats = "";
       }
       else
       {
-        for (RequestFormat.Type acceptFormat : routeNode.routeConfiguration.acceptedFormats)
+        for (MediaType mediaType : routeNode.routeConfiguration.respondsToMedia)
         {
           if (acceptFormats == null)
           {
-            acceptFormats = acceptFormat.name;
+            acceptFormats = mediaType.toString();
           }
           else
           {
-            acceptFormats += ", " + acceptFormat.name;
+            acceptFormats += ", " + mediaType.toString();
           }
         }
       }
@@ -183,7 +183,7 @@ class MetaHandler
 
     void toJson(PrintWriter writer) throws IOException
     {
-      writer.write("{\"link\": \"" + link + "\", \"path\": \"" + path + "\", \"httpMethods\": \"" + httpMethods + "\", \"acceptFormats\": \"" + acceptFormats + "\", \"classMethod\": \"" + classMethod + "\"}");
+      writer.write("{\"link\": \"" + link + "\", \"path\": \"" + path + "\", \"respondsToMethods\": \"" + httpMethods + "\", \"acceptFormats\": \"" + acceptFormats + "\", \"classMethod\": \"" + classMethod + "\"}");
     }
   }
 

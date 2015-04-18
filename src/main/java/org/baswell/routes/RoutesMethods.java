@@ -22,7 +22,12 @@ class RoutesMethods
   {
     return (collection != null) && !collection.isEmpty();
   }
-  
+
+  static boolean hasContent(CharSequence string)
+  {
+    return ((string != null) && !string.toString().trim().isEmpty());
+  }
+
   static boolean nullEmpty(CharSequence string)
   {
     return ((string == null) || string.toString().trim().isEmpty());

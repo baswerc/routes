@@ -6,7 +6,7 @@ import org.baswell.routes.Routes;
 @Routes("/combined")
 public class CombinedRoutes extends BaseRoutes
 {
-  @Route(value = "/one", responseIsBody = true)
+  @Route(value = "/one", returnedStringIsContent = true)
   public String getOne()
   {
     methodsCalled.add("getOne");

@@ -128,11 +128,18 @@ public class RoutingTable
             ResponseStringWriteStrategy responseStringWriteStrategy;
             if (responseType == ResponseType.STRING_CONTENT)
             {
-              Pair<ResponseStringWriteStrategy, String> stringWriteStrategyStringPair = mapResponseStringWriteStrategy(method, routeConfiguration.contentType, availableLibraries);
-              responseStringWriteStrategy = stringWriteStrategyStringPair.x;
-              if (nullEmpty(routeConfiguration.contentType))
+              Pair<ResponseStringWriteStrategy, String> stringWriteStrategyStringPair = mapResponseStringWriteStrategy(method, routeConfiguration.respondsToMedia, routeConfiguration.contentType, availableLibraries);
+              if (stringWriteStrategyStringPair == null)
               {
-                routeConfiguration.contentType = stringWriteStrategyStringPair.y;
+                responseStringWriteStrategy = null;
+              }
+              else
+              {
+                responseStringWriteStrategy = stringWriteStrategyStringPair.x;
+                if (nullEmpty(routeConfiguration.contentType))
+                {
+                  routeConfiguration.contentType = stringWriteStrategyStringPair.y;
+                }
               }
             }
             else

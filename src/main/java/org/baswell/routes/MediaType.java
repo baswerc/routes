@@ -6,27 +6,30 @@ import static java.util.Arrays.*;
 
 public enum MediaType
 {
-  HTML(asList("text/html", "application/xhtml+xml"), asList("html", "htm", "htmls", "html")),
-  XML(asList("text/xml", "application/xml"), asList("xml")),
-  JSON(asList("application/json"), asList("json")),
-  JAVASCRIPT(asList("application/javascript", "text/javascript"), asList("js")),
-  CSV(asList("text/csv"), asList("csv")),
-  PDF(asList("application/pdf"), asList("pdf")),
-  RSS(asList("application/rss+xml"), asList("rss")),
-  ATOM(asList("application/atomcat+xml"), asList("atomcat")),
-  ICS(asList("text/calendar"), asList("ics")),
-  TEXT(asList("text/plain"), asList("text", "txt")),
-  EXCEL(asList("application/vnd.ms-excel", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"), asList("xlsx", "xls")),
-  WORD(asList("application/msword", "application/vnd.openxmlformats-officedocument.wordprocessingml.document"), asList("doc", "docx"));
+  ATOM(asList(MIMETypes.ATOM), asList("atomcat")),
+  CSV(asList(MIMETypes.CSV), asList("csv")),
+  EXCEL(asList(MIMETypes.EXCEL, MIMETypes.EXCEL2, MIMETypes.EXCEL3, MIMETypes.EXCEL4, MIMETypes.EXCEL5, MIMETypes.EXCEL6, MIMETypes.EXCEL7), asList("xlsx", "xls")),
+  HTML(asList(MIMETypes.HTML, MIMETypes.HTML2), asList("html", "htm", "htmls", "html")),
+  ICS(asList(MIMETypes.ICS), asList("ics")),
+  JAVASCRIPT(asList(MIMETypes.JAVASCRIPT, MIMETypes.JAVASCRIPT2, MIMETypes.JAVASCRIPT3), asList("js")),
+  JSON(asList(MIMETypes.JSON, MIMETypes.JSON2), asList("json")),
+  PDF(asList(MIMETypes.PDF), asList("pdf")),
+  RSS(asList(MIMETypes.RSS), asList("rss")),
+  TEXT(asList(MIMETypes.TEXT), asList("text", "txt")),
+  WORD(asList(MIMETypes.WORD, MIMETypes.WORD2), asList("doc", "docx")),
+  XML(asList(MIMETypes.XML, MIMETypes.XML2), asList("xml"));
+
+  public final String mimeType;
 
   public final List<String> mimeTypes;
 
   public final List<String> extensions;
 
-  public static MediaType match(String mimeType, String extension)
+  public static MediaType findFromMimeType(String mimeType)
   {
     if (mimeType != null)
     {
+      mimeType = mimeType.toLowerCase();
       for (MediaType mediaType : values())
       {
         for (String mediaTypeMimeType : mediaType.mimeTypes)
@@ -39,8 +42,14 @@ public enum MediaType
       }
     }
 
-    if (mimeType != null)
+    return null;
+  }
+
+  public static MediaType findFromExtension(String extension)
+  {
+    if (extension != null)
     {
+      extension = extension.toLowerCase();
       for (MediaType mediaType : values())
       {
         for (String mediaTypeExtension : mediaType.extensions)
@@ -56,10 +65,12 @@ public enum MediaType
     return null;
   }
 
+
   private MediaType(List<String> mimeTypes, List<String> extensions)
   {
     this.mimeTypes = mimeTypes;
     this.extensions = extensions;
-  }
 
+    mimeType = mimeTypes.get(0);
+  }
 }

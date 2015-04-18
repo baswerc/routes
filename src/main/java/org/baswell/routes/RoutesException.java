@@ -1,7 +1,7 @@
 package org.baswell.routes;
 
 /**
- * General exception thrown when Route classes are configured incorrectly.
+ * General exception thrown when Routes are configured incorrectly.
  */
 public class RoutesException extends RuntimeException
 {

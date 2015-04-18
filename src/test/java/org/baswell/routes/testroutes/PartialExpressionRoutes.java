@@ -1,8 +1,10 @@
 package org.baswell.routes.testroutes;
 
+import org.baswell.routes.MediaType;
 import org.baswell.routes.RequestFormat;
 import org.baswell.routes.Route;
 
+import javax.print.attribute.standard.Media;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -25,7 +27,7 @@ public class PartialExpressionRoutes extends BaseRoutes
   @Route("/{(.*)\\.(.*)}")
   public void getReport(String reportName, String extension, RequestFormat requestFormat)
   {
-    assertEquals(RequestFormat.Type.PDF, requestFormat.type);
+    assertEquals(MediaType.PDF, requestFormat.mediaType);
     methodsCalled.add("getReport");
     PartialExpressionRoutes.reportName = reportName;
     PartialExpressionRoutes.extension = extension;

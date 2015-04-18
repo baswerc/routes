@@ -14,34 +14,34 @@ public @interface Route
 {
   /**
    * The route path pattern used to match HTTP requests to this route method. If not provided the route path pattern
-   * will be built from the method name.
+   * will be built from the route method name.
    */
   String value() default "";
 
   /**
-   * The HTTP methods this route method accepts. If not provided the HTTP methods will be assigned from the method name.
+   * The HTTP methods this route method accepts. If not provided the allowed HTTP methods will be built from the route method
+   * name.
    */
-  HttpMethod[] httpMethods() default {};
+  HttpMethod[] respondsToMethods() default {};
 
   /**
-   * The type for formats this route method accepts. If not provided the format of request will not be used as a match filter
-   * for this route.
+   * The type of media this route knows how to serve. If not provided media will not be used as a criteria for matching HTTP
+   * requests to routes.
    */
-  RequestFormat.Type[] acceptedFormats() default {};
+  MediaType[] respondsToMedia() default {};
 
   /**
-   * The content type to set for this route. This can be overridden by calling {@link javax.servlet.http.HttpServletResponse#setContentType(String)}
+   * The content type to set in the response for this route. This can be overridden by calling {@link javax.servlet.http.HttpServletResponse#setContentType(String)}
    * from within the route method.
    */
   String contentType() default "";
-  
+
   /**
    * Are Strings returned from routes sent directly to the client as the response?
    *
    * This should be used as a single value. Only the first value in the array will be used.
    */
-  boolean[] responseIsBody() default {};
-
+  boolean[] returnedStringIsContent() default {};
 
   /**
    * Assign parameter values if the parameters are not present in the HTTP request. The default parameter values (when not explicitly provided) will be

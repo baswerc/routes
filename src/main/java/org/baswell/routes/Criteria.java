@@ -59,11 +59,11 @@ class Criteria implements Comparable<Criteria>
 
   boolean matches(HttpMethod httpMethod, RequestFormat requestFormat, RequestPath path, RequestParameters parameters, List<Matcher> pathMatchers, Map<String, Matcher> parameterMatchers)
   {
-    if (!routeConfiguration.httpMethods.contains(httpMethod))
+    if (!routeConfiguration.respondsToMethods.contains(httpMethod))
     {
       return false;
     }
-    else if (!routeConfiguration.acceptedFormats.isEmpty() && !routeConfiguration.acceptedFormats.contains(requestFormat.type))
+    else if (!routeConfiguration.respondsToMedia.isEmpty() && !routeConfiguration.respondsToMedia.contains(requestFormat.mediaType))
     {
       return false;
     }
