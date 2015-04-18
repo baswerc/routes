@@ -1,7 +1,21 @@
 Routes
 ======
 
-Routes is a Java library for mapping HTTP requests to plain Java object methods. Routes runs within a Java servlet container and has no other external dependencies.
+Routes is a Java library for mapping HTTP requests to plain Java object methods. Routes runs within a Java servlet container and makes it easy to turn this class:
+
+```Java
+@Routes("/api")
+public class ApiRoutes
+{
+  public String getUsers(HttpServletRequest request)
+  {
+    ...
+    request.setAttribute("users", users);
+    return "users.jsp";
+  }
+}
+```
+into an object that accepts HTTP `GET` requests at the path `/api/users', and renders the loaded users with the JSP file `users.jsp`.
 
 ## Getting Started
 
@@ -38,7 +52,7 @@ The Routes filter is the entry point for mapping HTTP servlet requests to Java m
 </filter-mapping>
 ````
 
-This filter should be placed last in your filter chain. No filters in the chain below this filter will be processed when route method matches are found (i.e. chain.doFilter is not called).
+This filter should be placed last in your filter chain. No filters in the chain below this filter will be processed when route method matches are found (i.e. `chain.doFilter` is not called).
 If no match is found, then chain.doFilter will be called so further processing can occur. This will allow, for example, to still serve up file resources (ex. html, jsp) directly as long as
 none of your routes match the file resource URL.
 
@@ -62,3 +76,13 @@ In this example all HTTP requests with URL paths that start with `/api` will be 
 
 In this example all HTTP requests except URL paths that end with with `.jsp` will be candidates for routes. Both `ONLY` and `EXCEPT` must be valid Java regular expressions or an exception
 will be thrown when the `RoutesFilter` is initialized.
+
+## How To Use
+
+
+### Routes Annotations
+
+
+### Convention Based Routing
+
+
