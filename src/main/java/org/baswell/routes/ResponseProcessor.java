@@ -49,48 +49,24 @@ class ResponseProcessor
           break;
           
         case STRING_CONTENT:
-          if (response instanceof String)
+          switch(responseStringWriteStrategy)
           {
-            servletResponse.getWriter().write((String)response);
-          }
-          else
-          {
-            if (responseStringWriteStrategy != null)
-            {
-              switch (responseStringWriteStrategy)
-              {
-                case JSON:
-                  sendJson(response, servletResponse);
-                  break;
+            case GSON:
+              sendGson(response, servletResponse);
+              break;
 
-                case XML:
-                  sendXML(response, servletResponse);
-                  break;
+            case W3C_NODE:
+              sendNode(response, servletResponse);
+              break;
 
-                default:
-                  sendText(response, servletResponse);
-                  break;
-              }
-            }
-            else if (contentType != null)
-            {
-              if (contentType.contains("json"))
-              {
-                sendJson(response, servletResponse);
-              }
-              else if (contentType.contains("xml"))
-              {
-                sendXML(response, servletResponse);
-              }
-              else
-              {
-                sendText(response, servletResponse);
-              }
-            }
-            else
-            {
-              sendText(response, servletResponse);
-            }
+            case JAXB:
+              sendJaxb(response, servletResponse);
+              break;
+
+            case TO_STRING:
+            default:
+              sendToString(response, servletResponse);
+              break;
           }
           break;
           
@@ -110,54 +86,36 @@ class ResponseProcessor
     }
   }
 
-  void sendJson(Object response, HttpServletResponse servletResponse) throws IOException
+  void sendGson(Object response, HttpServletResponse servletResponse) throws IOException
   {
-    if (availableLibraries.jsonSimpleAvailable() && (response instanceof JSONObject))
+    servletResponse.getWriter().write(new Gson().toJson(response));
+  }
+
+  void sendNode(Object response, HttpServletResponse servletResponse) throws IOException
+  {
+    try
     {
-      ((JSONObject)response).writeJSONString(servletResponse.getWriter());
+      TransformerFactory.newInstance().newTransformer().transform(new DOMSource((Node) response), new StreamResult(servletResponse.getOutputStream()));
     }
-    else if (availableLibraries.gsonAvailable())
+    catch (TransformerException e)
     {
-      Gson gson = new Gson();
-      servletResponse.getWriter().write(gson.toJson(response));
-    }
-    else
-    {
-      sendText(response, servletResponse);
+      throw new RuntimeException(e);
     }
   }
 
-  void sendXML(Object response, HttpServletResponse servletResponse) throws IOException
+  void sendJaxb(Object response, HttpServletResponse servletResponse) throws IOException
   {
-    if (response instanceof Node)
+    try
     {
-      try
-      {
-        TransformerFactory.newInstance().newTransformer().transform(new DOMSource((Node) response), new StreamResult(servletResponse.getOutputStream()));
-      }
-      catch (TransformerException e)
-      {
-        throw new RuntimeException(e);
-      }
+      JAXBContext.newInstance(response.getClass()).createMarshaller().marshal(response, servletResponse.getOutputStream());
     }
-    else if (response.getClass().getAnnotation(XmlRootElement.class) != null)
+    catch (JAXBException e)
     {
-      try
-      {
-        JAXBContext.newInstance(response.getClass()).createMarshaller().marshal(response, servletResponse.getOutputStream());
-      }
-      catch (JAXBException e)
-      {
-        throw new RuntimeException(e);
-      }
-    }
-    else
-    {
-      sendText(response, servletResponse);
+      throw new RuntimeException(e);
     }
   }
 
-  void sendText(Object response, HttpServletResponse servletResponse) throws IOException
+  void sendToString(Object response, HttpServletResponse servletResponse) throws IOException
   {
     servletResponse.getWriter().write(response.toString());
   }

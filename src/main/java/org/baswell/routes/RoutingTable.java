@@ -12,6 +12,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
 
+import static org.baswell.routes.ResponseTypeMapper.*;
+import static org.baswell.routes.RoutesMethods.*;
+
 /**
  * Hub for all routes. The RoutingTable should be treated as a singleton and only constructed once in your application.
  *
@@ -77,7 +80,7 @@ public class RoutingTable
     Parser parser = new Parser();
     CriteriaBuilder criteriaBuilder = new CriteriaBuilder();
     MethodParametersBuilder parametersBuilder = new MethodParametersBuilder();
-    ResponseTypeMapper returnTypeMapper = new ResponseTypeMapper();
+    AvailableLibraries availableLibraries = new AvailableLibraries();
 
     routeNodes = new ArrayList<RouteNode>();
     for (Object addedObject : addedObjects)
@@ -121,11 +124,16 @@ public class RoutingTable
             RouteInstance routeInstance = instanceIsClass ? new RouteInstance(routesClass, routesConfiguration.routeInstanceFactory) : new RouteInstance(addedObject);
             Criteria criteria = criteriaBuilder.buildCriteria(method, tree, routeConfiguration, routesConfiguration);
             List<MethodParameter> parameters = parametersBuilder.buildParameters(method, criteria);
-            ResponseType responseType = returnTypeMapper.mapResponseType(method, routeConfiguration);
+            ResponseType responseType = mapResponseType(method, routeConfiguration);
             ResponseStringWriteStrategy responseStringWriteStrategy;
             if (responseType == ResponseType.STRING_CONTENT)
             {
-
+              Pair<ResponseStringWriteStrategy, String> stringWriteStrategyStringPair = mapResponseStringWriteStrategy(method, routeConfiguration.contentType, availableLibraries);
+              responseStringWriteStrategy = stringWriteStrategyStringPair.x;
+              if (nullEmpty(routeConfiguration.contentType))
+              {
+                routeConfiguration.contentType = stringWriteStrategyStringPair.y;
+              }
             }
             else
             {

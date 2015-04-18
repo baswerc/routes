@@ -28,6 +28,8 @@ public class RequestFormat
 
     public final String name;
 
+
+
     public final List<String> fileExtensions;
 
     private Type(String name, String... fileExtensions)

@@ -17,7 +17,7 @@ class RouteConfiguration
   
   final Set<RequestFormat.Type> acceptedFormats;
   
-  final String contentType;
+  String contentType;
   
   final boolean returnedStringIsContent;
 

@@ -1,5 +1,6 @@
 package org.baswell.routes;
 
+import javax.xml.bind.annotation.XmlRootElement;
 import java.io.InputStream;
 import java.lang.reflect.Method;
 
@@ -33,10 +34,11 @@ class ResponseTypeMapper
     }
   }
 
-  static Pair<ResponseStringWriteStrategy, String> mapResponseStringWriteStrategy(Method method, String contentType, AvailableLibraries availableLibraries)
+  static Pair<ResponseStringWriteStrategy, String> mapResponseStringWriteStrategy(Method method, RequestFormat.Type requestFormatType, String contentType, AvailableLibraries availableLibraries)
   {
     Class returnType = method.getReturnType();
     String returnTypePackage = returnType.getPackage().toString();
+
     if (returnTypePackage.startsWith("org.json"))
     {
       return pair(ResponseStringWriteStrategy.TO_STRING, "application/json");
@@ -53,32 +55,25 @@ class ResponseTypeMapper
     {
       return pair(ResponseStringWriteStrategy.DOM4J, "text/xml");
     }
-
-
-    if (classImplementsInterface(returnType, CharSequence.class))
+    else if (returnType.getAnnotation(XmlRootElement.class) != null)
     {
-      return ResponseStringWriteStrategy.TEXT;
+      return pair(ResponseStringWriteStrategy.JAXB, "text/xml");
+    }
+    else if (classImplementsInterface(returnType, CharSequence.class))
+    {
+      return pair(ResponseStringWriteStrategy.TO_STRING, contentType);
+    }
+    else if ((((requestFormatType != null) && (requestFormatType == RequestFormat.Type.JSON))
+            || ((contentType != null) && contentType.contains("json")))
+            && availableLibraries.gsonAvailable())
+    {
+      return pair(ResponseStringWriteStrategy.GSON, "application/json");
     }
     else
     {
-
-      if (returnTypePackage.startsWith("org.json") || returnTypePackage.startsWith("com.google.gson"))
-      {
-        return ResponseStringWriteStrategy.JSON;
-      }
-      if (returnTypePackage.startsWith("org.json"))
-      {
-        return ResponseStringWriteStrategy.JSON;
-      }
-      else if (returnTypePackage.startsWith("org.w3c.dom") || returnTypePackage.startsWith("org.jdom2") || returnTypePackage.startsWith("org.dom4j"))
-      {
-        return Responsest
-      }
+      return pair(ResponseStringWriteStrategy.TO_STRING, null);
     }
   }
-
-
-
 }
 
 
