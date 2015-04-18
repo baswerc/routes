@@ -19,6 +19,9 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
 import com.google.gson.Gson;
+import org.jdom2.Document;
+import org.jdom2.Element;
+import org.jdom2.output.XMLOutputter;
 import org.w3c.dom.Node;
 
 import static org.baswell.routes.ResponseTypeMapper.*;
@@ -82,6 +85,14 @@ class ResponseProcessor
               sendJaxb(response, servletResponse);
               break;
 
+            case JDOM2_DOCUMENT:
+              sendJdom2Document(response, servletResponse);
+              break;
+
+            case JDOM2_ELEMENT:
+              sendJdom2Element(response, servletResponse);
+              break;
+
             case TO_STRING:
             default:
               sendToString(response, servletResponse);
@@ -132,6 +143,16 @@ class ResponseProcessor
     {
       throw new RuntimeException(e);
     }
+  }
+
+  void sendJdom2Document(Object response, HttpServletResponse servletResponse) throws IOException
+  {
+    new XMLOutputter().output((Document)response, servletResponse.getWriter());
+  }
+
+  void sendJdom2Element(Object response, HttpServletResponse servletResponse) throws IOException
+  {
+    new XMLOutputter().output((Element)response, servletResponse.getWriter());
   }
 
   void sendToString(Object response, HttpServletResponse servletResponse) throws IOException

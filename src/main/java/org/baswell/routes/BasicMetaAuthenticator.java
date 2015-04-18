@@ -1,7 +1,5 @@
 package org.baswell.routes;
 
-import org.apache.commons.codec.binary.Base64;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -32,7 +30,7 @@ abstract public class BasicMetaAuthenticator implements MetaAuthenticator
       }
       else
       {
-        String userPasswordDecoded = new String(Base64.decodeBase64(authorizationHeader.substring(6)));
+        String userPasswordDecoded = new String(Base64.decode(authorizationHeader.substring(6)));
         String userName, password;
         int index = userPasswordDecoded.indexOf(':');
         if (index == -1)

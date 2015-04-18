@@ -47,6 +47,7 @@ class ResponseTypeMapper
 
   static Pair<ResponseStringWriteStrategy, String> mapResponseStringWriteStrategy(Class returnType, Set<MediaType> respondToMedia, String contentType, AvailableLibraries availableLibraries)
   {
+    String returnClassName = returnType.getCanonicalName();
     String returnTypePackage = returnType.getPackage().getName();
 
     MediaType mediaType = contentType == null ? null : MediaType.findFromMimeType(contentType);
@@ -63,13 +64,13 @@ class ResponseTypeMapper
     {
       return pair(ResponseStringWriteStrategy.W3C_NODE, MIMETypes.XML);
     }
-    else if (returnTypePackage.startsWith("org.jdom2"))
+    else if (returnClassName.equals("org.jdom2.Document"))
     {
-      return pair(ResponseStringWriteStrategy.JDOM, MIMETypes.XML);
+      return pair(ResponseStringWriteStrategy.JDOM2_DOCUMENT, MIMETypes.XML);
     }
-    else if (returnTypePackage.startsWith("org.dom4j"))
+    else if (returnClassName.equals("org.jdom2.Element"))
     {
-      return pair(ResponseStringWriteStrategy.DOM4J, MIMETypes.XML);
+      return pair(ResponseStringWriteStrategy.JDOM2_ELEMENT, MIMETypes.XML);
     }
     else if (returnType.getAnnotation(XmlRootElement.class) != null)
     {
