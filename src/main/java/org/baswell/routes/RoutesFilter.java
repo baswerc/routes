@@ -59,7 +59,7 @@ public class RoutesFilter implements Filter
   
   private Pattern exceptPattern;
 
-  private MetaHandler metaHandler;
+  private RoutesEntry routesEntry;
   
   @Override
   public void init(FilterConfig config) throws ServletException
@@ -75,6 +75,8 @@ public class RoutesFilter implements Filter
     {
       exceptPattern = Pattern.compile(except);
     }
+
+    routesEntry = new RoutesEntry();
   }
 
   @Override
@@ -105,50 +107,8 @@ public class RoutesFilter implements Filter
         }
       }
     }
-    
-    if (pipeline == null)
-    {
-      synchronized (this)
-      {
-        if (pipeline == null)
-        {
-          pipeline = new MethodPipeline(theRoutingTable.routesConfiguration);
-        }
 
-        if (theRoutingTable.routesConfiguration.hasRoutesMetaPath())
-        {
-          metaHandler = new MetaHandler(theRoutingTable, theRoutingTable.routesConfiguration);
-        }
-      }
-    }
-    
-    RequestPath requestPath = new RequestPath(servletRequest);
-    RequestParameters requestParameters = new RequestParameters(servletRequest);
-    HttpMethod httpMethod = HttpMethod.fromServletMethod(servletRequest.getMethod());
-    RequestFormat requestFormat = new RequestFormat(servletRequest.getHeader("Accept"), requestPath);
-
-    MatchedRoute matchedRoute = null;
-
-    if (theRoutingTable.routesConfiguration.routesCache != null)
-    {
-      matchedRoute = (MatchedRoute)theRoutingTable.routesConfiguration.routesCache.get(httpMethod, requestFormat, requestPath, requestParameters);
-    }
-
-    if (matchedRoute == null)
-    {
-      matchedRoute = theRoutingTable.find(requestPath, requestParameters, httpMethod, requestFormat);
-    }
-
-    if (matchedRoute != null)
-    {
-      pipeline.invoke(matchedRoute.routeNode, servletRequest, servletResponse, httpMethod, requestFormat, requestPath, requestParameters, matchedRoute.pathMatchers, matchedRoute.parameterMatchers);
-
-      if (theRoutingTable.routesConfiguration.routesCache != null)
-      {
-        theRoutingTable.routesConfiguration.routesCache.put(matchedRoute, httpMethod, requestFormat, requestPath, requestParameters);
-      }
-    }
-    else if ((metaHandler == null ) || !metaHandler.handled(servletRequest, servletResponse, requestPath, requestParameters, httpMethod, requestFormat))
+    if (!routesEntry.process(servletRequest, servletResponse))
     {
       chain.doFilter(servletRequest, servletResponse);
     }
