@@ -43,6 +43,13 @@ class RouteNode implements Comparable<RouteNode>
   public int compareTo(RouteNode routeNode)
   {
     int criteriaCompare = criteria.compareTo(routeNode.criteria);
-    return criteriaCompare != 0 ? criteriaCompare : (index - routeNode.index);
+    if (criteriaCompare == 0)
+    {
+      return index - routeNode.index;
+    }
+    else
+    {
+      return criteriaCompare;
+    }
   }
 }

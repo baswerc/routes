@@ -138,19 +138,34 @@ class Criteria implements Comparable<Criteria>
   }
 
   @Override
-  public int compareTo(Criteria routeCriteria)
+  public int compareTo(Criteria other)
   {
-    if (allCriteriaFixed && !routeCriteria.allCriteriaFixed)
+    if (allCriteriaFixed && !other.allCriteriaFixed)
     {
       return -1;
     }
-    else if (!allCriteriaFixed && routeCriteria.allCriteriaFixed)
+    else if (!allCriteriaFixed && other.allCriteriaFixed)
     {
       return 1;
     }
     else
     {
-      return 0;
+      if (routeConfiguration.respondsToMedia.size() == other.routeConfiguration.respondsToMedia.size())
+      {
+        return 0;
+      }
+      else if (routeConfiguration.respondsToMedia.isEmpty())
+      {
+        return 1;
+      }
+      else if (other.routeConfiguration.respondsToMedia.isEmpty())
+      {
+        return -1;
+      }
+      else
+      {
+        return routeConfiguration.respondsToMedia.size() - other.routeConfiguration.respondsToMedia.size();
+      }
     }
   }
 
