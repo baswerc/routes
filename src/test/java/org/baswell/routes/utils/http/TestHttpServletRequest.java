@@ -1,30 +1,16 @@
 package org.baswell.routes.utils.http;
 
+import javax.servlet.RequestDispatcher;
+import javax.servlet.ServletInputStream;
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.security.Principal;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.Locale;
-import java.util.Map;
-
-import javax.servlet.AsyncContext;
-import javax.servlet.DispatcherType;
-import javax.servlet.RequestDispatcher;
-import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
-import javax.servlet.ServletInputStream;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-import javax.servlet.http.Part;
+import java.util.*;
 
 public class TestHttpServletRequest implements HttpServletRequest
 {
@@ -257,48 +243,6 @@ public class TestHttpServletRequest implements HttpServletRequest
   }
 
   @Override
-  public ServletContext getServletContext()
-  {
-    throw new RuntimeException("Not implemented.");
-  }
-
-  @Override
-  public AsyncContext startAsync() throws IllegalStateException
-  {
-    throw new RuntimeException("Not implemented.");
-  }
-
-  @Override
-  public AsyncContext startAsync(ServletRequest servletRequest, ServletResponse servletResponse) throws IllegalStateException
-  {
-    throw new RuntimeException("Not implemented.");
-  }
-
-  @Override
-  public boolean isAsyncStarted()
-  {
-    throw new RuntimeException("Not implemented.");
-  }
-
-  @Override
-  public boolean isAsyncSupported()
-  {
-    throw new RuntimeException("Not implemented.");
-  }
-
-  @Override
-  public AsyncContext getAsyncContext()
-  {
-    throw new RuntimeException("Not implemented.");
-  }
-
-  @Override
-  public DispatcherType getDispatcherType()
-  {
-    throw new RuntimeException("Not implemented.");
-  }
-
-  @Override
   public String getAuthType()
   {
     throw new RuntimeException("Not implemented.");
@@ -448,35 +392,4 @@ public class TestHttpServletRequest implements HttpServletRequest
   {
     return false;
   }
-
-  @Override
-  public boolean authenticate(HttpServletResponse response) throws IOException, ServletException
-  {
-    throw new RuntimeException("Not implemented.");
-  }
-
-  @Override
-  public void login(String username, String password) throws ServletException
-  {
-    throw new RuntimeException("Not implemented.");
-  }
-
-  @Override
-  public void logout() throws ServletException
-  {
-    throw new RuntimeException("Not implemented.");
-  }
-
-  @Override
-  public Collection<Part> getParts() throws IOException, ServletException
-  {
-    throw new RuntimeException("Not implemented.");
-  }
-
-  @Override
-  public Part getPart(String name) throws IOException, ServletException
-  {
-    throw new RuntimeException("Not implemented.");
-  }
-
 }

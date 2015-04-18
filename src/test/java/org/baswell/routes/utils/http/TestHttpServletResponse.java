@@ -218,25 +218,21 @@ public class TestHttpServletResponse implements HttpServletResponse
     responseCode = sc;
   }
 
-  @Override
   public int getStatus()
   {
     return responseCode == null ? 200 : responseCode;
   }
 
-  @Override
   public String getHeader(String name)
   {
     throw new RuntimeException("Not implemented.");
   }
 
-  @Override
   public Collection<String> getHeaders(String name)
   {
     throw new RuntimeException("Not implemented.");
   }
 
-  @Override
   public Collection<String> getHeaderNames()
   {
     throw new RuntimeException("Not implemented.");

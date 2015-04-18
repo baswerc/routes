@@ -8,7 +8,7 @@ jar {
 }
 
 dependencies {
-    compile 'javax.servlet:javax.servlet-api:3.0.+'
+    compile 'javax.servlet:servlet-api:2.4'
     compile 'com.google.code.gson:gson:2.+'
     compile 'com.googlecode.json-simple:json-simple:1.+'
     compile 'org.jdom:jdom2:2.0.+'
