@@ -27,15 +27,15 @@ class RouteConfiguration
   
   final String forwardPath;
 
-  RouteConfiguration(Method method, RoutesConfiguration routesConfiguration)
+  RouteConfiguration(Class clazz, Method method, RoutesConfiguration routesConfiguration)
   {
-    this(method, routesConfiguration, method.getDeclaringClass().getAnnotation(Routes.class), method.getAnnotation(Route.class), 0);
+    this(clazz, method, routesConfiguration, method.getDeclaringClass().getAnnotation(Routes.class), method.getAnnotation(Route.class), 0);
   }
 
-  RouteConfiguration(Method method, RoutesConfiguration routesConfiguration, Routes routes, Route route, int routesPathIndex)
+  RouteConfiguration(Class clazz, Method method, RoutesConfiguration routesConfiguration, Routes routes, Route route, int routesPathIndex)
   {
     respondsToMethods = getHttpMethods(routes, route, method, routesConfiguration.routeFromMethodScheme);
-    this.route = buildRoutePath(routesConfiguration.rootPath, routes, route, method, routesConfiguration.routeFromMethodScheme, routesPathIndex);
+    this.route = buildRoutePath(routesConfiguration.rootPath, routes, route, clazz, method, routesConfiguration.routeFromMethodScheme, routesPathIndex);
     respondsToMedia = new HashSet<MediaType>();
     defaultParameters = new HashMap<String, List<String>>();
 
@@ -123,7 +123,7 @@ class RouteConfiguration
     }
   }
   
-  static String buildRoutePath(String rootPath, Routes routes, Route route, Method method, RouteFromMethodScheme routeFromMethodScheme, int routesPathIndex)
+  static String buildRoutePath(String rootPath, Routes routes, Route route, Class routesClass, Method routeMethod, RouteFromMethodScheme routeFromMethodScheme, int routesPathIndex)
   {
     String routePath = "";
     if (rootPath != null)
@@ -136,6 +136,12 @@ class RouteConfiguration
       if (!routePath.isEmpty() && !routePath.endsWith("/")) routePath += "/";
       routePath += routes.value()[routesPathIndex].trim();
     }
+    else if ((route == null) || route.value().trim().isEmpty())
+    {
+      if (!routePath.isEmpty() && !routePath.endsWith("/")) routePath += "/";
+      routePath += routeFromMethodScheme.getRootPath(routesClass);
+    }
+
 
     if ((route != null) && !route.value().trim().isEmpty())
     {
@@ -152,7 +158,7 @@ class RouteConfiguration
     }
     else
     {
-      String methodNameRoutePath = routeFromMethodScheme.getHttpPath(method);
+      String methodNameRoutePath = routeFromMethodScheme.getHttpPath(routeMethod);
       if (!methodNameRoutePath.isEmpty())
       {
         if (!routePath.isEmpty() && !routePath.endsWith("/")) routePath += "/";

@@ -26,9 +26,15 @@ import java.lang.reflect.Method;
 public class CamelCaseRouteFromMethodScheme extends BaseRouteFromMethodScheme
 {
   @Override
-  public String getHttpPath(Method method)
+  public String getRootPath(Class routesClass)
   {
-    return camelCaseToPath(removeHttpMethodsFromName(method));
+    return camelCaseToPath(removeRoutesControllerHandlerFromName(routesClass));
+  }
+
+  @Override
+  public String getHttpPath(Method routeMethod)
+  {
+    return camelCaseToPath(removeHttpMethodsFromName(routeMethod));
   }
 
   static String camelCaseToPath(String method)

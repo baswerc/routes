@@ -11,7 +11,9 @@ import java.util.List;
  */
 public interface RouteFromMethodScheme
 {
-  String getHttpPath(Method method);
+  String getRootPath(Class routesClass);
+
+  String getHttpPath(Method routeMethod);
 
   List<HttpMethod> getHttpMethods(Method method);
 }

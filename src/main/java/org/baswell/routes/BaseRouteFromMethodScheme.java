@@ -68,7 +68,39 @@ abstract public class BaseRouteFromMethodScheme implements RouteFromMethodScheme
     
     return httpMethods;
   }
-  
+
+  public String removeRoutesControllerHandlerFromName(Class clazz)
+  {
+    String className = clazz.getSimpleName();
+
+    if (className.endsWith("Routes"))
+    {
+      className = className.substring(0, className.length() - "Routes".length());
+    }
+    else if (className.endsWith("Route"))
+    {
+      className = className.substring(0, className.length() - "Route".length());
+    }
+    else if (className.endsWith("Controller"))
+    {
+      className = className.substring(0, className.length() - "Controller".length());
+    }
+    else if (className.endsWith("Handler"))
+    {
+      className = className.substring(0, className.length() - "Handler".length());
+    }
+
+    if (className.equalsIgnoreCase("Root"))
+    {
+      return "";
+    }
+    else
+    {
+      return className;
+    }
+  }
+
+
   protected String removeHttpMethodsFromName(Method method)
   {
     Route route = method.getAnnotation(Route.class);

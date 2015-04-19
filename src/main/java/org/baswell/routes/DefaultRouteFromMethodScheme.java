@@ -26,8 +26,14 @@ import java.lang.reflect.Method;
 public class DefaultRouteFromMethodScheme extends BaseRouteFromMethodScheme
 {
   @Override
-  public String getHttpPath(Method method)
+  public String getRootPath(Class routesClass)
   {
-    return removeHttpMethodsFromName(method).toLowerCase();
+    return removeRoutesControllerHandlerFromName(routesClass).toLowerCase();
+  }
+
+  @Override
+  public String getHttpPath(Method routeMethod)
+  {
+    return removeHttpMethodsFromName(routeMethod).toLowerCase();
   }
 }

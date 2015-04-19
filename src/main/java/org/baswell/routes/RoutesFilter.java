@@ -69,7 +69,7 @@ public class RoutesFilter implements Filter
     String onlyInitParam = filterConfig.getInitParameter("ONLY");
     if (onlyInitParam != null)
     {
-      List<Pattern> onlyPatterns = new ArrayList<>();
+      List<Pattern> onlyPatterns = new ArrayList<Pattern>();
       String[] onlyInitParams = onlyInitParam.split(",");
       for (String pattern : onlyInitParams)
       {
@@ -85,7 +85,7 @@ public class RoutesFilter implements Filter
     String exceptInitParam = filterConfig.getInitParameter("EXCEPT");
     if (exceptInitParam != null)
     {
-      List<Pattern> exceptPatterns = new ArrayList<>();
+      List<Pattern> exceptPatterns = new ArrayList<Pattern>();
       String[] exceptInitParams = exceptInitParam.split(",");
       for (String pattern : exceptInitParams)
       {

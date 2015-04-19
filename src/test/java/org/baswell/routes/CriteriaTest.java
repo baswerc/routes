@@ -30,8 +30,8 @@ public class CriteriaTest
   @Before
   public void setupTest() throws NoSuchMethodException
   {
-    getRouteConfiguration = new RouteConfiguration(getClass().getMethod("getOnly"), new RoutesConfiguration());
-    getPostRouteConfiguration = new RouteConfiguration(getClass().getMethod("getAndPost"), new RoutesConfiguration());
+    getRouteConfiguration = new RouteConfiguration(getClass(), getClass().getMethod("getOnly"), new RoutesConfiguration());
+    getPostRouteConfiguration = new RouteConfiguration(getClass(), getClass().getMethod("getAndPost"), new RoutesConfiguration());
   }
 
 

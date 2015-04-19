@@ -119,7 +119,7 @@ public class RoutingTable
 
           for (int i = 0; i < numRoutesPaths; i++)
           {
-            RouteConfiguration routeConfiguration = new RouteConfiguration(method, routesConfiguration, routesAnnotation, routeAnnotation, i);
+            RouteConfiguration routeConfiguration = new RouteConfiguration(routesClass, method, routesConfiguration, routesAnnotation, routeAnnotation, i);
             ParsedRouteTree tree = parser.parse(routeConfiguration.route);
             RouteInstance routeInstance = instanceIsClass ? new RouteInstance(routesClass, routesConfiguration.routeInstanceFactory) : new RouteInstance(addedObject);
             Criteria criteria = criteriaBuilder.buildCriteria(method, tree, routeConfiguration, routesConfiguration);
