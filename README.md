@@ -41,7 +41,7 @@ Routes requires the Java Servlet API 2.4 or greater. Routes has no other externa
 
 There are three different ways Routes can be used within a Servlet container.
 
-#### Servlet
+#### RoutesServlet
 
 The `RoutesServlet` can be used to map HTTP requests to routes. Any HTTP request the `RoutesServlet` does not find a
 matching route for is returned a 404 (`HttpServletResponse.setStatus(404)`).
@@ -57,7 +57,7 @@ matching route for is returned a 404 (`HttpServletResponse.setStatus(404)`).
 </servlet-mapping>
 ````
 
-#### Filter
+#### RoutesFilter
 
 If you need more control then `servlet-mapping` over which HTTP paths are routes and aren't you can use the `RoutesFilter`.
 
@@ -118,8 +118,8 @@ else
 ...
 ```
 
+## Configuring Routes
 
-## How To Use
 
 
 ### Routes Annotations
