@@ -1,6 +1,8 @@
 package org.baswell.routes;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Pattern;
 
 import javax.servlet.Filter;
@@ -55,25 +57,45 @@ public class RoutesFilter implements Filter
 {
   private volatile MethodPipeline pipeline;
   
-  private Pattern onlyPattern;
+  private List<Pattern> onlyPatterns;
   
-  private Pattern exceptPattern;
+  private List<Pattern> exceptPatterns;
 
   private RoutesEntry routesEntry;
   
   @Override
-  public void init(FilterConfig config) throws ServletException
+  public void init(FilterConfig filterConfig) throws ServletException
   {
-    String only = config.getInitParameter("ONLY");
-    if (only != null)
+    String onlyInitParam = filterConfig.getInitParameter("ONLY");
+    if (onlyInitParam != null)
     {
-      onlyPattern = Pattern.compile(only);
+      List<Pattern> onlyPatterns = new ArrayList<>();
+      String[] onlyInitParams = onlyInitParam.split(",");
+      for (String pattern : onlyInitParams)
+      {
+        if (!pattern.trim().isEmpty())
+        {
+          onlyPatterns.add(Pattern.compile(pattern));
+        }
+      }
+
+      if (!onlyPatterns.isEmpty()) this.onlyPatterns = onlyPatterns;
     }
 
-    String except = config.getInitParameter("EXCEPT");
-    if (except != null)
+    String exceptInitParam = filterConfig.getInitParameter("EXCEPT");
+    if (exceptInitParam != null)
     {
-      exceptPattern = Pattern.compile(except);
+      List<Pattern> exceptPatterns = new ArrayList<>();
+      String[] exceptInitParams = exceptInitParam.split(",");
+      for (String pattern : exceptInitParams)
+      {
+        if (!pattern.trim().isEmpty())
+        {
+          exceptPatterns.add(Pattern.compile(pattern));
+        }
+      }
+
+      if (!exceptPatterns.isEmpty()) this.exceptPatterns = exceptPatterns;
     }
 
     routesEntry = new RoutesEntry();
@@ -84,14 +106,40 @@ public class RoutesFilter implements Filter
   {
     HttpServletRequest servletRequest = (HttpServletRequest)request;
     HttpServletResponse servletResponse = (HttpServletResponse)response;
-    
-    if ((onlyPattern != null) || exceptPattern != null)
+
+    if (onlyPatterns != null || exceptPatterns != null)
     {
       String requestPath = servletRequest.getRequestURI().substring(servletRequest.getContextPath().length());
-      if (((onlyPattern != null) && !onlyPattern.matcher(requestPath).matches()) || ((exceptPattern != null) && exceptPattern.matcher(requestPath).matches()))
+
+      if (onlyPatterns != null)
       {
-        chain.doFilter(servletRequest, servletResponse);
-        return;
+        boolean matchFound = false;
+        for (Pattern onlyPattern : onlyPatterns)
+        {
+          if (onlyPattern.matcher(requestPath).matches())
+          {
+            matchFound = true;
+            break;
+          }
+        }
+
+        if (!matchFound)
+        {
+          chain.doFilter(servletRequest, servletResponse);
+          return;
+        }
+      }
+
+      if (exceptPatterns != null)
+      {
+        for (Pattern exceptPattern : exceptPatterns)
+        {
+          if (exceptPattern.matcher(requestPath).matches())
+          {
+            chain.doFilter(servletRequest, servletResponse);
+            return;
+          }
+        }
       }
     }
 
