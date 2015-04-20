@@ -1,5 +1,7 @@
 package org.baswell.routes;
 
+import java.net.URL;
+
 /**
  * If thrown from {@link org.baswell.routes.BeforeRoute} or {@link org.baswell.routes.Route} methods the current request
  * will immediately (no further processing) be redirected to the given {@link #redirectUrl}. This exception should not be thrown
@@ -16,5 +18,12 @@ public class RedirectTo extends RuntimeException
     assert redirectUrl != null && !redirectUrl.isEmpty();
     
     this.redirectUrl = redirectUrl;
+  }
+
+  public RedirectTo(URL redirectUrl)
+  {
+    assert redirectUrl != null;
+
+    this.redirectUrl = redirectUrl.toString();
   }
 }
