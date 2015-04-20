@@ -5,41 +5,53 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-import static org.baswell.routes.RoutingTable.theRoutingTable;
-
+/**
+ * The entry point into the Routes engine. Used by {@link org.baswell.routes.RoutesFilter} and {@link org.baswell.routes.RoutesServlet}.
+ */
 public class RoutesEntry
 {
-  private volatile MethodPipeline pipeline;
+  private final RoutingTable routingTable;
+
+  private MethodPipeline pipeline;
 
   private MetaHandler metaHandler;
 
+  /**
+   *
+   * @param routingTable
+   */
+  public RoutesEntry(RoutingTable routingTable)
+  {
+    assert routingTable != null;
+
+    this.routingTable = routingTable;
+    pipeline = new MethodPipeline(routingTable.routesConfiguration);
+    if (routingTable.routesConfiguration.hasRoutesMetaPath())
+    {
+      metaHandler = new MetaHandler(routingTable, routingTable.routesConfiguration);
+    }
+  }
+
+  /**
+   *
+   * @param servletRequest
+   * @param servletResponse
+   * @return True if the request has been processed by the Routes engine. False if the request has not been processed.
+   * @throws IOException
+   * @throws ServletException
+   */
   public boolean process(HttpServletRequest servletRequest, HttpServletResponse servletResponse) throws IOException, ServletException
   {
-    assert theRoutingTable != null;
+    assert servletRequest != null;
+    assert servletResponse != null;
 
-    if (!theRoutingTable.built)
+    if (!routingTable.built)
     {
       synchronized (this)
       {
-        if (!theRoutingTable.built)
+        if (!routingTable.built)
         {
-          theRoutingTable.build();
-        }
-      }
-    }
-
-    if (pipeline == null)
-    {
-      synchronized (this)
-      {
-        if (pipeline == null)
-        {
-          pipeline = new MethodPipeline(theRoutingTable.routesConfiguration);
-        }
-
-        if (theRoutingTable.routesConfiguration.hasRoutesMetaPath())
-        {
-          metaHandler = new MetaHandler(theRoutingTable, theRoutingTable.routesConfiguration);
+          routingTable.build();
         }
       }
     }
@@ -51,30 +63,30 @@ public class RoutesEntry
 
     MatchedRoute matchedRoute = null;
 
-    if (theRoutingTable.routesConfiguration.routesCache != null)
+    if (routingTable.routesConfiguration.routesCache != null)
     {
-      matchedRoute = (MatchedRoute)theRoutingTable.routesConfiguration.routesCache.get(httpMethod, requestFormat, requestPath, requestParameters);
+      matchedRoute = (MatchedRoute) routingTable.routesConfiguration.routesCache.get(httpMethod, requestFormat, requestPath, requestParameters);
     }
 
     if (matchedRoute == null)
     {
-      matchedRoute = theRoutingTable.find(requestPath, requestParameters, httpMethod, requestFormat);
+      matchedRoute = routingTable.find(requestPath, requestParameters, httpMethod, requestFormat);
     }
 
     if (matchedRoute != null)
     {
       pipeline.invoke(matchedRoute.routeNode, servletRequest, servletResponse, httpMethod, requestFormat, requestPath, requestParameters, matchedRoute.pathMatchers, matchedRoute.parameterMatchers);
 
-      if (theRoutingTable.routesConfiguration.routesCache != null)
+      if (routingTable.routesConfiguration.routesCache != null)
       {
-        theRoutingTable.routesConfiguration.routesCache.put(matchedRoute, httpMethod, requestFormat, requestPath, requestParameters);
+        routingTable.routesConfiguration.routesCache.put(matchedRoute, httpMethod, requestFormat, requestPath, requestParameters);
       }
 
       return true;
     }
     else
     {
-      return ((metaHandler != null ) && metaHandler.handled(servletRequest, servletResponse, requestPath, requestParameters, httpMethod, requestFormat));
+      return ((metaHandler != null) && metaHandler.handled(servletRequest, servletResponse, requestPath, requestParameters, httpMethod, requestFormat));
     }
   }
 

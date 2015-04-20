@@ -1,9 +1,5 @@
 package org.baswell.routes;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
 /**
  * The format type of an HTTP request. Taken from the either the Accept-Type header of the request (if present) or the file
  * extension (if present) of the URL.

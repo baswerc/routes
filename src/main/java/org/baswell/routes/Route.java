@@ -46,7 +46,7 @@ public @interface Route
   /**
    * Assign parameter values if the parameters are not present in the HTTP request. The default parameter values (when not explicitly provided) will be
    * used to match the route method to the HTTP request (if applicable) and will also be present in {@link org.baswell.routes.RequestParameters}.
-   * They will be present in {@link javax.servlet.http.HttpServletRequest#getParameter(String)}.
+   * They will not be present in {@link javax.servlet.http.HttpServletRequest#getParameter(String)}.
    *
    * The format of this attribute array is {"parameter1Name=parameter1DefaultValue", "parameter2Name=parameter2DefaultValue"...}.
    */
