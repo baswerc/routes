@@ -31,7 +31,7 @@ public class SimpleRoutesCache implements RoutesCache
 
     this.maxCachedRoutes = maxCachedRoutes;
     this.minCleanMSecs = minCleanMSecs;
-    this.parametersUsedInRouting = false;
+    this.parametersUsedInRouting = parametersUsedInRouting;
   }
 
   @Override
