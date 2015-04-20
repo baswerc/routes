@@ -2,6 +2,8 @@ package org.baswell.routes;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -23,14 +25,14 @@ class MethodInvoker
   private RequestParameters requestParameters; 
   
   private RouteConfiguration routeConfiguration;
-  
-  private RequestContext requestContext;
-  
+
   private Map<String, List<String>> parameterListMap;
 
   private Map<String, String> parameterMap;
   
   private RequestFormat requestFormat;
+
+  private URL url;
 
   MethodInvoker(HttpServletRequest request, HttpServletResponse response, HttpMethod httpMethod, RequestPath requestPath, RequestParameters requestParameters, RequestFormat requestFormat, RouteConfiguration routeConfiguration)
   {
@@ -53,14 +55,6 @@ class MethodInvoker
         MethodParameter methodParameter = methodParameters.get(i);
         switch (methodParameter.type)
         {
-          case REQUEST_CONTEXT:
-            if (requestContext == null)
-            {
-              requestContext = new RequestContext(request, response, httpMethod, requestPath, requestParameters, requestFormat);
-            }
-            invokeParameters[i] = requestContext;
-            break;
-          
           case PARAMETER_LIST_MAP:
             if (parameterListMap == null)
             {
@@ -95,6 +89,27 @@ class MethodInvoker
             
           case FORMAT:
             invokeParameters[i] = requestFormat;
+            break;
+
+          case URL:
+            if (url == null)
+            {
+              String requestUrl = request.getRequestURL().toString();
+              String queryString = request.getQueryString();
+              if ((queryString != null) && !queryString.trim().isEmpty())
+              {
+                requestUrl += "?" + queryString;
+              }
+              try
+              {
+                url = new URL(requestUrl);
+              }
+              catch (MalformedURLException e)
+              {
+                throw new RuntimeException(e);
+              }
+            }
+            invokeParameters[i] = url;
             break;
             
           case REQUEST_PATH:

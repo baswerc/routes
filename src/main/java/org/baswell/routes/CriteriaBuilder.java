@@ -178,7 +178,7 @@ class CriteriaBuilder
     for (int i = 0; i < parameters.length; i++)
     {
       Type parameter = parameters[i];
-      if (!routesParameterTypes.contains(parameter))
+      if (!methodRouteParameterTypes.contains(parameter))
       {
         if (dynamicParameterCounter++ == dynamicIndex)
         {

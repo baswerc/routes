@@ -1,6 +1,6 @@
 package org.baswell.routes;
 
-enum MethodParameterType
+enum MethodPathParameterType
 {
   STRING,
   CHARCTER,

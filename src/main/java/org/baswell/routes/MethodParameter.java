@@ -2,23 +2,7 @@ package org.baswell.routes;
 
 class MethodParameter
 {
-  static enum RouteMethodParameterType
-  {
-    ROUTE_PATH,
-    ROUTE_PARAMETER,
-    ROUTE_PARAMETERS,
-    SERVLET_REQUEST,
-    SERVLET_RESPONSE,
-    REQUEST_CONTEXT,
-    REQUEST_PATH,
-    REQUEST_PARAMETERS,
-    PARAMETER_LIST_MAP,
-    PARAMETER_MAP,
-    SESSION,
-    FORMAT;
-  }
-  
-  final RouteMethodParameterType type;
+  final MethodRouteParameterType type;
   
   final Integer segmentIndex;
 
@@ -26,9 +10,9 @@ class MethodParameter
   
   final String requestParameterName;
   
-  final MethodParameterType routhPathParameterType;
+  final MethodPathParameterType routhPathParameterType;
   
-  MethodParameter(RouteMethodParameterType type)
+  MethodParameter(MethodRouteParameterType type)
   {
     this.type = type;
     this.segmentIndex = null;
@@ -37,7 +21,7 @@ class MethodParameter
     routhPathParameterType = null;
   }
 
-  MethodParameter(RouteMethodParameterType type, Integer segmentIndex, Integer groupIndex, MethodParameterType routhPathParameterType)
+  MethodParameter(MethodRouteParameterType type, Integer segmentIndex, Integer groupIndex, MethodPathParameterType routhPathParameterType)
   {
     this.type = type;
     this.segmentIndex = segmentIndex;
@@ -46,7 +30,7 @@ class MethodParameter
     this.requestParameterName = null;
   }
 
-  MethodParameter(RouteMethodParameterType type, String requestParameterName, Integer groupIndex, MethodParameterType routhPathParameterType)
+  MethodParameter(MethodRouteParameterType type, String requestParameterName, Integer groupIndex, MethodPathParameterType routhPathParameterType)
   {
     this.type = type;
     this.requestParameterName = requestParameterName;

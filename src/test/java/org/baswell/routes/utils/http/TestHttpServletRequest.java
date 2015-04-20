@@ -44,13 +44,13 @@ public class TestHttpServletRequest implements HttpServletRequest
 
   public TestHttpSession session = new TestHttpSession();
 
+  public String requestUrl;
+
   private String pathInfo;
 
   private String pathTranslated;
 
-  private String queryString;
-
-  private String requestUrl;
+  public String queryString;
 
   private String servletPath;
   
