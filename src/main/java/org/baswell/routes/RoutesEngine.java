@@ -8,7 +8,7 @@ import java.io.IOException;
 /**
  * The entry point into the Routes engine. Used by {@link org.baswell.routes.RoutesFilter} and {@link org.baswell.routes.RoutesServlet}.
  */
-public class RoutesEntry
+public class RoutesEngine
 {
   private final RoutingTable routingTable;
 
@@ -20,7 +20,7 @@ public class RoutesEntry
    *
    * @param routingTable
    */
-  public RoutesEntry(RoutingTable routingTable)
+  public RoutesEngine(RoutingTable routingTable)
   {
     assert routingTable != null;
 
@@ -36,7 +36,7 @@ public class RoutesEntry
    *
    * @param servletRequest
    * @param servletResponse
-   * @return True if the request has been processed by the Routes engine. False if the request has not been processed.
+   * @return True if the request has been processed by the Routes engine. False if no match was found and the request has not been processed.
    * @throws IOException
    * @throws ServletException
    */
@@ -89,5 +89,4 @@ public class RoutesEntry
       return ((metaHandler != null) && metaHandler.handled(servletRequest, servletResponse, requestPath, requestParameters, httpMethod, requestFormat));
     }
   }
-
 }

@@ -10,23 +10,23 @@ import static org.baswell.routes.RoutingTable.*;
 
 public class RoutesServlet extends HttpServlet
 {
-  private volatile static RoutesEntry routesEntry;
+  private volatile static RoutesEngine routesEngine;
 
   @Override
   protected void service(HttpServletRequest servletRequest, HttpServletResponse servletResponse) throws ServletException, IOException
   {
-    if (routesEntry == null)
+    if (routesEngine == null)
     {
       synchronized (RoutesServlet.class)
       {
-        if (routesEntry == null)
+        if (routesEngine == null)
         {
-          routesEntry = new RoutesEntry(theRoutingTable);
+          routesEngine = new RoutesEngine(theRoutingTable);
         }
       }
     }
 
-    if (!routesEntry.process(servletRequest, servletResponse))
+    if (!routesEngine.process(servletRequest, servletResponse))
     {
       servletResponse.setStatus(404);
     }

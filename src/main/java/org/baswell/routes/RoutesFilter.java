@@ -61,7 +61,7 @@ public class RoutesFilter implements Filter
   
   private List<Pattern> exceptPatterns;
 
-  private volatile RoutesEntry routesEntry;
+  private volatile RoutesEngine routesEngine;
   
   @Override
   public void init(FilterConfig filterConfig) throws ServletException
@@ -143,18 +143,18 @@ public class RoutesFilter implements Filter
 
     assert theRoutingTable != null;
 
-    if (routesEntry == null)
+    if (routesEngine == null)
     {
       synchronized (this)
       {
-        if (routesEntry == null)
+        if (routesEngine == null)
         {
-          routesEntry = new RoutesEntry(theRoutingTable);
+          routesEngine = new RoutesEngine(theRoutingTable);
         }
       }
     }
 
-    if (!routesEntry.process(servletRequest, servletResponse))
+    if (!routesEngine.process(servletRequest, servletResponse))
     {
       chain.doFilter(servletRequest, servletResponse);
     }
