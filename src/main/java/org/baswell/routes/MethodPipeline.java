@@ -17,6 +17,7 @@ package org.baswell.routes;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -30,11 +31,14 @@ class MethodPipeline
   final RoutesConfiguration routesConfiguration;
   
   final ResponseProcessor responseProcessor;
-  
+
+  final RoutesLogger logger;
+
   MethodPipeline(RoutesConfiguration routesConfiguration)
   {
     this.routesConfiguration = routesConfiguration;
     responseProcessor = new ResponseProcessor(routesConfiguration);
+    logger = routesConfiguration.logger;
   }
   
   void invoke(RouteNode routeNode, HttpServletRequest servletRequest, HttpServletResponse servletResponse, HttpMethod httpMethod,
@@ -42,7 +46,7 @@ class MethodPipeline
   {
     MethodInvoker invoker = new MethodInvoker(servletRequest, servletResponse, httpMethod, path, parameters, requestFormat, routeNode.routeConfiguration);
     Object routeInstance = routeNode.instance.create();
-    
+
     try
     {
       for (BeforeRouteNode beforeNode : routeNode.beforeRouteNodes)
@@ -70,35 +74,75 @@ class MethodPipeline
 
       Object response = invoker.invoke(routeInstance, routeNode.method, routeNode.parameters, pathMatchers, parameterMatchers);
       responseProcessor.processResponse(routeNode.responseType, routeNode.responseStringWriteStrategy, response, routeNode.routeConfiguration.contentType, routeNode.routeConfiguration, servletRequest, servletResponse);
-      
+
+      boolean success = getStatus(servletResponse) < 300;
       for (AfterRouteNode afterNode : routeNode.afterRouteNodes)
       {
-        invoker.invoke(routeInstance, afterNode.method, afterNode.parameters, pathMatchers, parameterMatchers);
+        if ((afterNode.onlyOnSuccess && !success) || (afterNode.onlyOnError && success))
+        {
+          continue;
+        }
+        try
+        {
+          invoker.invoke(routeInstance, afterNode.method, afterNode.parameters, pathMatchers, parameterMatchers);
+        }
+        catch (Exception e)
+        {
+          if (logger != null)
+          {
+            logger.logError("AfterRoute method: " + afterNode.method + " threw exception.", e);
+          }
+        }
       }
     }
     catch (InvocationTargetException e)
     {
       Throwable targetException = e.getTargetException();
-      
+      boolean exceptionHandled = false;
+
       if (targetException instanceof RedirectTo)
       {
         servletResponse.sendRedirect(((RedirectTo)targetException).redirectUrl);
+        exceptionHandled = true;
       }
       else if (targetException instanceof ReturnHttpResponseCode)
       {
         servletResponse.setStatus(((ReturnHttpResponseCode)targetException).code);
+        exceptionHandled = true;
       }
-      else if (targetException instanceof RuntimeException)
+
+      for (AfterRouteNode afterNode : routeNode.afterRouteNodes)
       {
-        throw (RuntimeException)targetException;
+        if (!afterNode.onlyOnSuccess)
+        {
+          try
+          {
+            invoker.invoke(routeInstance, afterNode.method, afterNode.parameters, pathMatchers, parameterMatchers);
+          }
+          catch (Exception exc)
+          {
+            if (logger != null)
+            {
+              logger.logError("AfterRoute method: " + afterNode.method + " threw exception.", exc);
+            }
+          }
+        }
       }
-      else if (targetException instanceof Error)
+
+      if (!exceptionHandled)
       {
-        throw (Error)targetException;
-      }
-      else
-      {
-        throw new RuntimeException(targetException);
+        if (targetException instanceof RuntimeException)
+        {
+          throw (RuntimeException) targetException;
+        }
+        else if (targetException instanceof Error)
+        {
+          throw (Error) targetException;
+        }
+        else
+        {
+          throw new RuntimeException(targetException);
+        }
       }
     }
     finally
@@ -112,6 +156,19 @@ class MethodPipeline
         catch (Exception e)
         {}
       }
+    }
+  }
+
+  static int getStatus(HttpServletResponse response)
+  {
+    try
+    {
+      Method method = response.getClass().getMethod("getStatus");
+      return (Integer)method.invoke(response);
+    }
+    catch (Exception e)
+    {
+      return 0;
     }
   }
 }

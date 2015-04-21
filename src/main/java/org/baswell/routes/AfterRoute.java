@@ -21,8 +21,10 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
+ * <p>
  * Callback to receive notification after HTTP requests have been routed. The response to the HTTP client has already
  * been sent by the time this callback is invoked.
+ * </p>
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.METHOD})
@@ -37,6 +39,18 @@ public @interface AfterRoute
    * Only execute after any routes that have matching {@link Route#tags()}.
    */
   String[] onlyTags() default {};
+
+  /**
+   * Only call when the HTTP servlet response was successfully processed (no exceptions thrown and response status is less
+   * than 300).
+   */
+  boolean[] onlyOnSuccess() default {};
+
+  /**
+   * Only call when the HTTP servlet response was unsuccessfully processed (an exception was thrown and response status is between
+   * 200 and 299).
+   */
+  boolean[] onlyOnError() default {};
 
   /**
    * An optional weight to control the order of method execution when there are multiple AfterRoute for a Route. Smaller

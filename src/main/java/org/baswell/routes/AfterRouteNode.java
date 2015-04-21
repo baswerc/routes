@@ -28,15 +28,21 @@ class AfterRouteNode implements Comparable<AfterRouteNode>
   final Set<String> onlyTags;
   
   final Set<String> exceptTags;
+
+  final boolean onlyOnSuccess;
+
+  final boolean onlyOnError;
   
   final Integer order;
-  
-  AfterRouteNode(Method method, List<MethodParameter> parameters, Set<String> onlyTags, Set<String> exceptTags, Integer order)
+
+  AfterRouteNode(Method method, List<MethodParameter> parameters, Set<String> onlyTags, Set<String> exceptTags, boolean onlyOnSuccess, boolean onlyOnError, Integer order)
   {
     this.method = method;
     this.parameters = parameters;
     this.onlyTags = onlyTags;
     this.exceptTags = exceptTags;
+    this.onlyOnSuccess = onlyOnSuccess;
+    this.onlyOnError = onlyOnError;
     this.order = order;
   }
 

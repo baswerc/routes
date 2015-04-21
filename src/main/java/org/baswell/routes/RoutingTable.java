@@ -259,8 +259,10 @@ public class RoutingTable
         if (returnType == void.class)
         {
           List<MethodParameter> routeParameters = new MethodParametersBuilder().buildParameters(method);
+          boolean onlyOnSuccess = afterRoute.onlyOnSuccess().length == 0 ? false : afterRoute.onlyOnSuccess()[0];
+          boolean onlyOnError = afterRoute.onlyOnError().length == 0 ? false : afterRoute.onlyOnError()[0];
           Integer order = afterRoute.order().length == 0 ? null : afterRoute.order()[0];
-          nodes.add(new AfterRouteNode(method, routeParameters, new HashSet<String>(Arrays.asList(afterRoute.onlyTags())), new HashSet<String>(Arrays.asList(afterRoute.exceptTags())), order));
+          nodes.add(new AfterRouteNode(method, routeParameters, new HashSet<String>(Arrays.asList(afterRoute.onlyTags())), new HashSet<String>(Arrays.asList(afterRoute.exceptTags())), onlyOnSuccess, onlyOnError, order));
         }
         else
         {
