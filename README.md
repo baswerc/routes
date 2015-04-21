@@ -34,14 +34,12 @@ Add the following dependency into your Maven project:
 ````
 
 ### Dependencies
-
 Routes requires the Java Servlet API 2.4 or greater. Routes has no other external dependencies.
 
-### Servlet Container Use
-
+## Servlet Container Configuration
 There are three different ways Routes can be used within a Servlet container.
 
-#### Servlet
+### RoutesServlet
 
 The `RoutesServlet` can be used to map HTTP requests to routes. Any HTTP request the `RoutesServlet` does not find a
 matching route for is returned a 404 (`HttpServletResponse.setStatus(404)`).
@@ -57,9 +55,9 @@ matching route for is returned a 404 (`HttpServletResponse.setStatus(404)`).
 </servlet-mapping>
 ````
 
-#### Filter
+### RoutesFilter
 
-If you need more control then `servlet-mapping` over which HTTP paths are routes and aren't you can use the `RoutesFilter`.
+The `RoutesFilter` may work better when Routes is not the only means of serving content for your application.
 
 ````xml
 <filter>
@@ -72,42 +70,42 @@ If you need more control then `servlet-mapping` over which HTTP paths are routes
 </filter-mapping>
 ````
 
-This filter should be placed last in your filter chain. No filters in the chain below this filter will be processed when route method matches are found (i.e. `chain.doFilter` is not called).
+This filter should be placed last in your filter chain. Chain processing will end in this filter when a route method match is found (`chain.doFilter` is not called).
 If no match is found, then chain.doFilter will be called so further processing can occur. This will allow, for example, to still serve up file resources (ex. html, jsp) directly as long as
 none of your routes match the file resource URL.
 
-In addition to the `filter-mapping` specification, you can control which HTTP requests are candidates for routes with the `ONLY` and `EXCEPT` filter parameters
-(this potentially can improve performance when it's known that certain HTTP paths won't match any routes).
+In addition to the `filter-mapping` configuration, you can control which HTTP requests are candidates for routes with the `ONLY` and `EXCEPT` filter parameters
+(this can improve performance when it's known that certain HTTP paths won't match any routes).
 
 ````xml
 <init-param>
    <param-name>ONLY</param-name>
-   <param-value>/api.*</param-value>
+   <param-value>/api/.*,/data/.*</param-value>
 </init-param>
 ````
-In this example all HTTP requests with URL paths that start with `/api` will be candidates for routes (note that as in `url-pattern' the context path should be left off the expression).
+This parameter is a comma delimited list of Java regular expressions. In this example all HTTP requests with URL paths that start with `/api/` or `/data/` will be candidates for routes
+(as in `url-pattern` the context path should be left off the expression).
 
 ````xml
 <init-param>
    <param-name>EXCEPT</param-name>
-   <param-value>.*\.jsp$</param-value>
+   <param-value>.*\.html$,.*\.jsp$</param-value>
  </init-param>
 ````
 
-In this example all HTTP requests except URL paths that end with with `.jsp` will be candidates for routes. Both `ONLY` and `EXCEPT` must be valid Java regular expressions or an exception
+In this example all HTTP requests except URL paths that end with with `.html` or `.jsp` will be candidates for routes. Both `ONLY` and `EXCEPT` must be a list of valid Java regular expressions or an exception
 will be thrown when the `RoutesFilter` is initialized.
 
-#### RoutesEntry
+### RoutesEngine
 
-Both `RoutesServlet` and `RoutesFilter` use `RoutesEntry` to match HTTP requests to routes. It can be used in your code to manually
-handle when the Routes engine is used.
+Both `RoutesServlet` and `RoutesFilter` use `RoutesEngine` to match HTTP requests to routes. It can be used in your code to manually handle when routes should be used to process HTTP requests.
 
 ```Java
 ...
-RoutesEntry routesEntry = new RoutesEntry();
+RoutesEngine routesEngine = new RoutesEngine();
 ...
 
-if (routesEntry.process(servletRequest, servletResponse))
+if (routesEngine.process(servletRequest, servletResponse))
 {
   // Request was processed, response has already been sent
 }
@@ -119,8 +117,9 @@ else
 ```
 
 
-## How To Use
+## Route Mapping
 
+Routes imposes no class hierarchies or interfaces on your code. There are two ways to tell Routes how your Java objects
 
 ### Convention Based Routing
 

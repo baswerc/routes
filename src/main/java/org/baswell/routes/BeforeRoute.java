@@ -21,8 +21,11 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Callback to receive notification before HTTP requests have been sent to the route method. BeforeRoute methods can prevent
- * HTTP requests from being routed by returning false or throwing an exception.
+ * <p>
+ * Callback to receive notification before HTTP requests have been sent to the route method. BeforeRoute methods should
+ * return a {@code boolean} or {@code void}. If a {@code boolean} is the return type and {@code false} is returned, all
+ * further processing will be stopped. A BeforeRoute method can also stop processing by throwing an exception.
+ * </p>
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.METHOD})
@@ -39,10 +42,14 @@ public @interface BeforeRoute
   String[] onlyTags() default {};
 
   /**
+   * <p>
    * An optional weight to control the order of method execution when there are multiple BeforeRoute for a Route. Smaller
    * numbers go first.
+   * </p>
    *
+   * <p>
    * This should be used as a single value. Only the first value in the array will be used.
+   * </p>
    */
   int[] order() default {};
 }

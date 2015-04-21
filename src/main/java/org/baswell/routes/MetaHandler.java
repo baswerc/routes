@@ -15,6 +15,7 @@
  */
 package org.baswell.routes;
 
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.ByteArrayOutputStream;
@@ -36,7 +37,7 @@ class MetaHandler
     this.routesConfiguration = routesConfiguration;
   }
 
-  boolean handled(HttpServletRequest request, HttpServletResponse response, RequestPath path, RequestParameters parameters, HttpMethod httpMethod, RequestFormat requestFormat) throws IOException
+  boolean handled(HttpServletRequest request, HttpServletResponse response, RequestPath path, RequestParameters parameters, HttpMethod httpMethod, RequestFormat requestFormat) throws IOException, ServletException
   {
     String routesMetaPath = routesConfiguration.routesMetaPath;
     if (!routesMetaPath.startsWith("/")) routesMetaPath = "/" + routesMetaPath;

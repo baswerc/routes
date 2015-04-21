@@ -2,10 +2,10 @@ package org.baswell.routes;
 
 import org.junit.Test;
 
-import static org.baswell.routes.BaseRouteFromMethodScheme.*;
+import static org.baswell.routes.RouteByHttpMethodNameConvention.*;
 import static org.junit.Assert.*;
 
-public class BaseRouteFromMethodSchemeTest
+public class BaseRouteByConventionTest
 {
   @Test
   public void testRemoveHttpMethods()

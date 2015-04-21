@@ -32,41 +32,57 @@ import javax.servlet.http.HttpServletResponse;
 import static org.baswell.routes.RoutingTable.*;
 
 /**
- * Entry point for mapping HTTP servlet requests to route methods. This filter should be placed last in your filter chain.
+ * <p>
+ * An entry point for mapping HTTP servlet requests to route methods. This filter should be placed last in your filter chain.
  * No filters in the chain below this filter will be processed when route method matches are found (i.e. chain.doFilter is not called).
  * If no match is found, then chain.doFilter will be called so further processing can occur. This will allow, for example, to still
  * serve up file resources (ex. html, jsp) directly as long as none of your routes match the file resource URL.
+ * </p>
  *
+ * <p>
  * If your method routes are not the only mechanism for serving content, there are two parameters you can specify
  * to improve the performance of this filter.
+ * </p>
  *
- * <code>
+ * <pre>
+ * {@code
  * <init-param>
  *   <param-name>ONLY</param-name>
- *   <param-value>/routes.*</param-value>
+ *   <param-value>/api/.*,/routes/.*</param-value>
  * </init-param>
- * </code>
+ * }
+ * </pre>
  *
- * The <code>ONLY</code> parameter must be a valid Java regular expression. If specified, only request URIs that match
+ * <p>
+ * The <code>ONLY</code> parameter must be a list (comma delimited) of valid Java regular expression. If specified, only request URIs that match
  * this pattern will be checked to see if they match any route methods. The URI matched against will not include the context
  * your application is deployed at so do not include that in the pattern.
+ * </p>
  *
+ * <p>
  * The other supported parameter is <code>EXCEPT</code>:
+ * </p>
  *
- * <code>
+ * <pre>
+ * {@code
  * <init-param>
  *   <param-name>EXCEPT</param-name>
- *   <param-value>.*\.jsp$</param-value>
+ *   <param-value>.*\.html$,.*\.jsp$</param-value>
  * </init-param>
- * </code>
+ * }
+ * </pre>
  *
- * This parameter must also be a valid Java regular expression. If specified, all request URIs will be checked to see if they match
- * any route method except those that match this pattern. The URI matched against will not include the context
- * your application is deployed at so do not include that in the pattern.
+ * <p>
+ * The <code>EXCEPT</code> parameter must be a list (comma delimited) of valid Java regular expression. If specified, all request URIs will be checked to see if they match
+ * any route method except those that match this pattern. The URI matched against will not include the context your application is deployed at so do not include that in the pattern.
+ * </p>
  *
- * The <code>ONLY</code> and <code>EXCEPT</code> parameters are intended to be use exclusively (one or the other). If both
- * are specified then the route methods will be ignore if the <code>ONLY</code> pattern does not match or the <code>EXCEPT</code>
- * pattern does match.
+ * <p>
+ * If both <code>ONLY</code> and <code>EXCEPT</code> are specified then the route methods will not be checked if the <code>ONLY</code> pattern does not match or the <code>EXCEPT</code> pattern does match.
+ * </p>
+ *
+ * @see org.baswell.routes.RoutesServlet
+ * @see org.baswell.routes.RoutesEngine
  */
 public class RoutesFilter implements Filter
 {
@@ -90,7 +106,7 @@ public class RoutesFilter implements Filter
       {
         if (!pattern.trim().isEmpty())
         {
-          onlyPatterns.add(Pattern.compile(pattern));
+          onlyPatterns.add(Pattern.compile(pattern.trim()));
         }
       }
 
@@ -106,7 +122,7 @@ public class RoutesFilter implements Filter
       {
         if (!pattern.trim().isEmpty())
         {
-          exceptPatterns.add(Pattern.compile(pattern));
+          exceptPatterns.add(Pattern.compile(pattern.trim()));
         }
       }
 

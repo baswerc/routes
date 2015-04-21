@@ -20,22 +20,49 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Base route method schema that provides an HTTP method implementation that takes the HTTP method names are taken from
- * the beginning of the method name. If the method name doesn't start with any HTTP methods then the methods
- * [GET, POST, PUT, DELETE] are used. For example:
+ * <p>
+ * {@code RouteFromMethodScheme} implementation that provides {@code respondsToMethods}. The HTTP method names are taken from
+ * the beginning of the method name. If the method name doesn't start with any HTTP methods then the methods [GET, POST, PUT, DELETE] are used.
+ * </p>
  *
- * getMyResource() -> [GET]
+ * <p>For example:</p>
  *
- * getPostMyResource() -> [GET, POST]
- *
- * getPostDeleteAnotherThing() -> [GET, POST, DELETE]
- *
- * doSomething() -> [GET, POST, PUT, DELETE]
+ * <table>
+ *   <thead>
+ *     <tr>
+ *       <th style="text-align: left;padding-right: 10px;">Method Name</th>
+ *       <th>Route HTTP Methods</th>
+ *     </tr>
+ *   </thead>
+ *   <tbody>
+ *     <tr>
+ *       <td style="text-align: left;padding-right: 10px;">getMyResource</td>
+ *       <td>GET</td>
+ *     </tr>
+ *     <tr>
+ *       <td style="padding-right: 10px;">getPostMyResource</td>
+ *       <td>GET, POST</td>
+ *     </tr>
+ *     <tr>
+ *       <td style="padding-right: 10px;">getPostDeleteAnotherThing</td>
+ *       <td>GET, POST, DELETE</td>
+ *     </tr>
+ *     <tr>
+ *       <td style="padding-right: 10px;">doSomething</td>
+ *       <td>GET, POST, PUT, DELETE</td>
+ *     </tr>
+ *   </tbody>
+ * </table>
  */
-abstract public class BaseRouteFromMethodScheme implements RouteFromMethodScheme
+abstract public class RouteByHttpMethodNameConvention implements RouteByConvention
 {
+  /**
+   * The HTTP method names are taken from the beginning of the method name. If the method name doesn't start with any HTTP methods then the methods [GET, POST, PUT, DELETE] are used.
+   * @param method
+   * @return The HTTP methods this method specifies from its name.
+   */
   @Override
-  public List<HttpMethod> getHttpMethods(Method method)
+  public List<HttpMethod> respondsToMethods(Method method)
   {
     List<HttpMethod> httpMethods = new ArrayList<HttpMethod>();
     String methodName = method.getName().toLowerCase();
@@ -84,6 +111,19 @@ abstract public class BaseRouteFromMethodScheme implements RouteFromMethodScheme
     return httpMethods;
   }
 
+  /**
+   * Removes any of the following words from the very end of the given class name.
+   * <ul>
+   *   <li>Routes</li>
+   *   <li>Route</li>
+   *   <li>Controller</li>
+   *   <li>Handler</li>
+   * </ul>
+   *
+   * @param clazz
+   * @return The class name with the above words removed from the end.
+   * @see RouteByConvention#routesPathPrefix(Class)
+   */
   public String removeRoutesControllerHandlerFromName(Class clazz)
   {
     String className = clazz.getSimpleName();
@@ -115,7 +155,15 @@ abstract public class BaseRouteFromMethodScheme implements RouteFromMethodScheme
     }
   }
 
-
+  /**
+   * Removes any of the HTTP method names GET, POST, PUT, DELETE, HEAD (case insensitive) from the beginning of this method
+   * name if the given method does not have a {@link Route#respondsToMethods()} specified. If {@code respondsToMethods} is
+   * specified the method name is returned unaltered.
+   *
+   * @param method
+   * @return The method name minus the HTTP method names at the beginning.
+   * @see RouteByConvention#routePath(java.lang.reflect.Method)
+   */
   protected String removeHttpMethodsFromName(Method method)
   {
     Route route = method.getAnnotation(Route.class);

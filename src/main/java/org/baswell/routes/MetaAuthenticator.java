@@ -15,22 +15,28 @@
  */
 package org.baswell.routes;
 
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 /**
- * Authentication scheme for Routes meta page.
+ * Authentication implementation for Routes meta page.
+ *
+ * @see org.baswell.routes.RoutesConfiguration#metaAuthenticator
+ * @see org.baswell.routes.RoutesConfiguration#routesMetaPath
  */
 public interface MetaAuthenticator
 {
   /**
-   * Called when the current HTTP request matches {@link org.baswell.routes.RoutesConfiguration#routesMetaPath}.
+   * Called when the current HTTP request matches {@link org.baswell.routes.RoutesConfiguration#routesMetaPath}. If {@code true}
+   * is returned the Routes meta page will be displayed.
    *
-   * @param request
-   * @param response
+   * @param servletRequest The HTTP request.
+   * @param servletResponse The HTTP response
    * @return True if the Routes meta page is allowed to be shown, false otherwise.
-   * @throws IOException
+   * @throws IOException  If an input or output error occurs while the servlet is handling the HTTP request.
+   * @throws ServletException If the HTTP request cannot be handled.
    */
-  boolean metaRequestAuthenticated(HttpServletRequest request, HttpServletResponse response) throws IOException;
+  boolean metaRequestAuthenticated(HttpServletRequest servletRequest, HttpServletResponse servletResponse) throws IOException, ServletException;
 }

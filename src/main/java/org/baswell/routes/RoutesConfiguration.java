@@ -23,7 +23,7 @@ import java.util.regex.PatternSyntaxException;
 import static org.baswell.routes.RoutesMethods.typesToPatterns;
 
 /**
- * Global Routes configuration.
+ * Global route configuration.
  */
 public class RoutesConfiguration
 {
@@ -86,9 +86,9 @@ public class RoutesConfiguration
    * The scheme for mapping route methods to HTTP methods and HTTP paths when not explicitly set by the {@link org.baswell.routes.Route}
    * annotation.
    *
-   * Default value: {@link org.baswell.routes.DefaultRouteFromMethodScheme}
+   * Default value: {@link RouteByLowercaseConvention}
    */
-  public RouteFromMethodScheme routeFromMethodScheme = new DefaultRouteFromMethodScheme();
+  public RouteByConvention routeByConvention = new RouteByLowercaseConvention();
 
   /**
    * The routes cache implementation. No cache will be used if null.
@@ -122,6 +122,11 @@ public class RoutesConfiguration
    * Default value: <code>false</code>
    */
   public boolean routeUnannotatedPublicMethods;
+
+  /**
+   * Logger Routes uses for error messages. Set to {@code null} to suppress all logging. By default System.
+   */
+  public RoutesLogger logger = new SystemOutLogger();
 
   final Map<String, Pattern> symbolsToPatterns = new HashMap<String, Pattern>();
 

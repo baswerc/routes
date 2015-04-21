@@ -23,7 +23,7 @@ import java.lang.annotation.Target;
 /**
  * <p>
  * Callback to receive notification after HTTP requests have been routed. The response to the HTTP client has already
- * been sent by the time this callback is invoked.
+ * been sent by the time this callback is invoked. AfterRoute methods should always return {@code void}.
  * </p>
  */
 @Retention(RetentionPolicy.RUNTIME)
@@ -31,32 +31,52 @@ import java.lang.annotation.Target;
 public @interface AfterRoute
 {
   /**
+   * <p>
    * Do not execute after any routes that have matching {@link Route#tags()}.
+   * </p>
    */
   String[] exceptTags() default {};
 
   /**
+   * <p>
    * Only execute after any routes that have matching {@link Route#tags()}.
+   * </p>
    */
   String[] onlyTags() default {};
 
   /**
+   * <p>
    * Only call when the HTTP servlet response was successfully processed (no exceptions thrown and response status is less
    * than 300).
+   * </p>
+   *
+   * <p>
+   * This should be used as a single value. Only the first value in the array will be used.
+   * </p>
    */
   boolean[] onlyOnSuccess() default {};
 
   /**
+   * <p>
    * Only call when the HTTP servlet response was unsuccessfully processed (an exception was thrown and response status is between
    * 200 and 299).
+   * </p>
+   *
+   * <p>
+   * This should be used as a single value. Only the first value in the array will be used.
+   * </p>
    */
   boolean[] onlyOnError() default {};
 
   /**
+   * <p>
    * An optional weight to control the order of method execution when there are multiple AfterRoute for a Route. Smaller
    * numbers go first.
+   * </p>
    *
+   * <p>
    * This should be used as a single value. Only the first value in the array will be used.
+   * </p>
    */
   int[] order() default {};
 }

@@ -21,7 +21,23 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 /**
- * The entry point into the Routes engine. Used by {@link org.baswell.routes.RoutesFilter} and {@link org.baswell.routes.RoutesServlet}.
+ * <p>
+ * Routes process engine. Reponsible for finding route method matches and executing matched methods. Used by {@link org.baswell.routes.RoutesFilter}
+ * and {@link org.baswell.routes.RoutesServlet}.
+ * </p>
+ *
+ * <p>
+ * If no match is found on a call to {@code process} it is the responsibility of the caller to do something with the HTTP response. For example:
+ * </p>
+ *
+ * <pre>
+ * {@code
+ * if (!routesEngine.process(servletRequest, servletResponse))
+ * {
+ *   servletResponse.setStatus(404);
+ * }
+ * }
+ * </pre>
  */
 public class RoutesEngine
 {
@@ -32,6 +48,8 @@ public class RoutesEngine
   private MetaHandler metaHandler;
 
   /**
+   * If the routingTable has not already been built the  {@link RoutingTable#build()} method will be called on the first
+   * request received.
    *
    * @param routingTable
    */
@@ -48,12 +66,14 @@ public class RoutesEngine
   }
 
   /**
+   * Looks for route matches for the given HTTP request. If a match is found the HTTP request is processed by the route method and <code>true</code> is returned.
+   * Otherwise no action is performed on the request and <code>false</code> is returned.
    *
-   * @param servletRequest
-   * @param servletResponse
+   * @param servletRequest The HTTP request.
+   * @param servletResponse The HTTP response.
    * @return True if the request has been processed by the Routes engine. False if no match was found and the request has not been processed.
-   * @throws IOException
-   * @throws ServletException
+   * @throws IOException  If an input or output error occurs while the servlet is handling the HTTP request.
+   * @throws ServletException If the HTTP request cannot be handled.
    */
   public boolean process(HttpServletRequest servletRequest, HttpServletResponse servletResponse) throws IOException, ServletException
   {

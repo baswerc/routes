@@ -23,6 +23,16 @@ import java.io.IOException;
 
 import static org.baswell.routes.RoutingTable.*;
 
+/**
+ * <p>
+ * An entry point for mapping HTTP servlet requests to route methods. All HTTP requests received by this servlet will be passed to
+ * {@link org.baswell.routes.RoutesEngine}. If a routes match was found the request will be processed by that route otherwise this
+ * servlet will return a 404 (<code>HttpServletResponse.setStatus(404)</code>).
+ * </p>
+ *
+ * @see org.baswell.routes.RoutesFilter
+ * @see org.baswell.routes.RoutesEngine
+ */
 public class RoutesServlet extends HttpServlet
 {
   private volatile static RoutesEngine routesEngine;

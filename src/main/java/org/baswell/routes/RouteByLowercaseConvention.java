@@ -38,16 +38,16 @@ import java.lang.reflect.Method;
  *
  * doSomething() -> [GET, POST, PUT, DELETE]
  */
-public class DefaultRouteFromMethodScheme extends BaseRouteFromMethodScheme
+public class RouteByLowercaseConvention extends RouteByHttpMethodNameConvention
 {
   @Override
-  public String getRootPath(Class routesClass)
+  public String routesPathPrefix(Class routesClass)
   {
     return removeRoutesControllerHandlerFromName(routesClass).toLowerCase();
   }
 
   @Override
-  public String getHttpPath(Method routeMethod)
+  public String routePath(Method routeMethod)
   {
     return removeHttpMethodsFromName(routeMethod).toLowerCase();
   }

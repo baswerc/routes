@@ -49,8 +49,8 @@ class RouteConfiguration
 
   RouteConfiguration(Class clazz, Method method, RoutesConfiguration routesConfiguration, Routes routes, Route route, int routesPathIndex)
   {
-    respondsToMethods = getHttpMethods(routes, route, method, routesConfiguration.routeFromMethodScheme);
-    this.route = buildRoutePath(routesConfiguration.rootPath, routes, route, clazz, method, routesConfiguration.routeFromMethodScheme, routesPathIndex);
+    respondsToMethods = getHttpMethods(routes, route, method, routesConfiguration.routeByConvention);
+    this.route = buildRoutePath(routesConfiguration.rootPath, routes, route, clazz, method, routesConfiguration.routeByConvention, routesPathIndex);
     respondsToMedia = new HashSet<MediaType>();
     defaultParameters = new HashMap<String, List<String>>();
 
@@ -138,7 +138,7 @@ class RouteConfiguration
     }
   }
   
-  static String buildRoutePath(String rootPath, Routes routes, Route route, Class routesClass, Method routeMethod, RouteFromMethodScheme routeFromMethodScheme, int routesPathIndex)
+  static String buildRoutePath(String rootPath, Routes routes, Route route, Class routesClass, Method routeMethod, RouteByConvention routeByConvention, int routesPathIndex)
   {
     String routePath = "";
     if (rootPath != null)
@@ -154,7 +154,7 @@ class RouteConfiguration
     else if ((route == null) || route.value().trim().isEmpty())
     {
       if (!routePath.isEmpty() && !routePath.endsWith("/")) routePath += "/";
-      routePath += routeFromMethodScheme.getRootPath(routesClass);
+      routePath += routeByConvention.routesPathPrefix(routesClass);
     }
 
 
@@ -173,7 +173,7 @@ class RouteConfiguration
     }
     else
     {
-      String methodNameRoutePath = routeFromMethodScheme.getHttpPath(routeMethod);
+      String methodNameRoutePath = routeByConvention.routePath(routeMethod);
       if (!methodNameRoutePath.isEmpty())
       {
         if (!routePath.isEmpty() && !routePath.endsWith("/")) routePath += "/";
@@ -185,7 +185,7 @@ class RouteConfiguration
     return routePath;
   }
 
-  static List<HttpMethod> getHttpMethods(Routes routes, Route route, Method method, RouteFromMethodScheme routeFromMethodScheme)
+  static List<HttpMethod> getHttpMethods(Routes routes, Route route, Method method, RouteByConvention routeByConvention)
   {
     List<HttpMethod> httpMethods = new ArrayList<HttpMethod>();
     
@@ -195,7 +195,7 @@ class RouteConfiguration
     }
     else
     {
-      httpMethods.addAll(routeFromMethodScheme.getHttpMethods(method));
+      httpMethods.addAll(routeByConvention.respondsToMethods(method));
     }
     
     return httpMethods;
