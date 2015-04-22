@@ -25,8 +25,8 @@ import java.util.Map.Entry;
 import javax.servlet.http.HttpServletRequest;
 
 /**
- * Helper class for accessing the parameters of an HTTP request. The default parameter values for a route (@link org.baswell.routes.Route#defaultParameters()})
- * will be present in this class if those default parameters aren't explicitly set in the HTTP request.
+ * The parameters from an HTTP request. Default parameters for a route ({@link org.baswell.routes.Route#defaultParameters()})
+ * will be present for any parameters not explicitly set in the HTTP request.
  */
 public class RequestParameters
 {
@@ -192,7 +192,7 @@ public class RequestParameters
   /**
    *
    * @param name The parameter name
-   * @return The first character of the parameter value or <code>null</code> if the given parameter doesn't exist.
+   * @return The first character of the parameter value or <status>null</status> if the given parameter doesn't exist.
    */
   public Character getCharacter(String name)
   {
@@ -238,7 +238,7 @@ public class RequestParameters
   /**
    *
    * @param name The parameter name
-   * @return The parameter value parsed as a Boolean or <code>null</code> if the given parameter doesn't exist.
+   * @return The parameter value parsed as a Boolean or <status>null</status> if the given parameter doesn't exist.
    * @see java.lang.Boolean#parseBoolean(String)
    */
   public Boolean getBoolean(String name)
@@ -287,7 +287,7 @@ public class RequestParameters
   /**
    *
    * @param name The parameter name
-   * @return The parameter value parsed as a Byte or <code>null</code> if the given parameter doesn't exist.
+   * @return The parameter value parsed as a Byte or <status>null</status> if the given parameter doesn't exist.
    * @throws java.lang.NumberFormatException If the parameter value cannot be parsed into a Byte.
    * @see java.lang.Byte#parseByte(String)
    */
@@ -336,7 +336,7 @@ public class RequestParameters
   /**
    *
    * @param name The parameter name
-   * @return The parameter value parsed as a Short or <code>null</code> if the given parameter doesn't exist.
+   * @return The parameter value parsed as a Short or <status>null</status> if the given parameter doesn't exist.
    * @throws java.lang.NumberFormatException If the parameter value cannot be parsed into a Short.
    * @see java.lang.Short#parseShort(String)
    */
@@ -385,7 +385,7 @@ public class RequestParameters
   /**
    *
    * @param name The parameter name
-   * @return The parameter value parsed as a Integer or <code>null</code> if the given parameter doesn't exist.
+   * @return The parameter value parsed as a Integer or <status>null</status> if the given parameter doesn't exist.
    * @throws java.lang.NumberFormatException If the parameter value cannot be parsed into a Integer.
    * @see java.lang.Integer#parseInt(String)
    */
@@ -434,7 +434,7 @@ public class RequestParameters
   /**
    *
    * @param name The parameter name
-   * @return The parameter value parsed as a Long or <code>null</code> if the given parameter doesn't exist.
+   * @return The parameter value parsed as a Long or <status>null</status> if the given parameter doesn't exist.
    * @throws java.lang.NumberFormatException If the parameter value cannot be parsed into a Long.
    * @see java.lang.Long#parseLong(String)
    */
@@ -483,7 +483,7 @@ public class RequestParameters
   /**
    *
    * @param name The parameter name
-   * @return The parameter value parsed as a Float or <code>null</code> if the given parameter doesn't exist.
+   * @return The parameter value parsed as a Float or <status>null</status> if the given parameter doesn't exist.
    * @throws java.lang.NumberFormatException If the parameter value cannot be parsed into a Float.
    * @see java.lang.Float#parseFloat(String)
    */
@@ -532,7 +532,7 @@ public class RequestParameters
   /**
    *
    * @param name The parameter name
-   * @return The parameter value parsed as a Double or <code>null</code> if the given parameter doesn't exist.
+   * @return The parameter value parsed as a Double or <status>null</status> if the given parameter doesn't exist.
    * @throws java.lang.NumberFormatException If the parameter value cannot be parsed into a Double.
    * @see java.lang.Double#parseDouble(String)
    */

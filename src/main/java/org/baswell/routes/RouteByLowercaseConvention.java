@@ -18,25 +18,63 @@ package org.baswell.routes;
 import java.lang.reflect.Method;
 
 /**
- * Default scheme used by Routes. For the the HTTP path, removes all HTTP method names from the beginning and then performs
- * lower case on remaining text. For example:
+ * <p>
+ * Default convention used by Routes. Performs a lowercase operation on method names to create a single path segments.
+ * </p>
  *
- * getMyResource() -> /myresource
+ * <p>For example</p>
  *
- * getPostMyResource() -> /myresource
+ * <table>
+ *   <thead>
+ *     <tr>
+ *       <th style="text-align: left;padding-right: 10px;">Method Name</th>
+ *       <th style="text-align: left;">Route Path</th>
+ *     </tr>
+ *   </thead>
+ *   <tbody>
+ *     <tr>
+ *       <td style="text-align: left;padding-right: 10px;">get</td>
+ *       <td>/</td>
+ *     </tr>
+ *     <tr>
+ *       <td style="text-align: left;padding-right: 10px;">getMyResource</td>
+ *       <td>/myresource</td>
+ *     </tr>
+ *     <tr>
+ *       <td style="padding-right: 10px;">getPostMyResource</td>
+ *       <td>/myresource</td>
+ *     </tr>
+ *     <tr>
+ *       <td style="padding-right: 10px;">getPostDeleteAnotherThingHere</td>
+ *       <td>/anotherthinghere</td>
+ *     </tr>
+ *   </tbody>
+ * </table>
  *
- * getPostDeleteAnotherThing() -> /anotherthing
+ * <p>
+ * The same convention is used for generating the root path from the class name.
+ * </p>
  *
- * For the HTTP methods, the HTTP method names are taken from the beginning of the method name. If the method name doesn't
- * start with any HTTP methods then the methods [GET, POST, PUT, DELETE] are used. For example:
+ * <table>
+ *   <thead>
+ *     <tr>
+ *       <th style="text-align: left;padding-right: 10px;">Class Name</th>
+ *       <th style="text-align: left;">Route Root Path</th>
+ *     </tr>
+ *   </thead>
+ *   <tbody>
+ *     <tr>
+ *       <td style="text-align: left;padding-right: 10px;">ApiRoutes</td>
+ *       <td>/api</td>
+ *     </tr>
+ *     <tr>
+ *       <td style="text-align: left;padding-right: 10px;">UserProfileController</td>
+ *       <td>/userprofile</td>
+ *     </tr>
+ *   </tbody>
+ * </table>
  *
- * getMyResource() -> [GET]
- *
- * getPostMyResource() -> [GET, POST]
- *
- * getPostDeleteAnotherThing() -> [GET, POST, DELETE]
- *
- * doSomething() -> [GET, POST, PUT, DELETE]
+ * @see org.baswell.routes.RoutesConfiguration#routeByConvention
  */
 public class RouteByLowercaseConvention extends RouteByHttpMethodNameConvention
 {

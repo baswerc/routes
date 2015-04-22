@@ -15,7 +15,7 @@
  */
 package org.baswell.routes;
 
-public enum ResponseStringWriteStrategy
+enum ResponseStringWriteStrategy
 {
   GSON,
   W3C_NODE,

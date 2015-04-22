@@ -54,13 +54,13 @@ import static org.baswell.routes.RoutingTable.*;
  * </pre>
  *
  * <p>
- * The <code>ONLY</code> parameter must be a list (comma delimited) of valid Java regular expression. If specified, only request URIs that match
+ * The <status>ONLY</status> parameter must be a list (comma delimited) of valid Java regular expression. If specified, only request URIs that match
  * this pattern will be checked to see if they match any route methods. The URI matched against will not include the context
  * your application is deployed at so do not include that in the pattern.
  * </p>
  *
  * <p>
- * The other supported parameter is <code>EXCEPT</code>:
+ * The other supported parameter is <status>EXCEPT</status>:
  * </p>
  *
  * <pre>
@@ -73,12 +73,12 @@ import static org.baswell.routes.RoutingTable.*;
  * </pre>
  *
  * <p>
- * The <code>EXCEPT</code> parameter must be a list (comma delimited) of valid Java regular expression. If specified, all request URIs will be checked to see if they match
+ * The <status>EXCEPT</status> parameter must be a list (comma delimited) of valid Java regular expression. If specified, all request URIs will be checked to see if they match
  * any route method except those that match this pattern. The URI matched against will not include the context your application is deployed at so do not include that in the pattern.
  * </p>
  *
  * <p>
- * If both <code>ONLY</code> and <code>EXCEPT</code> are specified then the route methods will not be checked if the <code>ONLY</code> pattern does not match or the <code>EXCEPT</code> pattern does match.
+ * If both <status>ONLY</status> and <status>EXCEPT</status> are specified then the route methods will not be checked if the <status>ONLY</status> pattern does not match or the <status>EXCEPT</status> pattern does match.
  * </p>
  *
  * @see org.baswell.routes.RoutesServlet

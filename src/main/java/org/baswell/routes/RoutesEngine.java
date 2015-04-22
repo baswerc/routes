@@ -43,9 +43,11 @@ public class RoutesEngine
 {
   private final RoutingTable routingTable;
 
-  private MethodPipeline pipeline;
+  private final MethodPipeline pipeline;
 
-  private MetaHandler metaHandler;
+  private final MetaHandler metaHandler;
+
+  private final RoutesLogger logger;
 
   /**
    * If the routingTable has not already been built the  {@link RoutingTable#build()} method will be called on the first
@@ -63,11 +65,17 @@ public class RoutesEngine
     {
       metaHandler = new MetaHandler(routingTable, routingTable.routesConfiguration);
     }
+    else
+    {
+      metaHandler = null;
+    }
+
+    logger = routingTable.routesConfiguration.logger;
   }
 
   /**
-   * Looks for route matches for the given HTTP request. If a match is found the HTTP request is processed by the route method and <code>true</code> is returned.
-   * Otherwise no action is performed on the request and <code>false</code> is returned.
+   * Looks for route matches for the given HTTP request. If a match is found the HTTP request is processed by the route method and <status>true</status> is returned.
+   * Otherwise no action is performed on the request and <status>false</status> is returned.
    *
    * @param servletRequest The HTTP request.
    * @param servletResponse The HTTP response.
@@ -94,34 +102,45 @@ public class RoutesEngine
     RequestPath requestPath = new RequestPath(servletRequest);
     RequestParameters requestParameters = new RequestParameters(servletRequest);
     HttpMethod httpMethod = HttpMethod.fromServletMethod(servletRequest.getMethod());
-    RequestFormat requestFormat = new RequestFormat(servletRequest.getHeader("Accept"), requestPath);
+    RequestedMediaType requestedMediaType = new RequestedMediaType(servletRequest.getHeader("Accept"), requestPath);
 
     MatchedRoute matchedRoute = null;
 
     if (routingTable.routesConfiguration.routesCache != null)
     {
-      matchedRoute = (MatchedRoute) routingTable.routesConfiguration.routesCache.get(httpMethod, requestFormat, requestPath, requestParameters);
+      matchedRoute = (MatchedRoute) routingTable.routesConfiguration.routesCache.get(httpMethod, requestedMediaType, requestPath, requestParameters);
     }
 
     if (matchedRoute == null)
     {
-      matchedRoute = routingTable.find(requestPath, requestParameters, httpMethod, requestFormat);
+      matchedRoute = routingTable.find(requestPath, requestParameters, httpMethod, requestedMediaType);
     }
 
     if (matchedRoute != null)
     {
-      pipeline.invoke(matchedRoute.routeNode, servletRequest, servletResponse, httpMethod, requestFormat, requestPath, requestParameters, matchedRoute.pathMatchers, matchedRoute.parameterMatchers);
-
-      if (routingTable.routesConfiguration.routesCache != null)
+      try
       {
-        routingTable.routesConfiguration.routesCache.put(matchedRoute, httpMethod, requestFormat, requestPath, requestParameters);
-      }
+        pipeline.invoke(matchedRoute.routeNode, servletRequest, servletResponse, httpMethod, requestedMediaType, requestPath, requestParameters, matchedRoute.pathMatchers, matchedRoute.parameterMatchers);
 
-      return true;
+        if (routingTable.routesConfiguration.routesCache != null)
+        {
+          routingTable.routesConfiguration.routesCache.put(matchedRoute, httpMethod, requestedMediaType, requestPath, requestParameters);
+        }
+
+        return true;
+      }
+      catch (RouteInstanceBorrowException e)
+      {
+        if (logger != null)
+        {
+          logger.logError("Unable to create route instance for class: " + matchedRoute.routeNode.instance.clazz, e);
+        }
+        throw new ServletException(e);
+      }
     }
     else
     {
-      return ((metaHandler != null) && metaHandler.handled(servletRequest, servletResponse, requestPath, requestParameters, httpMethod, requestFormat));
+      return ((metaHandler != null) && metaHandler.handled(servletRequest, servletResponse, requestPath, requestParameters, httpMethod, requestedMediaType));
     }
   }
 }

@@ -45,22 +45,22 @@ class MethodInvoker
 
   private Map<String, String> parameterMap;
   
-  private RequestFormat requestFormat;
+  private RequestedMediaType requestedMediaType;
 
   private URL url;
 
-  MethodInvoker(HttpServletRequest request, HttpServletResponse response, HttpMethod httpMethod, RequestPath requestPath, RequestParameters requestParameters, RequestFormat requestFormat, RouteConfiguration routeConfiguration)
+  MethodInvoker(HttpServletRequest request, HttpServletResponse response, HttpMethod httpMethod, RequestPath requestPath, RequestParameters requestParameters, RequestedMediaType requestedMediaType, RouteConfiguration routeConfiguration)
   {
     this.request = request;
     this.response = response;
     this.httpMethod = httpMethod;
     this.requestPath = requestPath;
     this.requestParameters = requestParameters;
-    this.requestFormat = requestFormat;
+    this.requestedMediaType = requestedMediaType;
     this.routeConfiguration = routeConfiguration;
   }
   
-  Object invoke(Object routeInstance, Method method, List<MethodParameter> methodParameters, List<Matcher> pathMatchers, Map<String, Matcher> parameterMatchers) throws RouteMappingException, InvocationTargetException
+  Object invoke(Object routeInstance, Method method, List<MethodParameter> methodParameters, List<Matcher> pathMatchers, Map<String, Matcher> parameterMatchers) throws InvocationTargetException
   {
     Object[] invokeParameters = new Object[methodParameters.size()];
     for (int i = 0; i < methodParameters.size(); i++)
@@ -103,7 +103,7 @@ class MethodInvoker
             break;
             
           case FORMAT:
-            invokeParameters[i] = requestFormat;
+            invokeParameters[i] = requestedMediaType;
             break;
 
           case URL:

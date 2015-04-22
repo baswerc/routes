@@ -19,6 +19,13 @@ import java.util.List;
 
 import static java.util.Arrays.*;
 
+/**
+ * Media types that Routes is aware of. A media type has one or more mime types and one more file extensions.
+ *
+ * @see org.baswell.routes.Route#respondsToMedia()
+ * @see RequestedMediaType#mediaType
+ */
+
 public enum MediaType
 {
   ATOM(asList(MIMETypes.ATOM), asList("atomcat")),
@@ -34,12 +41,31 @@ public enum MediaType
   WORD(asList(MIMETypes.WORD, MIMETypes.WORD2), asList("doc", "docx")),
   XML(asList(MIMETypes.XML, MIMETypes.XML2), asList("xml"));
 
+  /**
+   * The default mime type.
+   */
   public final String mimeType;
 
+  /**
+   * All mime types.
+   */
   public final List<String> mimeTypes;
 
+  /**
+   * The default file extension.
+   */
+  public final String extension;
+
+  /**
+   * All file extensions.
+   */
   public final List<String> extensions;
 
+  /**
+   *
+   * @param mimeType The mime type to look for
+   * @return The {@code MediaType} that has a matching mime type or {@code null}.
+   */
   public static MediaType findFromMimeType(String mimeType)
   {
     if (mimeType != null)
@@ -60,6 +86,11 @@ public enum MediaType
     return null;
   }
 
+  /**
+   *
+   * @param extension The file extension
+   * @return The {@code MediaType} that has a matching file extension or {@code null}.
+   */
   public static MediaType findFromExtension(String extension)
   {
     if (extension != null)
@@ -80,12 +111,12 @@ public enum MediaType
     return null;
   }
 
-
   private MediaType(List<String> mimeTypes, List<String> extensions)
   {
     this.mimeTypes = mimeTypes;
     this.extensions = extensions;
 
     mimeType = mimeTypes.get(0);
+    extension = extensions.get(0);
   }
 }

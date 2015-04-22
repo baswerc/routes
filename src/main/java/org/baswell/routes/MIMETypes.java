@@ -15,6 +15,9 @@
  */
 package org.baswell.routes;
 
+/**
+ * Mime type constants that Routes is aware of.
+ */
 public class MIMETypes
 {
   /**

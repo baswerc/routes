@@ -21,16 +21,22 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * <p>
  * Details of the HTTP request path (minus the application's context path). The request path is broken up into segments
  * where a segment is the text between slashes.
+ * </p>
  *
+ * <p>
  * For example there are three path segments ("one", "two", and "three") in the URL:
+ * </p>
  *
- * <code>
+ * <pre>
  * http://localhost:8080/context_path/one/two/three
- * </code>
+ * </pre>
  *
- * This class is immutable. All changing operations (ex. {@link #pop()} return new RequestPath objects.
+ * <p>
+ * This class is immutable. All modification operations (ex. {@link #pop()}) result in new {@code RequestPath} objects returned.
+ * </p>
  *
  */
 public class RequestPath
@@ -214,13 +220,13 @@ public class RequestPath
    * Returns a new RequestPath with the given number of segments removed from the start of the path. The RequestPath
    * this method is called is unaltered.
    *
-   * <code>requestPath.pop(2)</code> performed on:
+   * <status>requestPath.pop(2)</status> performed on:
    *
-   * <code>/one/two/three</code>
+   * <status>/one/two/three</status>
    *
    * results in:
    *
-   * <code>/three</code>
+   * <status>/three</status>
    *
    * @param numberSegments The number of segments to pop from this path.
    * @return A new RequestPath with the given number of segments removed from the head of the path.
@@ -232,7 +238,7 @@ public class RequestPath
   }
 
   /**
-   * Same as <code>pop(1)</code>.
+   * Same as <status>pop(1)</status>.
    *
    * @see #pop(int)
    * @return A new RequestPath with the 1 segment removed from the head of the path.
@@ -245,9 +251,9 @@ public class RequestPath
 
   /**
    * If the last segment in this path has a '.' then the full (last) segment will be returned. If the last segment does not
-   * have a '.' then <code>null</code> is returned.
+   * have a '.' then <status>null</status> is returned.
    *
-   * @return The file name of the path or <code>null</code> if this path does not contain a file name at the end.
+   * @return The file name of the path or <status>null</status> if this path does not contain a file name at the end.
    */
   public String getFileName()
   {
@@ -265,7 +271,7 @@ public class RequestPath
 
   /**
    * If this path contains a file name this method returns the text to the right of the last '.' in the file name. If the
-   * path does not contain a file name then <code>null</code> is returned.
+   * path does not contain a file name then <status>null</status> is returned.
    * @return The file name extension or null if the path does contain a file name.
    */
   public String getFileExtension()

@@ -16,13 +16,24 @@
 package org.baswell.routes;
 
 /**
- * Thrown when an HTTP request matches a route method, but the input parameters to the method cannot be properly
- * mapped from the HTTP request values.
+ * Create a new route object each time using the default constructor and discards the object after use.
  */
-public class RouteMappingException extends RuntimeException
+public class DefaultRouteInstancePool implements RouteInstancePool
 {
-  public RouteMappingException(String message, Throwable cause)
+  @Override
+  public Object borrowRouteInstance(Class routeClass) throws RouteInstanceBorrowException
   {
-    super(message, cause);
+    try
+    {
+      return routeClass.getConstructor().newInstance();
+    }
+    catch (Exception e)
+    {
+      throw new RouteInstanceBorrowException("Unable to instantiate route instance: " + routeClass, e);
+    }
   }
+
+  @Override
+  public void returnRouteInstance(Object routeInstance)
+  {}
 }

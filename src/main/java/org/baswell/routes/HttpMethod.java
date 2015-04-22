@@ -22,16 +22,22 @@ public enum HttpMethod
   PUT,
   DELETE,
   HEAD;
-  
-  static public HttpMethod fromServletMethod(String method)
+
+  /**
+   *
+   * @param servletMethod
+   * @return The matched HTTP method or {@code null} if no match is found.
+   * @see javax.servlet.http.HttpServletRequest#getMethod()
+   */
+  static public HttpMethod fromServletMethod(String servletMethod)
   {
     for (HttpMethod httpMethod : values())
     {
-      if (httpMethod.toString().equalsIgnoreCase(method))
+      if (httpMethod.toString().equalsIgnoreCase(servletMethod))
       {
         return httpMethod;
       }
     }
-    return GET; // TODO ?
+    return null;
   }
 }

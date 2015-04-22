@@ -5,9 +5,9 @@ package org.baswell.routes;
  * 
  * <p>Example:</p>
  * 
- * <code>String encoded = Base64.encode( myByteArray );</code>
+ * <status>String encoded = Base64.encode( myByteArray );</status>
  * <br />
- * <code>byte[] myByteArray = Base64.decode( encoded );</code>
+ * <status>byte[] myByteArray = Base64.decode( encoded );</status>
  *
  * <p>The <tt>options</tt> parameter, which appears in a few places, is used to pass 
  * several pieces of information to the encoder. In the "higher level" methods such as 
@@ -23,10 +23,10 @@ package org.baswell.routes;
  * <p>The constants defined in Base64 can be OR-ed together to combine options, so you 
  * might make a call like this:</p>
  *
- * <code>String encoded = Base64.encodeBytes( mybytes, Base64.GZIP | Base64.DO_BREAK_LINES );</code>
+ * <status>String encoded = Base64.encodeBytes( mybytes, Base64.GZIP | Base64.DO_BREAK_LINES );</status>
  * <p>to compress the data before encoding it and then making the output have newline characters.</p>
  * <p>Also...</p>
- * <code>String encoded = Base64.encodeBytes( crazyString.getBytes() );</code>
+ * <status>String encoded = Base64.encodeBytes( crazyString.getBytes() );</status>
  *
  *
  *
@@ -57,7 +57,7 @@ package org.baswell.routes;
  *   inconsistent. Removed imports and specified things like java.io.IOException
  *   explicitly inline.</li>
  *  <li>v2.3.2 - Reduced memory footprint! Finally refined the "guessing" of how big the
- *   final encoded data will be so that the code doesn't have to create two output
+ *   final encoded data will be so that the status doesn't have to create two output
  *   arrays: an oversized initial one and then a final, exact-sized one. Big win
  *   when using the {@link #encodeBytesToBytes(byte[])} family of methods (and not
  *   using the gzip options which uses a different mechanism with streams and stuff).</li>
@@ -78,7 +78,7 @@ package org.baswell.routes;
  *      is a possiblity of an java.io.IOException being thrown. After some discussion and
  *      thought, I've changed the behavior of the methods to throw java.io.IOExceptions
  *      rather than return null if ever there's an error. I think this is more
- *      appropriate, though it will require some changes to your code. Sorry,
+ *      appropriate, though it will require some changes to your status. Sorry,
  *      it should have been done this way to begin with.</li>
  *    <li><em>Removed all references to System.out, System.err, and the like.</em>
  *      Shame on me. All I can say is sorry they were ever there.</li>
@@ -108,12 +108,12 @@ package org.baswell.routes;
  * 
  *  <li>v2.1 - Cleaned up javadoc comments and unused variables and methods. Added
  *   some convenience methods for reading and writing to and from files.</li>
- *  <li>v2.0.2 - Now specifies UTF-8 encoding in places where the code fails on systems
+ *  <li>v2.0.2 - Now specifies UTF-8 encoding in places where the status fails on systems
  *   with other encodings (like EBCDIC).</li>
  *  <li>v2.0.1 - Fixed an error when decoding a single byte, that is, when the
  *   encoded data was a single byte.</li>
  *  <li>v2.0 - I got rid of methods that used booleans to set options. 
- *   Now everything is more consolidated and cleaner. The code now detects
+ *   Now everything is more consolidated and cleaner. The status now detects
  *   when data that's being decoded is gzip-compressed and will decompress it
  *   automatically. Generally things are cleaner. You'll probably have to
  *   change some method calls that you were making to support the new
@@ -135,7 +135,7 @@ package org.baswell.routes;
  * </ul>
  *
  * <p>
- * I am placing this code in the Domain. Do with it as you will.
+ * I am placing this status in the Domain. Do with it as you will.
  * This software comes with no guarantees or warranties but with
  * plenty of well-wishing instead!
  * Please visit <a href="http://iharder.net/base64">http://iharder.net/base64</a>
@@ -543,8 +543,8 @@ class Base64
 
 
     /**
-     * Performs Base64 encoding on the <code>raw</code> ByteBuffer,
-     * writing it to the <code>encoded</code> ByteBuffer.
+     * Performs Base64 encoding on the <status>raw</status> ByteBuffer,
+     * writing it to the <status>encoded</status> ByteBuffer.
      * This is an experimental feature. Currently it does not
      * pass along any options (such as {@link #DO_BREAK_LINES}
      * or {@link #GZIP}.
@@ -567,8 +567,8 @@ class Base64
 
 
     /**
-     * Performs Base64 encoding on the <code>raw</code> ByteBuffer,
-     * writing it to the <code>encoded</code> CharBuffer.
+     * Performs Base64 encoding on the <status>raw</status> ByteBuffer,
+     * writing it to the <status>encoded</status> CharBuffer.
      * This is an experimental feature. Currently it does not
      * pass along any options (such as {@link #DO_BREAK_LINES}
      * or {@link #GZIP}.
@@ -636,9 +636,9 @@ class Base64
      *   DO_BREAK_LINES: break lines at 76 characters
      * </pre>
      * <p>
-     * Example: <code>encodeObject( myObj, Base64.GZIP )</code> or
+     * Example: <status>encodeObject( myObj, Base64.GZIP )</status> or
      * <p>
-     * Example: <code>encodeObject( myObj, Base64.GZIP | Base64.DO_BREAK_LINES )</code>
+     * Example: <status>encodeObject( myObj, Base64.GZIP | Base64.DO_BREAK_LINES )</status>
      *
      * @param serializableObject The object to encode
      * @param options Specified options
@@ -735,9 +735,9 @@ class Base64
      *     <i>Note: Technically, this makes your encoding non-compliant.</i>
      * </pre>
      * <p>
-     * Example: <code>encodeBytes( myData, Base64.GZIP )</code> or
+     * Example: <status>encodeBytes( myData, Base64.GZIP )</status> or
      * <p>
-     * Example: <code>encodeBytes( myData, Base64.GZIP | Base64.DO_BREAK_LINES )</code>
+     * Example: <status>encodeBytes( myData, Base64.GZIP | Base64.DO_BREAK_LINES )</status>
      *
      *  
      * <p>As of v 2.3, if there is an error with the GZIP stream,
@@ -803,9 +803,9 @@ class Base64
      *     <i>Note: Technically, this makes your encoding non-compliant.</i>
      * </pre>
      * <p>
-     * Example: <code>encodeBytes( myData, Base64.GZIP )</code> or
+     * Example: <status>encodeBytes( myData, Base64.GZIP )</status> or
      * <p>
-     * Example: <code>encodeBytes( myData, Base64.GZIP | Base64.DO_BREAK_LINES )</code>
+     * Example: <status>encodeBytes( myData, Base64.GZIP | Base64.DO_BREAK_LINES )</status>
      *
      *  
      * <p>As of v 2.3, if there is an error with the GZIP stream,
@@ -1671,7 +1671,7 @@ class Base64
          *     (only meaningful when encoding)</i>
          * </pre>
          * <p>
-         * Example: <code>new Base64.InputStream( in, Base64.DECODE )</code>
+         * Example: <status>new Base64.InputStream( in, Base64.DECODE )</status>
          *
          *
          * @param in the <tt>java.io.InputStream</tt> from which to read data.
@@ -1793,7 +1793,7 @@ class Base64
             
             // Else error
             else {
-                throw new java.io.IOException( "Error in Base64 code reading stream." );
+                throw new java.io.IOException( "Error in Base64 status reading stream." );
             }   // end else
         }   // end read
         
@@ -1884,7 +1884,7 @@ class Base64
          *     (only meaningful when encoding)</i>
          * </pre>
          * <p>
-         * Example: <code>new Base64.OutputStream( out, Base64.ENCODE )</code>
+         * Example: <status>new Base64.OutputStream( out, Base64.ENCODE )</status>
          *
          * @param out the <tt>java.io.OutputStream</tt> to which data will be written.
          * @param options Specified options.

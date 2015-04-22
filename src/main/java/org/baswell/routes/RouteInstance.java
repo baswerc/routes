@@ -15,17 +15,17 @@
  */
 package org.baswell.routes;
 
-public class RouteInstance
+class RouteInstance
 {
-  public final Object instance;
+  final Object instance;
   
-  public final Class clazz;
+  final Class clazz;
   
-  public final RouteInstanceFactory factory;
+  final RouteInstancePool factory;
 
-  public final boolean createdFromFactory;
+  final boolean createdFromFactory;
   
-  public RouteInstance(Object instance)
+  RouteInstance(Object instance)
   {
     this.instance = instance;
     clazz = null;
@@ -33,7 +33,7 @@ public class RouteInstance
     createdFromFactory = false;
   }
   
-  public RouteInstance(Class clazz, RouteInstanceFactory factory)
+  RouteInstance(Class clazz, RouteInstancePool factory)
   {
     instance = null;
     this.clazz = clazz;
@@ -41,8 +41,8 @@ public class RouteInstance
     createdFromFactory = true;
   }
   
-  public Object create()
+  Object create() throws RouteInstanceBorrowException
   {
-    return (instance == null) ? factory.getInstanceOf(clazz) : instance;
+    return (instance == null) ? factory.borrowRouteInstance(clazz) : instance;
   }
 }

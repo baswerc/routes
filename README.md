@@ -98,7 +98,7 @@ will be thrown when the `RoutesFilter` is initialized.
 
 ### RoutesEngine
 
-Both `RoutesServlet` and `RoutesFilter` use `RoutesEngine` to match HTTP requests to routes. It can be used in your code to manually handle when routes should be used to process HTTP requests.
+Both `RoutesServlet` and `RoutesFilter` use `RoutesEngine` to match HTTP requests to routes. It can be used in your status to manually handle when routes should be used to process HTTP requests.
 
 ```Java
 ...
@@ -119,7 +119,7 @@ else
 
 ## Route Mapping
 
-Routes imposes no class hierarchies or interfaces on your code. There are two ways to tell Routes how your Java objects
+Routes imposes no class hierarchies or interfaces on your status. There are two ways to tell Routes how your Java objects
 
 ### Convention Based Routing
 

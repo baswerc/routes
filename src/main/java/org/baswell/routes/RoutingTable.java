@@ -31,18 +31,33 @@ import static org.baswell.routes.ResponseTypeMapper.*;
 import static org.baswell.routes.RoutesMethods.*;
 
 /**
- * Hub for all routes. The RoutingTable should be treated as a singleton and only constructed once in your application.
+ * <p>
+ * Hub for all routes. Routes can be added to the {@code RoutingTable} in the following ways:
+ * </p>
  *
- * Routes can be added to the RoutingTable in the following ways:
- *
+ * <p>
  * 1. As class objects. Routes added as class objects are instantiated on each matched HTTP request. Once the HTTP request
  * is processed, the instantiated route object is discarded. Every HTTP request gets its own route object instance. The
  * route class does not have to be thread safe.
+ * </p>
  *
+ * <p>
  * 2. As instances of the route class. In this case the same route object will get used for every matched HTTP request. The
  * route class must be thread safe as it can process multiple HTTP requests concurrently.
+ * </p>
  *
- * After
+ * <p>
+ * Normally {@code build} should be called during application startup after all routes have been added. If there are any
+ * errors in route configurations an error will be thrown then. Otherwise this method will be called on the first request
+ * that uses the Routes engine.
+ * </p>
+ *
+ * <p>
+ * If the {@code RoutesFilter} or {@code RoutesServlet} is used in web.xml then this class should be treated as a singleton (only
+ * one instance created). If multiple instances of {@code RoutingTable} are created then {@code RoutesFilter} and {@code RoutesServlet}
+ * will only have visibly to the last one created.
+ * </p>
+ *
  */
 public class RoutingTable
 {
@@ -88,7 +103,7 @@ public class RoutingTable
    * Builds the routing table from the added route objects. This will typically only be called once after all route objects
    * have been added in your application's bootstrap.
    *
-   * @throws RoutesException If an added route class cannot be parsed.
+   * @throws RoutesException If an added route is configured incorrectly.
    */
   public synchronized void build() throws RoutesException
   {
@@ -136,7 +151,7 @@ public class RoutingTable
           {
             RouteConfiguration routeConfiguration = new RouteConfiguration(routesClass, method, routesConfiguration, routesAnnotation, routeAnnotation, i);
             ParsedRouteTree tree = parser.parse(routeConfiguration.route);
-            RouteInstance routeInstance = instanceIsClass ? new RouteInstance(routesClass, routesConfiguration.routeInstanceFactory) : new RouteInstance(addedObject);
+            RouteInstance routeInstance = instanceIsClass ? new RouteInstance(routesClass, routesConfiguration.routeInstancePool) : new RouteInstance(addedObject);
             Criteria criteria = criteriaBuilder.buildCriteria(method, tree, routeConfiguration, routesConfiguration);
             List<MethodParameter> parameters = parametersBuilder.buildParameters(method, criteria);
             ResponseType responseType = mapResponseType(method, routeConfiguration);
@@ -199,7 +214,7 @@ public class RoutingTable
     built = true;
   }
 
-  MatchedRoute find(RequestPath path, RequestParameters parameters, HttpMethod httpMethod, RequestFormat requestFormat)
+  MatchedRoute find(RequestPath path, RequestParameters parameters, HttpMethod httpMethod, RequestedMediaType requestedMediaType)
   {
     List<Matcher> pathMatchers = new ArrayList<Matcher>();
     Map<String, Matcher> parameterMatchers = new HashMap<String, Matcher>();
@@ -207,7 +222,7 @@ public class RoutingTable
     {
       pathMatchers.clear();
       parameterMatchers.clear();
-      if (routeNode.criteria.matches(httpMethod, requestFormat, path, parameters, pathMatchers, parameterMatchers))
+      if (routeNode.criteria.matches(httpMethod, requestedMediaType, path, parameters, pathMatchers, parameterMatchers))
       {
         return new MatchedRoute(routeNode, pathMatchers, parameterMatchers);
       }

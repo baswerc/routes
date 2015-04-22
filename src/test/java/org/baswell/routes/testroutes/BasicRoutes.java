@@ -60,7 +60,7 @@ public class BasicRoutes extends BaseRoutes
   public void notFound()
   {
     methodsCalled.add("redirectTest");
-    throw ReturnHttpResponseCode.NOT_FOUND;
+    throw ReturnHttpResponseStatus.NOT_FOUND;
   }
 
   @Route(value="/url", tags="not_authenticated")

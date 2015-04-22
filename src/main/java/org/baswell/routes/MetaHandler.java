@@ -37,7 +37,7 @@ class MetaHandler
     this.routesConfiguration = routesConfiguration;
   }
 
-  boolean handled(HttpServletRequest request, HttpServletResponse response, RequestPath path, RequestParameters parameters, HttpMethod httpMethod, RequestFormat requestFormat) throws IOException, ServletException
+  boolean handled(HttpServletRequest request, HttpServletResponse response, RequestPath path, RequestParameters parameters, HttpMethod httpMethod, RequestedMediaType requestedMediaType) throws IOException, ServletException
   {
     String routesMetaPath = routesConfiguration.routesMetaPath;
     if (!routesMetaPath.startsWith("/")) routesMetaPath = "/" + routesMetaPath;
@@ -48,7 +48,7 @@ class MetaHandler
       {
         path = path.substring(routesMetaPath.length());
 
-        if (requestFormat.mediaType == MediaType.HTML)
+        if (requestedMediaType.mediaType == MediaType.HTML)
         {
           if (path.equals(""))
           {
@@ -57,7 +57,7 @@ class MetaHandler
           }
 
         }
-        else if (requestFormat.mediaType == MediaType.JSON)
+        else if (requestedMediaType.mediaType == MediaType.JSON)
         {
           if (path.equals(""))
           {
@@ -93,7 +93,7 @@ class MetaHandler
 
       for (RouteNode routeNode : routingTable.getRouteNodes())
       {
-        if ((routeNode.criteria.matches(httpMethod, new RequestFormat(acceptType), requestPath, requestParameters)))
+        if ((routeNode.criteria.matches(httpMethod, new RequestedMediaType(acceptType), requestPath, requestParameters)))
         {
           rows.add(new RouteTableRow(routeNode, request));
         }

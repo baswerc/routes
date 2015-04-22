@@ -167,7 +167,7 @@ class RoutesMethods
     methodRouteParameterTypes.add(Map.class);
     methodRouteParameterTypes.add(RequestPath.class);
     methodRouteParameterTypes.add(RequestParameters.class);
-    methodRouteParameterTypes.add(RequestFormat.class);
+    methodRouteParameterTypes.add(RequestedMediaType.class);
     methodRouteParameterTypes.add(URL.class);
   }
 

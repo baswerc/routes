@@ -1,6 +1,11 @@
 package org.baswell.routes;
 
-public class SystemOutLogger implements RoutesLogger
+/**
+ * The default Routes logger. Logs everything to {@link java.lang.System#err}.
+ *
+ * @see org.baswell.routes.RoutesConfiguration#logger
+ */
+public class SystemErrLogger implements RoutesLogger
 {
   @Override
   public void logError(String message)

@@ -23,7 +23,8 @@ import java.lang.annotation.Target;
 /**
  * <p>
  * Callback to receive notification after HTTP requests have been routed. The response to the HTTP client has already
- * been sent by the time this callback is invoked. AfterRoute methods should always return {@code void}.
+ * been sent by the time this callback is invoked. AfterRoute methods should always return {@code void} and should never
+ * throw exceptions.
  * </p>
  */
 @Retention(RetentionPolicy.RUNTIME)

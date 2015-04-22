@@ -42,9 +42,9 @@ class MethodPipeline
   }
   
   void invoke(RouteNode routeNode, HttpServletRequest servletRequest, HttpServletResponse servletResponse, HttpMethod httpMethod,
-              RequestFormat requestFormat, RequestPath path, RequestParameters parameters, List<Matcher> pathMatchers, Map<String, Matcher> parameterMatchers) throws IOException, ServletException
+              RequestedMediaType requestedMediaType, RequestPath path, RequestParameters parameters, List<Matcher> pathMatchers, Map<String, Matcher> parameterMatchers) throws IOException, ServletException, RouteInstanceBorrowException
   {
-    MethodInvoker invoker = new MethodInvoker(servletRequest, servletResponse, httpMethod, path, parameters, requestFormat, routeNode.routeConfiguration);
+    MethodInvoker invoker = new MethodInvoker(servletRequest, servletResponse, httpMethod, path, parameters, requestedMediaType, routeNode.routeConfiguration);
     Object routeInstance = routeNode.instance.create();
 
     try
@@ -105,9 +105,9 @@ class MethodPipeline
         servletResponse.sendRedirect(((RedirectTo)targetException).redirectUrl);
         exceptionHandled = true;
       }
-      else if (targetException instanceof ReturnHttpResponseCode)
+      else if (targetException instanceof ReturnHttpResponseStatus)
       {
-        servletResponse.setStatus(((ReturnHttpResponseCode)targetException).code);
+        servletResponse.setStatus(((ReturnHttpResponseStatus)targetException).status);
         exceptionHandled = true;
       }
 
@@ -151,7 +151,7 @@ class MethodPipeline
       {
         try
         {
-          routeNode.instance.factory.doneUsing(routeInstance);
+          routeNode.instance.factory.returnRouteInstance(routeInstance);
         }
         catch (Exception e)
         {}

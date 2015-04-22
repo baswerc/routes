@@ -71,7 +71,7 @@ class MethodParametersBuilder
       {
         routeParameters.add(new MethodParameter(MethodRouteParameterType.REQUEST_PARAMETERS));
       }
-      else if (parameterClass == RequestFormat.class)
+      else if (parameterClass == RequestedMediaType.class)
       {
         routeParameters.add(new MethodParameter(MethodRouteParameterType.FORMAT));
       }

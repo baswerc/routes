@@ -27,7 +27,7 @@ import static org.baswell.routes.RoutingTable.*;
  * <p>
  * An entry point for mapping HTTP servlet requests to route methods. All HTTP requests received by this servlet will be passed to
  * {@link org.baswell.routes.RoutesEngine}. If a routes match was found the request will be processed by that route otherwise this
- * servlet will return a 404 (<code>HttpServletResponse.setStatus(404)</code>).
+ * servlet will return a 404 (<status>HttpServletResponse.setStatus(404)</status>).
  * </p>
  *
  * @see org.baswell.routes.RoutesFilter

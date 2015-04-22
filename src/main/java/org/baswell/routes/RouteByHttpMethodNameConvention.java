@@ -21,8 +21,9 @@ import java.util.List;
 
 /**
  * <p>
- * {@code RouteFromMethodScheme} implementation that provides {@code respondsToMethods}. The HTTP method names are taken from
- * the beginning of the method name. If the method name doesn't start with any HTTP methods then the methods [GET, POST, PUT, DELETE] are used.
+ * Base class {@code RouteByConvention} that provides an implementation for {@code respondsToMethods}. The HTTP method names are taken from
+ * the beginning of the method name (case insensitive). If the method name doesn't start with any HTTP methods then the methods
+ * [GET, POST, PUT, DELETE] are used.
  * </p>
  *
  * <p>For example:</p>
@@ -31,7 +32,7 @@ import java.util.List;
  *   <thead>
  *     <tr>
  *       <th style="text-align: left;padding-right: 10px;">Method Name</th>
- *       <th>Route HTTP Methods</th>
+ *       <th style="text-align: left;">Route HTTP Methods</th>
  *     </tr>
  *   </thead>
  *   <tbody>
@@ -57,15 +58,17 @@ import java.util.List;
 abstract public class RouteByHttpMethodNameConvention implements RouteByConvention
 {
   /**
-   * The HTTP method names are taken from the beginning of the method name. If the method name doesn't start with any HTTP methods then the methods [GET, POST, PUT, DELETE] are used.
-   * @param method
+   * The HTTP method names are taken from the beginning of the method name. If the method name doesn't start with any HTTP
+   * methods then the methods [GET, POST, PUT, DELETE] are used.
+   *
+   * @param routeMethod
    * @return The HTTP methods this method specifies from its name.
    */
   @Override
-  public List<HttpMethod> respondsToMethods(Method method)
+  public List<HttpMethod> respondsToMethods(Method routeMethod)
   {
     List<HttpMethod> httpMethods = new ArrayList<HttpMethod>();
-    String methodName = method.getName().toLowerCase();
+    String methodName = routeMethod.getName().toLowerCase();
     while (!methodName.isEmpty())
     {
       if (methodName.startsWith("get"))

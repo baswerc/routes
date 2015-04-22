@@ -58,7 +58,7 @@ public class MethodParamtersBuilderTest
     
     class RouteTest
     {
-      public void testMethod(RequestParameters parameters, RequestPath path, RequestFormat format, HttpServletRequest request, HttpServletResponse response, Map<String, String> paramMap, Map<String, List<String>> paramMapList)
+      public void testMethod(RequestParameters parameters, RequestPath path, RequestedMediaType format, HttpServletRequest request, HttpServletResponse response, Map<String, String> paramMap, Map<String, List<String>> paramMapList)
       {}
       
       public void testInvalidMethod(HttpServletRequest request, HttpServletResponse response, boolean invalid)
@@ -71,7 +71,7 @@ public class MethodParamtersBuilderTest
     
     MethodParametersBuilder builder = new MethodParametersBuilder();
     
-    List<MethodParameter> parameters = builder.buildParameters(RouteTest.class.getMethod("testMethod", RequestParameters.class, RequestPath.class, RequestFormat.class, HttpServletRequest.class, HttpServletResponse.class, Map.class, Map.class));
+    List<MethodParameter> parameters = builder.buildParameters(RouteTest.class.getMethod("testMethod", RequestParameters.class, RequestPath.class, RequestedMediaType.class, HttpServletRequest.class, HttpServletResponse.class, Map.class, Map.class));
     assertNotNull(parameters);
     assertEquals(parameters.size(), 7);
     assertEquals(parameters.get(0).type, MethodRouteParameterType.REQUEST_PARAMETERS);

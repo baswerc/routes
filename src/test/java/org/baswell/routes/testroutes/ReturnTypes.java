@@ -1,7 +1,6 @@
 package org.baswell.routes.testroutes;
 
 import org.baswell.routes.MediaType;
-import org.baswell.routes.RequestFormat;
 import org.baswell.routes.Route;
 import org.baswell.routes.Routes;
 

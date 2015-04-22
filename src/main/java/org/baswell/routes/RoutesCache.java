@@ -15,14 +15,36 @@
  */
 package org.baswell.routes;
 
-import org.baswell.routes.RequestFormat;
-import org.baswell.routes.HttpMethod;
-import org.baswell.routes.RequestParameters;
-import org.baswell.routes.RequestPath;
-
+/**
+ * By default the Routes engine will sequential check each route method until a match is found. With lots of route methods, this can potentially
+ * become a performance bottle neck. If a cache implementation is provided, the Routes engine will first check the cache for a hit before running
+ * the sequential check.
+ *
+ *
+ * @see org.baswell.routes.RoutesConfiguration#routesCache
+ */
 public interface RoutesCache
 {
-  Object get(HttpMethod method, RequestFormat requestFormat, RequestPath path, RequestParameters parameters);
+  /**
+   * Called after a request has been processed by the given {@code routeNode}. This request should be cached for later retrieval
+   * from {@code get} when the HTTP request input parameters match.
+   *
+   * @param routeNode The route instance to be retrieved later from {@code get}.
+   * @param method The HTTP method.
+   * @param requestedMediaType The requested media type.
+   * @param path The HTTP path.
+   * @param parameters The HTTP parameters.
+   */
+  void put(Object routeNode, HttpMethod method, RequestedMediaType requestedMediaType, RequestPath path, RequestParameters parameters);
 
-  void put(Object routeNode, HttpMethod method, RequestFormat requestFormat, RequestPath path, RequestParameters parameters);
+  /**
+   * Retrieve the cached route instance or {@code null} on a cache miss.
+   *
+   * @param method The HTTP method.
+   * @param requestedMediaType The requested media type.
+   * @param path The HTTP path.
+   * @param parameters The HTTP parameters.
+   * @return The cached route instance or {@code null} on a cache miss.
+   */
+  Object get(HttpMethod method, RequestedMediaType requestedMediaType, RequestPath path, RequestParameters parameters);
 }

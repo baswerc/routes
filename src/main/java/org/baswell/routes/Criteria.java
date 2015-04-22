@@ -67,18 +67,18 @@ class Criteria implements Comparable<Criteria>
     this.allCriteriaFixed = !this.hasPattern && !this.hasMultiPathCriterion;
   }
 
-  boolean matches(HttpMethod httpMethod, RequestFormat requestFormat, RequestPath path, RequestParameters parameters)
+  boolean matches(HttpMethod httpMethod, RequestedMediaType requestedMediaType, RequestPath path, RequestParameters parameters)
   {
-    return matches(httpMethod, requestFormat, path, parameters, new ArrayList<Matcher>(), new HashMap<String, Matcher>());
+    return matches(httpMethod, requestedMediaType, path, parameters, new ArrayList<Matcher>(), new HashMap<String, Matcher>());
   }
 
-  boolean matches(HttpMethod httpMethod, RequestFormat requestFormat, RequestPath path, RequestParameters parameters, List<Matcher> pathMatchers, Map<String, Matcher> parameterMatchers)
+  boolean matches(HttpMethod httpMethod, RequestedMediaType requestedMediaType, RequestPath path, RequestParameters parameters, List<Matcher> pathMatchers, Map<String, Matcher> parameterMatchers)
   {
     if (!routeConfiguration.respondsToMethods.contains(httpMethod))
     {
       return false;
     }
-    else if (!routeConfiguration.respondsToMedia.isEmpty() && !routeConfiguration.respondsToMedia.contains(requestFormat.mediaType))
+    else if (!routeConfiguration.respondsToMedia.isEmpty() && !routeConfiguration.respondsToMedia.contains(requestedMediaType.mediaType))
     {
       return false;
     }

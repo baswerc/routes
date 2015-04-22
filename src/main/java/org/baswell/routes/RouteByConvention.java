@@ -27,8 +27,8 @@ import java.util.List;
 public interface RouteByConvention
 {
   /**
-   * The generated root path of a routes class if #{@link org.baswell.routes.Routes#value()} is not specified. This generated root
-   * path is only prepended to route method paths without {@link org.baswell.routes.Route#value()}.
+   * The generated root path of a routes class when {@link org.baswell.routes.Routes#value()} is not specified. This root
+   * path will only be prepended to route method paths without {@link org.baswell.routes.Route#value()}.
    *
    * @param routesClass The routes class.
    * @return The root route path.
@@ -45,9 +45,9 @@ public interface RouteByConvention
   String routePath(Method routeMethod);
 
   /**
-   * The HTTP methods this route method responds to if no {@link org.baswell.routes.Route#respondsToMethods()} is specified.
-   * @param method
+   * The HTTP methods this route method responds to when {@link org.baswell.routes.Route#respondsToMethods()} is not specified.
+   * @param routeMethod
    * @return The HTTP methods this route method responds to.
    */
-  List<HttpMethod> respondsToMethods(Method method);
+  List<HttpMethod> respondsToMethods(Method routeMethod);
 }

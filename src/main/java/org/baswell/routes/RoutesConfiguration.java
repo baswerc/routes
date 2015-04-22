@@ -31,22 +31,22 @@ public class RoutesConfiguration
    * The global path prepended to all route paths. For example if you want your route objects to process request that
    * start with "/api" set this variable to "/api" and then all route class paths will get prepended with this value.
    *
-   * Default value: <code>null</code>
+   * Default value: <status>null</status>
    */
   public String rootPath;
 
   /**
    * The root directory prepended to all file resource forward paths. If you want each Route to specify the full forward
-   * path set this variable to <code>null</code>.
+   * path set this variable to <status>null</status>.
    *
-   * Default value: <code>"/WEB-INF/jsps"</code>
+   * Default value: <status>"/WEB-INF/jsps"</status>
    */
   public String rootForwardPath = "/WEB-INF/jsps";
 
   /**
    * Is route path matching case insensitive?
    *
-   * Default value: <code>false</code>
+   * Default value: <status>false</status>
    */
   public boolean caseInsensitive;
 
@@ -56,7 +56,7 @@ public class RoutesConfiguration
    * {@link Route#contentType()}, or by explicitly calling {@link javax.servlet.http.HttpServletResponse#setContentType(String)} in the
    * route method.
    *
-   * Default value: <code>null</code>
+   * Default value: <status>null</status>
    */
   public String defaultContentType;
 
@@ -64,23 +64,23 @@ public class RoutesConfiguration
    * If true by default strings returned from route methods are sent back as the content. If false by default returned strings are interpreted as
    * file paths that the request is forwarded to. This can be overridden in {@link Routes#defaultReturnedStringIsContent()} or {@link Route#returnedStringIsContent()}.
    *
-   * Default value: <code>false</code>
+   * Default value: <status>false</status>
    */
   public boolean defaultReturnedStringIsContent;
 
   /**
    * The buffer size for streaming back content.
    *
-   * Default value: <code>16 * 1024</code>
+   * Default value: <status>16 * 1024</status>
    */
   public int streamBufferSize = 16 * 1024;
 
   /**
    * The factory for creating new route instances to process HTTP requests.
    *
-   * Default value: {@link org.baswell.routes.DefaultRouteInstanceFactory}
+   * Default value: {@link DefaultRouteInstancePool}
    */
-  public RouteInstanceFactory routeInstanceFactory = new DefaultRouteInstanceFactory();
+  public RouteInstancePool routeInstancePool = new DefaultRouteInstancePool();
 
   /**
    * The scheme for mapping route methods to HTTP methods and HTTP paths when not explicitly set by the {@link org.baswell.routes.Route}
@@ -93,7 +93,7 @@ public class RoutesConfiguration
   /**
    * The routes cache implementation. No cache will be used if null.
    *
-   * Default value: <code>null</code>
+   * Default value: <status>null</status>
    */
   public RoutesCache routesCache;
 
@@ -102,14 +102,14 @@ public class RoutesConfiguration
    * page will not be accessible. If there is a collision between this path and a routes path, the routes path will
    * win.
    *
-   * Default value: <code>null</code>
+   * Default value: <status>null</status>
    */
   public String routesMetaPath;
 
   /**
    * The authentication mechanism for the Routes meta page. If null, no authentication is required.
    *
-   * Default value: <code>null</code>
+   * Default value: <status>null</status>
    */
   public MetaAuthenticator metaAuthenticator;
 
@@ -119,14 +119,14 @@ public class RoutesConfiguration
    * classes will not be candidates (ex. {@link java.lang.Object#equals(Object)}. This can be overriden by {@link Routes#routeUnannotatedPublicMethods()}.
    *
    *
-   * Default value: <code>false</code>
+   * Default value: <status>false</status>
    */
   public boolean routeUnannotatedPublicMethods;
 
   /**
-   * Logger Routes uses for error messages. Set to {@code null} to suppress all logging. By default System.
+   * Logger Routes uses for error messages. Set to {@code null} to suppress all logging. By default {@link org.baswell.routes.SystemErrLogger}.
    */
-  public RoutesLogger logger = new SystemOutLogger();
+  public RoutesLogger logger = new SystemErrLogger();
 
   final Map<String, Pattern> symbolsToPatterns = new HashMap<String, Pattern>();
 

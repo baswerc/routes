@@ -28,7 +28,7 @@ import java.lang.reflect.Method;
  *   <thead>
  *     <tr>
  *       <th style="text-align: left;padding-right: 10px;">Method Name</th>
- *       <th>Route Path</th>
+ *       <th style="text-align: left;">Route Path</th>
  *     </tr>
  *   </thead>
  *   <tbody>
@@ -49,6 +49,7 @@ import java.lang.reflect.Method;
  *       <td>/another/thing/here</td>
  *     </tr>
  *   </tbody>
+ * </table>
  *
  * <p>
  * The same convention is used for generating the root path from the class name.
@@ -58,7 +59,7 @@ import java.lang.reflect.Method;
  *   <thead>
  *     <tr>
  *       <th style="text-align: left;padding-right: 10px;">Class Name</th>
- *       <th>Route Root Path</th>
+ *       <th style="text-align: left;">Route Root Path</th>
  *     </tr>
  *   </thead>
  *   <tbody>
@@ -71,6 +72,7 @@ import java.lang.reflect.Method;
  *       <td>/user/profile</td>
  *     </tr>
  *   </tbody>
+ * </table>
  *
  * @see org.baswell.routes.RoutesConfiguration#routeByConvention
  */

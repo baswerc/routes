@@ -17,11 +17,23 @@ package org.baswell.routes;
 
 /**
  *
- * @see org.baswell.routes.RouteInstanceFactory#getInstanceOf(Class)
+ * Thrown when a route instance cannot be borrowed from {@link org.baswell.routes.RouteInstancePool} for any reason.
+ *
+ * @see RouteInstancePool#borrowRouteInstance(Class)
  */
-public class RouteInstantiationException extends RuntimeException
+public class RouteInstanceBorrowException extends Exception
 {
-  public RouteInstantiationException(String message, Throwable cause)
+  public RouteInstanceBorrowException(String message)
+  {
+    super(message);
+  }
+
+  public RouteInstanceBorrowException(Throwable cause)
+  {
+    super(cause);
+  }
+
+  public RouteInstanceBorrowException(String message, Throwable cause)
   {
     super(message, cause);
   }

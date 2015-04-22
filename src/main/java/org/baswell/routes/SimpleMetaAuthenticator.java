@@ -16,8 +16,10 @@
 package org.baswell.routes;
 
 /**
- * A simple MetaAuthenticator that uses a static user name and password (provided at construction) and Base64 to determine if
+ * <p>
+ * A simple {@code MetaAuthenticator} that uses a static user name and password (provided at construction) and Basic authentication to determine if
  * access to the Routes meta page is allowed.
+ * </p>
  */
 public class SimpleMetaAuthenticator extends BasicMetaAuthenticator
 {

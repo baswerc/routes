@@ -16,10 +16,9 @@
 package org.baswell.routes;
 
 /**
- * The format type of an HTTP request. Taken from the either the Accept-Type header of the request (if present) or the file
- * extension (if present) of the URL.
+ * The requested media type of an HTTP request. Taken from the either the file extension of the request path if present or the Accept header.
  */
-public class RequestFormat
+public class RequestedMediaType
 {
   public final String acceptType;
 
@@ -27,12 +26,12 @@ public class RequestFormat
   
   public final MediaType mediaType;
 
-  public RequestFormat(String acceptType)
+  RequestedMediaType(String acceptType)
   {
     this(acceptType, null);
   }
 
-  public RequestFormat(String acceptType, RequestPath requestPath)
+  RequestedMediaType(String acceptType, RequestPath requestPath)
   {
     this.acceptType = acceptType;
     fileExtension = requestPath == null ? null : requestPath.getFileExtension();
@@ -63,7 +62,7 @@ public class RequestFormat
       }
       else
       {
-        return mediaType.mimeTypes.get(0);
+        return mediaType.mimeType;
       }
     }
     else
