@@ -41,7 +41,7 @@ There are three different ways Routes can be used within a Servlet container.
 
 ### RoutesServlet
 
-The `RoutesServlet` can be used to map HTTP requests to routes. Any HTTP request the `RoutesServlet` does not find a
+The <a href="http://baswerc.github.io/routes/javadoc/">RoutesServlet</a> can be used to map HTTP requests to routes. Any HTTP request the `RoutesServlet` does not find a
 matching route for is returned a 404 (`HttpServletResponse.setStatus(404)`).
 
 ````xml
