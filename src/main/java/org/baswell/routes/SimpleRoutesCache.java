@@ -45,7 +45,7 @@ public class SimpleRoutesCache implements RoutesCache
    *
    * @param maxCachedRoutes The maximum number of routes to cache in memory.
    * @param minCleanMSecs The minimum number of seconds between cache cleans.
-   * @param parametersUsedInRouting Are parameters used in determing route matches?
+   * @param parametersUsedInRouting Are parameters used in determining route matches?
    */
   public SimpleRoutesCache(int maxCachedRoutes, int minCleanMSecs, boolean parametersUsedInRouting)
   {
