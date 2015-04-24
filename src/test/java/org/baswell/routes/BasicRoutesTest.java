@@ -50,4 +50,14 @@ public class BasicRoutesTest extends EndToEndTest
     invoke(new TestHttpServletRequest("GET", "/", "/not_found", "authenticationAllowed", "true"));
     assertEquals(servletResponse.responseCode, (Integer)404);
   }
+
+  @Test
+  public void testGetUrl() throws IOException, ServletException
+  {
+    TestHttpServletRequest request = new TestHttpServletRequest("GET", "/", "/url");
+    request.requestUrl = "http://localhost:8080/url";
+    request.queryString = "one=1&two=1";
+
+    invoke(request, "getUrl");
+  }
 }

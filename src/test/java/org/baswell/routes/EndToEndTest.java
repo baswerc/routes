@@ -21,7 +21,7 @@ abstract public class EndToEndTest
   
   protected HttpMethod httpMethod;
 
-  protected RequestFormat requestFormat;
+  protected RequestedMediaType requestedMediaType;
   
   protected RequestPath path;
   
@@ -63,7 +63,7 @@ abstract public class EndToEndTest
     this.servletRequest = servletRequest;
     servletResponse = new TestHttpServletResponse();
     httpMethod = HttpMethod.fromServletMethod(servletRequest.getMethod());
-    requestFormat = new RequestFormat(servletRequest.getContentType(), new RequestPath(servletRequest));
+    requestedMediaType = new RequestedMediaType(servletRequest.getContentType(), new RequestPath(servletRequest));
     path = new RequestPath(servletRequest);
     parameters = new RequestParameters(servletRequest);
   }
@@ -74,7 +74,7 @@ abstract public class EndToEndTest
     assertNull(find());
   }
   
-  protected RequestFormat invoke(TestHttpServletRequest servletRequest, String... expectedMethodsCalled) throws IOException, ServletException
+  protected RequestedMediaType invoke(TestHttpServletRequest servletRequest, String... expectedMethodsCalled) throws IOException, ServletException
   {
     initializeRequest(servletRequest);
     invoke();
@@ -92,15 +92,22 @@ abstract public class EndToEndTest
   
   protected MatchedRoute find()
   {
-    return routingTable.find(path, parameters, httpMethod, requestFormat);
+    return routingTable.find(path, parameters, httpMethod, requestedMediaType);
   }
   
   protected void invoke() throws IOException, ServletException
   {
     MatchedRoute node = find();
     assertNotNull(node);
-    pipeline.invoke(node.routeNode, servletRequest, servletResponse, httpMethod, requestFormat, path, parameters, node.pathMatchers, node.parameterMatchers);
-    servletResponse.writer.close();
+    try
+    {
+      pipeline.invoke(node.routeNode, servletRequest, servletResponse, httpMethod, requestedMediaType, path, parameters, node.pathMatchers, node.parameterMatchers);
+      servletResponse.writer.close();
+    }
+    catch (RouteInstanceBorrowException e)
+    {
+      throw new RuntimeException(e);
+    }
   }
   
   protected void assertMethodsCalled(String... methodNames)

@@ -1,3 +1,18 @@
+/*
+ * Copyright 2015 Corey Baswell
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *  http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package org.baswell.routes;
 
 import java.util.ArrayList;
@@ -7,6 +22,13 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
+/**
+ * <p>
+ * A very simple in memory cache implementation. This class has not been tested (well) so there are likely issues.
+ * </p>
+ *
+ * @see org.baswell.routes.RoutesConfiguration#routesCache
+ */
 public class SimpleRoutesCache implements RoutesCache
 {
   private final int maxCachedRoutes;
@@ -19,11 +41,12 @@ public class SimpleRoutesCache implements RoutesCache
 
   private final Map<String, RouteCachedNode> cachedNodes = new ConcurrentHashMap<String, RouteCachedNode>();
 
-  public SimpleRoutesCache(int maxCachedRoutes, int minCleanMSecs)
-  {
-    this(maxCachedRoutes, minCleanMSecs, true);
-  }
-
+  /**
+   *
+   * @param maxCachedRoutes The maximum number of routes to cache in memory.
+   * @param minCleanMSecs The minimum number of seconds between cache cleans.
+   * @param parametersUsedInRouting Are parameters used in determing route matches?
+   */
   public SimpleRoutesCache(int maxCachedRoutes, int minCleanMSecs, boolean parametersUsedInRouting)
   {
     assert maxCachedRoutes > 0;
@@ -31,20 +54,20 @@ public class SimpleRoutesCache implements RoutesCache
 
     this.maxCachedRoutes = maxCachedRoutes;
     this.minCleanMSecs = minCleanMSecs;
-    this.parametersUsedInRouting = false;
+    this.parametersUsedInRouting = parametersUsedInRouting;
   }
 
   @Override
-  public Object get(HttpMethod method, RequestFormat requestFormat, RequestPath path, RequestParameters parameters)
+  public Object get(HttpMethod method, RequestedMediaType requestedMediaType, RequestPath path, RequestParameters parameters)
   {
-    RouteCachedNode cachedNode = cachedNodes.get(getKey(method, requestFormat, path, parameters));
+    RouteCachedNode cachedNode = cachedNodes.get(getKey(method, requestedMediaType, path, parameters));
     return cachedNode == null ? null : cachedNode.accessed();
   }
 
   @Override
-  public void put(Object routeNode, HttpMethod method, RequestFormat requestFormat, RequestPath path, RequestParameters parameters)
+  public void put(Object routeNode, HttpMethod method, RequestedMediaType requestedMediaType, RequestPath path, RequestParameters parameters)
   {
-    String key = getKey(method, requestFormat, path, parameters);
+    String key = getKey(method, requestedMediaType, path, parameters);
     cachedNodes.put(key, new RouteCachedNode(key, routeNode));
     if ((System.currentTimeMillis() - lastCleanAt) >= minCleanMSecs)
     {
@@ -71,9 +94,9 @@ public class SimpleRoutesCache implements RoutesCache
     }
   }
 
-  protected String getKey(HttpMethod method, RequestFormat requestFormat, RequestPath path, RequestParameters parameters)
+  protected String getKey(HttpMethod method, RequestedMediaType requestedMediaType, RequestPath path, RequestParameters parameters)
   {
-    StringBuilder keyBuilder = new StringBuilder(method.toString()).append(':').append(requestFormat).append(':').append(path);
+    StringBuilder keyBuilder = new StringBuilder(method.toString()).append(':').append(requestedMediaType).append(':').append(path);
     if (parametersUsedInRouting && (parameters != null) && parameters.hasParameters())
     {
       keyBuilder.append(':').append(parameters);

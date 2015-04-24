@@ -50,7 +50,7 @@ public class RootTest extends EndToEndTest
   static public class RootRoute extends BaseRoutes
   {
     @Route("*")
-    public void getName(String name, RequestFormat requestFormat, HttpServletRequest request)
+    public void getName(String name, RequestedMediaType requestedMediaType, HttpServletRequest request)
     {
       assertEquals(name, expectedName);
       methodsCalled.add("getName");

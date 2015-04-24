@@ -2,10 +2,10 @@ package org.baswell.routes;
 
 import org.junit.Test;
 
-import static org.baswell.routes.CamelCaseRouteFromMethodScheme.*;
+import static org.baswell.routes.RouteByCamelCaseConvention.*;
 import static org.junit.Assert.*;
 
-public class CameCaseRouteFromMethodSchemeTest
+public class CameCaseRouteByConventionTest
 {
   @Test
   public void testCamelCase()

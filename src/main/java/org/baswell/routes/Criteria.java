@@ -1,3 +1,18 @@
+/*
+ * Copyright 2015 Corey Baswell
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *  http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package org.baswell.routes;
 
 import java.util.ArrayList;
@@ -52,18 +67,18 @@ class Criteria implements Comparable<Criteria>
     this.allCriteriaFixed = !this.hasPattern && !this.hasMultiPathCriterion;
   }
 
-  boolean matches(HttpMethod httpMethod, RequestFormat requestFormat, RequestPath path, RequestParameters parameters)
+  boolean matches(HttpMethod httpMethod, RequestedMediaType requestedMediaType, RequestPath path, RequestParameters parameters)
   {
-    return matches(httpMethod, requestFormat, path, parameters, new ArrayList<Matcher>(), new HashMap<String, Matcher>());
+    return matches(httpMethod, requestedMediaType, path, parameters, new ArrayList<Matcher>(), new HashMap<String, Matcher>());
   }
 
-  boolean matches(HttpMethod httpMethod, RequestFormat requestFormat, RequestPath path, RequestParameters parameters, List<Matcher> pathMatchers, Map<String, Matcher> parameterMatchers)
+  boolean matches(HttpMethod httpMethod, RequestedMediaType requestedMediaType, RequestPath path, RequestParameters parameters, List<Matcher> pathMatchers, Map<String, Matcher> parameterMatchers)
   {
     if (!routeConfiguration.respondsToMethods.contains(httpMethod))
     {
       return false;
     }
-    else if (!routeConfiguration.respondsToMedia.isEmpty() && !routeConfiguration.respondsToMedia.contains(requestFormat.mediaType))
+    else if (!routeConfiguration.respondsToMedia.isEmpty() && !routeConfiguration.respondsToMedia.contains(requestedMediaType.mediaType))
     {
       return false;
     }

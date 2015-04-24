@@ -1,16 +1,31 @@
+/*
+ * Copyright 2015 Corey Baswell
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *  http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package org.baswell.routes;
 
-public class RouteInstance
+class RouteInstance
 {
-  public final Object instance;
+  final Object instance;
   
-  public final Class clazz;
+  final Class clazz;
   
-  public final RouteInstanceFactory factory;
+  final RouteInstancePool factory;
 
-  public final boolean createdFromFactory;
+  final boolean createdFromFactory;
   
-  public RouteInstance(Object instance)
+  RouteInstance(Object instance)
   {
     this.instance = instance;
     clazz = null;
@@ -18,7 +33,7 @@ public class RouteInstance
     createdFromFactory = false;
   }
   
-  public RouteInstance(Class clazz, RouteInstanceFactory factory)
+  RouteInstance(Class clazz, RouteInstancePool factory)
   {
     instance = null;
     this.clazz = clazz;
@@ -26,8 +41,8 @@ public class RouteInstance
     createdFromFactory = true;
   }
   
-  public Object create()
+  Object create() throws RouteInstanceBorrowException
   {
-    return (instance == null) ? factory.getInstanceOf(clazz) : instance;
+    return (instance == null) ? factory.borrowRouteInstance(clazz) : instance;
   }
 }

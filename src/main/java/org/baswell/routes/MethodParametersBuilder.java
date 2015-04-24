@@ -1,6 +1,19 @@
+/*
+ * Copyright 2015 Corey Baswell
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *  http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package org.baswell.routes;
-
-import org.baswell.routes.MethodParameter.RouteMethodParameterType;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -8,6 +21,7 @@ import javax.servlet.http.HttpSession;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -39,35 +53,35 @@ class MethodParametersBuilder
       Class parameterClass = typeToClass(parameter);
       if (parameterClass == HttpServletRequest.class)
       {
-        routeParameters.add(new MethodParameter(RouteMethodParameterType.SERVLET_REQUEST));
+        routeParameters.add(new MethodParameter(MethodRouteParameterType.SERVLET_REQUEST));
       }
       else if (parameterClass == HttpServletResponse.class)
       {
-        routeParameters.add(new MethodParameter(RouteMethodParameterType.SERVLET_RESPONSE));
+        routeParameters.add(new MethodParameter(MethodRouteParameterType.SERVLET_RESPONSE));
       }
       else if (parameterClass == HttpSession.class)
       {
-        routeParameters.add(new MethodParameter(RouteMethodParameterType.SESSION));
-      }
-      else if (parameterClass == RequestContext.class)
-      {
-        routeParameters.add(new MethodParameter(RouteMethodParameterType.REQUEST_CONTEXT));
+        routeParameters.add(new MethodParameter(MethodRouteParameterType.SESSION));
       }
       else if (parameterClass == RequestPath.class)
       {
-        routeParameters.add(new MethodParameter(RouteMethodParameterType.REQUEST_PATH));
+        routeParameters.add(new MethodParameter(MethodRouteParameterType.REQUEST_PATH));
       }
       else if (parameterClass == RequestParameters.class)
       {
-        routeParameters.add(new MethodParameter(RouteMethodParameterType.REQUEST_PARAMETERS));
+        routeParameters.add(new MethodParameter(MethodRouteParameterType.REQUEST_PARAMETERS));
       }
-      else if (parameterClass == RequestFormat.class)
+      else if (parameterClass == RequestedMediaType.class)
       {
-        routeParameters.add(new MethodParameter(RouteMethodParameterType.FORMAT));
+        routeParameters.add(new MethodParameter(MethodRouteParameterType.FORMAT));
+      }
+      else if (parameterClass == URL.class)
+      {
+        routeParameters.add(new MethodParameter(MethodRouteParameterType.URL));
       }
       else if (parameterClass == Map.class)
       {
-        RouteMethodParameterType mapType = getRouteMapParameterType(parameter);
+        MethodRouteParameterType mapType = getRouteMapParameterType(parameter);
         if (mapType != null)
         {
           routeParameters.add(new MethodParameter(mapType));
@@ -79,9 +93,9 @@ class MethodParametersBuilder
       }
       else if (routeCriteria != null)
       {
-        MethodParameterType methodParameterType = getRouteMethodParameterType(parameter);
+        MethodPathParameterType methodPathParameterType = getMethodRouteType(parameter);
 
-        if (methodParameterType != null)
+        if (methodPathParameterType != null)
         {
           if (!pathSegmentsProcessed)
           {
@@ -105,7 +119,7 @@ class MethodParametersBuilder
             {
               if (parameterClass != List.class)
               {
-                routeParameters.add(new MethodParameter(RouteMethodParameterType.ROUTE_PATH, currentPathSegmentCriteron.index, currentPathSegmentCriteron.numberPatternGroups > 0 ? groupIndex++ : null, methodParameterType));
+                routeParameters.add(new MethodParameter(MethodRouteParameterType.ROUTE_PATH, currentPathSegmentCriteron.index, currentPathSegmentCriteron.numberPatternGroups > 0 ? groupIndex++ : null, methodPathParameterType));
                 continue PARAMETERS_LOOP;
               }
               else
@@ -138,8 +152,8 @@ class MethodParametersBuilder
           {
             if (currentParameterCriteron.presenceRequired || !parameterClass.isPrimitive())
             {
-              RouteMethodParameterType routeMethodParameterType = parameterClass == List.class ? RouteMethodParameterType.ROUTE_PARAMETERS : RouteMethodParameterType.ROUTE_PARAMETER;
-              routeParameters.add(new MethodParameter(routeMethodParameterType, currentParameterCriteron.name, groupIndex++, methodParameterType));
+              MethodRouteParameterType methodRouteParameterType = parameterClass == List.class ? MethodRouteParameterType.ROUTE_PARAMETERS : MethodRouteParameterType.ROUTE_PARAMETER;
+              routeParameters.add(new MethodParameter(methodRouteParameterType, currentParameterCriteron.name, groupIndex++, methodPathParameterType));
               continue PARAMETERS_LOOP;
             }
             else
@@ -164,7 +178,7 @@ class MethodParametersBuilder
     return routeParameters;
   }
 
-  static RouteMethodParameterType getRouteMapParameterType(Type mapParameter)
+  static MethodRouteParameterType getRouteMapParameterType(Type mapParameter)
   {
     if (mapParameter instanceof ParameterizedType)
     {
@@ -177,7 +191,7 @@ class MethodParametersBuilder
           if (pt.getRawType() == List.class)
           {
             Type[] listTypes = pt.getActualTypeArguments();
-            return ((listTypes.length == 1) && (listTypes[0] == String.class)) ? RouteMethodParameterType.PARAMETER_LIST_MAP : null;
+            return ((listTypes.length == 1) && (listTypes[0] == String.class)) ? MethodRouteParameterType.PARAMETER_LIST_MAP : null;
           }
           else
           {
@@ -186,7 +200,7 @@ class MethodParametersBuilder
         }
         else if (types[1] == String.class)
         {
-          return RouteMethodParameterType.PARAMETER_MAP;
+          return MethodRouteParameterType.PARAMETER_MAP;
         }
       }
       else
@@ -196,7 +210,7 @@ class MethodParametersBuilder
     }
     if (mapParameter instanceof Class)
     {
-      return RouteMethodParameterType.PARAMETER_LIST_MAP;
+      return MethodRouteParameterType.PARAMETER_LIST_MAP;
     }
     else
     {
@@ -204,7 +218,7 @@ class MethodParametersBuilder
     }
   }
   
-  static MethodParameterType getRouteMethodParameterType(Type parameter)
+  static MethodPathParameterType getMethodRouteType(Type parameter)
   {
     Class parameterClass = null;;
     if (parameter instanceof Class)
@@ -228,39 +242,39 @@ class MethodParametersBuilder
     {
       if (parameterClass == String.class)
       {
-        return MethodParameterType.STRING;
+        return MethodPathParameterType.STRING;
       }
       else if ((parameterClass == Character.class) || (parameterClass == char.class))
       {
-        return MethodParameterType.CHARCTER;
+        return MethodPathParameterType.CHARCTER;
       }
       else if ((parameterClass == Boolean.class) || (parameterClass == boolean.class))
       {
-        return MethodParameterType.BOOLEAN;
+        return MethodPathParameterType.BOOLEAN;
       }
       else if ((parameterClass == Byte.class) || (parameterClass == byte.class))
       {
-        return MethodParameterType.BYTE;
+        return MethodPathParameterType.BYTE;
       }
       else if ((parameterClass == Short.class) || (parameterClass == short.class))
       {
-        return MethodParameterType.SHORT;
+        return MethodPathParameterType.SHORT;
       }
       else if ((parameterClass == Integer.class) || (parameterClass == int.class))
       {
-        return MethodParameterType.INTEGER;
+        return MethodPathParameterType.INTEGER;
       }
       else if ((parameterClass == Long.class) || (parameterClass == long.class))
       {
-        return MethodParameterType.LONG;
+        return MethodPathParameterType.LONG;
       }
       else if ((parameterClass == Float.class) || (parameterClass == float.class))
       {
-        return MethodParameterType.FLOAT;
+        return MethodPathParameterType.FLOAT;
       }
       else if ((parameterClass == Double.class) || (parameterClass == double.class))
       {
-        return MethodParameterType.DOUBLE;
+        return MethodPathParameterType.DOUBLE;
       }
     }
 

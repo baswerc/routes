@@ -1,7 +1,24 @@
+/*
+ * Copyright 2015 Corey Baswell
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *  http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package org.baswell.routes;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -23,27 +40,27 @@ class MethodInvoker
   private RequestParameters requestParameters; 
   
   private RouteConfiguration routeConfiguration;
-  
-  private RequestContext requestContext;
-  
+
   private Map<String, List<String>> parameterListMap;
 
   private Map<String, String> parameterMap;
   
-  private RequestFormat requestFormat;
+  private RequestedMediaType requestedMediaType;
 
-  MethodInvoker(HttpServletRequest request, HttpServletResponse response, HttpMethod httpMethod, RequestPath requestPath, RequestParameters requestParameters, RequestFormat requestFormat, RouteConfiguration routeConfiguration)
+  private URL url;
+
+  MethodInvoker(HttpServletRequest request, HttpServletResponse response, HttpMethod httpMethod, RequestPath requestPath, RequestParameters requestParameters, RequestedMediaType requestedMediaType, RouteConfiguration routeConfiguration)
   {
     this.request = request;
     this.response = response;
     this.httpMethod = httpMethod;
     this.requestPath = requestPath;
     this.requestParameters = requestParameters;
-    this.requestFormat = requestFormat;
+    this.requestedMediaType = requestedMediaType;
     this.routeConfiguration = routeConfiguration;
   }
   
-  Object invoke(Object routeInstance, Method method, List<MethodParameter> methodParameters, List<Matcher> pathMatchers, Map<String, Matcher> parameterMatchers) throws RouteMappingException, InvocationTargetException
+  Object invoke(Object routeInstance, Method method, List<MethodParameter> methodParameters, List<Matcher> pathMatchers, Map<String, Matcher> parameterMatchers) throws InvocationTargetException
   {
     Object[] invokeParameters = new Object[methodParameters.size()];
     for (int i = 0; i < methodParameters.size(); i++)
@@ -53,14 +70,6 @@ class MethodInvoker
         MethodParameter methodParameter = methodParameters.get(i);
         switch (methodParameter.type)
         {
-          case REQUEST_CONTEXT:
-            if (requestContext == null)
-            {
-              requestContext = new RequestContext(request, response, httpMethod, requestPath, requestParameters, requestFormat);
-            }
-            invokeParameters[i] = requestContext;
-            break;
-          
           case PARAMETER_LIST_MAP:
             if (parameterListMap == null)
             {
@@ -94,7 +103,28 @@ class MethodInvoker
             break;
             
           case FORMAT:
-            invokeParameters[i] = requestFormat;
+            invokeParameters[i] = requestedMediaType;
+            break;
+
+          case URL:
+            if (url == null)
+            {
+              String requestUrl = request.getRequestURL().toString();
+              String queryString = request.getQueryString();
+              if ((queryString != null) && !queryString.trim().isEmpty())
+              {
+                requestUrl += "?" + queryString;
+              }
+              try
+              {
+                url = new URL(requestUrl);
+              }
+              catch (MalformedURLException e)
+              {
+                throw new RuntimeException(e);
+              }
+            }
+            invokeParameters[i] = url;
             break;
             
           case REQUEST_PATH:

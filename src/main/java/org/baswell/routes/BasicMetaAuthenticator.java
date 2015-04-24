@@ -1,3 +1,18 @@
+/*
+ * Copyright 2015 Corey Baswell
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *  http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package org.baswell.routes;
 
 import javax.servlet.http.HttpServletRequest;
@@ -13,19 +28,19 @@ abstract public class BasicMetaAuthenticator implements MetaAuthenticator
   abstract protected boolean validCredentials(String userName, String password);
 
   @Override
-  public boolean metaRequestAuthenticated(HttpServletRequest request, HttpServletResponse response) throws IOException
+  public boolean metaRequestAuthenticated(HttpServletRequest servletRequest, HttpServletResponse servletResponse) throws IOException
   {
-    Boolean loggedIn = (Boolean) request.getSession().getAttribute(LOGGED_IN_ATTRIBUTE);
+    Boolean loggedIn = (Boolean) servletRequest.getSession().getAttribute(LOGGED_IN_ATTRIBUTE);
     if ((loggedIn != null) && loggedIn)
     {
       return true;
     }
     else
     {
-      String authorizationHeader = request.getHeader("Authorization");
+      String authorizationHeader = servletRequest.getHeader("Authorization");
       if ((authorizationHeader == null) || !authorizationHeader.toUpperCase().startsWith("BASIC "))
       {
-        requireLogin(response);
+        requireLogin(servletResponse);
         return false;
       }
       else
@@ -46,12 +61,12 @@ abstract public class BasicMetaAuthenticator implements MetaAuthenticator
 
         if (validCredentials(userName, password))
         {
-          request.getSession().setAttribute(LOGGED_IN_ATTRIBUTE, true);
+          servletRequest.getSession().setAttribute(LOGGED_IN_ATTRIBUTE, true);
           return true;
         }
         else
         {
-          requireLogin(response);
+          requireLogin(servletResponse);
           return false;
         }
       }
