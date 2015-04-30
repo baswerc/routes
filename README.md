@@ -151,6 +151,11 @@ public class LoginRoutes
 }
 ```
 
+| HTTP Request        | Matched Method |
+| :------------------- |:-------------- |
+| <pre>GET /login HTTP/1.0</pre> | <pre>get(request)</pre> |
+By default the class name is used to form the first url segment, in this case _/login_. Method names that just contain HTTP methods (ex. _get_, _post_) don't add anything to the matched path. The JSP file at _/WEB-INF/jsps/login.jsp_ will be rendered to the user.
+
 | HTTP Request        | Matched Method | Remarks  |
 | :------------------- |:-------------- | :--------|
 | <pre>GET /login HTTP/1.0</pre> | <pre>get(request)</pre> | By default the class name is used to form the first url segment, in this case _/login_. Method names that just contain HTTP methods (ex. _get_, _post_) don't add anything to the matched path. The JSP file at _/WEB-INF/jsps/login.jsp_ will be rendered to the user. |
