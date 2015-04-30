@@ -155,16 +155,23 @@ public class LoginRoutes
   <thead>
     <tr>
       <th align="left">HTTP Request</th>
-      <th>Matched Method</t>
+      <th align="left">Matched Method</t>
     </tr>
   </thead>
   <tbody>
     <tr>
-       <td>GET /login HTTP/1.0</td>
-       <td>get(request)</td>
+       <td><pre>GET /login HTTP/1.0</pre></td>
+       <td><pre>get(request)</pre></td>
     </tr>
     <tr>
       <td colspan="2">By default the class name is used to form the first url segment, in this case _/login_. Method names that just contain HTTP methods (ex. _get_, _post_) don't add anything to the matched path. The JSP file at _/WEB-INF/jsps/login.jsp_ will be rendered to the user.</td>
+    </tr>
+    <tr>
+       <td><pre>POST /login HTTP/1.0</pre></td>
+       <td><pre>post(request, response)</pre></td>
+    </tr>
+    <tr>
+      <td colspan="2">Since this method does not return anything, it must handle the content sent back to the user with HttpServletResponse object.</td>
     </tr>
   </tbody>
 </table>
