@@ -126,24 +126,24 @@ annotations. The following examples show how both these methods work.
 ```Java
 public class ApiRoutes
 {
-  public String get(HttpServletRequest request, HttpServletResponse)
+  public String get(HttpServletRequest request, HttpServletResponse response)
   {...}
 
-  public String post(HttpServletRequest request, HttpServletResponse)
+  public String post(HttpServletRequest request, HttpServletResponse response)
   {...}
 
-  public String getForgotPassword(HttpServletRequest request, HttpServletResponse)
+  public String getForgotPassword(HttpServletRequest request, HttpServletResponse response)
   {...}
 
-  public String postForgotPassword(HttpServletRequest request, HttpServletResponse)
+  public String postForgotPassword(HttpServletRequest request, HttpServletResponse response)
   {...}
 }
 ```
 
 | HTTP Request        | Matched Method | Remarks  |
-| ------------------- |:-------------- | :--------|
-| `GET /api HTTP/1.0` | `get`          |          |
-| `POST /api HTTP/1.0` | `post`          |          |
+| :------------------- |:-------------- | :--------|
+| `GET /api HTTP/1.0` | `get(request, response)`          |          |
+| `POST /api HTTP/1.0` | `post(request, response)`          |          |
 
 
 
