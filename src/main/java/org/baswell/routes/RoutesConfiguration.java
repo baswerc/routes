@@ -28,6 +28,22 @@ import static org.baswell.routes.RoutesMethods.typesToPatterns;
 public class RoutesConfiguration
 {
   /**
+   * If true the {@link org.baswell.routes.RoutingTable} will spawn a thread that rebuilds the routing table every
+   * {@link #developmentReloadCycleSeconds}.
+   *
+   * Default value: {@code false}
+   */
+  public boolean developmentMode;
+
+  /**
+   * The number of seconds between development mode reloads of the {@link org.baswell.routes.RoutingTable}. If {@link #developmentMode}
+   * is false this property is not used.
+   *
+   * Default value: 5
+   */
+  public int developmentReloadCycleSeconds = 5;
+
+  /**
    * The global path prepended to all route paths. For example if you want your route objects to process request that
    * start with "/api" set this variable to "/api" and then all route class paths will get prepended with this value.
    *

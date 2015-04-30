@@ -107,12 +107,13 @@ public class RoutingTable
    */
   public synchronized void build() throws RoutesException
   {
+    System.out.println("HERE");
     Parser parser = new Parser();
     CriteriaBuilder criteriaBuilder = new CriteriaBuilder();
     MethodParametersBuilder parametersBuilder = new MethodParametersBuilder();
     AvailableLibraries availableLibraries = new AvailableLibraries();
 
-    routeNodes = new ArrayList<RouteNode>();
+    List<RouteNode> routeNodes = new ArrayList<RouteNode>();
     for (Object addedObject : addedObjects)
     {
       boolean instanceIsClass = (addedObject instanceof Class);
@@ -211,7 +212,42 @@ public class RoutingTable
 
     }
     Collections.sort(routeNodes);
-    built = true;
+
+    this.routeNodes = routeNodes;
+    if (!built)
+    {
+      built = true;
+      if (routesConfiguration.developmentMode)
+      {
+        if (routesConfiguration.logger != null)
+        {
+          routesConfiguration.logger.logError("Routes is running in development mode.");
+        }
+        new Thread(new Runnable()
+        {
+          @Override
+          public void run()
+          {
+            try
+            {
+              while (true)
+              {
+                Thread.sleep(routesConfiguration.developmentReloadCycleSeconds * 1000);
+
+                build();
+              }
+            }
+            catch (Exception e)
+            {
+              if (routesConfiguration.logger != null)
+              {
+                routesConfiguration.logger.logError("Routes development mode thread crashed.", e);
+              }
+            }
+          }
+        }, "Routes Development Reloading").start();
+      }
+    }
   }
 
   MatchedRoute find(RequestPath path, RequestParameters parameters, HttpMethod httpMethod, RequestedMediaType requestedMediaType)
