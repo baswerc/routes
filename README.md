@@ -164,37 +164,52 @@ public class LoginRoutes
        <td><pre>get(request)</pre></td>
     </tr>
     <tr>
-      <td colspan="2">By default the class name is used to form the first url segment, in this case _/login_. Method names that just contain HTTP methods (ex. _get_, _post_) don't add anything to the matched path. The JSP file at _/WEB-INF/jsps/login.jsp_ will be rendered to the user.</td>
+      <td colspan="2">By default the class name is used to form the first url segment, in this case <i>/login</i>. Method names that just contain HTTP methods (ex. <i>get</i>, <i>post</i>)
+      don't add anything to the matched path. The JSP file at _/WEB-INF/jsps/login.jsp_ will be rendered to the user.</td>
     </tr>
     <tr>
-       <td><pre>POST /login HTTP/1.0</pre></td>
+       <td><pre>POST /login HTTP/1.1</pre></td>
        <td><pre>post(request, response)</pre></td>
     </tr>
     <tr>
       <td colspan="2">Since this method does not return anything, it must handle the content sent back to the user with HttpServletResponse object.</td>
     </tr>
+
+    <tr>
+       <td><pre>GET /login/forgotpassword HTTP/1.1</pre></td>
+       <td><pre>getForgotPassword(request)</pre></td>
+    </tr>
+    <tr>
+      <td colspan="2">The remaining method name after all HTTP methods are removed from the begging forms the next url segment to match.
+      The JSP file at _/WEB-INF/jsps/login.jsp_ will be rendered to the user.</td>
+    </tr>
+
+    <tr>
+       <td><pre>/login/ForGotpasSworD HTTP/1.1</pre></td>
+       <td><pre>getForgotPassword(request)</pre></td>
+    </tr>
+    <tr>
+      <td colspan="2">By default matching in Routes for paths and parameters is case insensitive. This can be changed in
+      <a href="http://baswerc.github.io/routes/javadoc/org/baswell/routes/RoutesConfiguration.html#caseInsensitive">RoutesConfiguration.caseInsensitve</a>.</td>
+    </tr>
+
+    <tr>
+       <td><pre></pre></td>
+       <td><pre></pre></td>
+    </tr>
+    <tr>
+      <td colspan="2"></td>
+    </tr>
+
+    <tr>
+       <td><pre></pre></td>
+       <td><pre></pre></td>
+    </tr>
+    <tr>
+      <td colspan="2"></td>
+    </tr>
   </tbody>
 </table>
-
-
-| HTTP Request        | Matched Method |
-| :------------------- |:-------------- |
-| <pre>GET /login HTTP/1.0</pre> | <pre>get(request)</pre> |
-
-
-| HTTP Request        | Matched Method |
-| :------------------- |:-------------- |
-| <pre>POST /login HTTP/1.0</pre> | <pre>post(request, response)</pre> |
-Since this method does not return anything, it must handle the content sent back to the user with HttpServletResponse object.
-
-
-| HTTP Request        | Matched Method | Remarks  |
-| :------------------- |:-------------- | :--------|
-| <pre>GET /login HTTP/1.0</pre> | <pre>get(request)</pre> | By default the class name is used to form the first url segment, in this case _/login_. Method names that just contain HTTP methods (ex. _get_, _post_) don't add anything to the matched path. The JSP file at _/WEB-INF/jsps/login.jsp_ will be rendered to the user. |
-| <pre>POST /login HTTP/1.0</pre> | <pre>post(request, response)</pre> | Since this method does not return anything, it must handle the content sent back to the user with HttpServletResponse object. |
-| <pre>GET /login/forgotpassword HTTP/1.0</pre> | <pre>getForgotPassword(request)</pre> | The remaining method name after all HTTP methods are removed from the begging forms the next url segment to match. The JSP file at _/WEB-INF/jsps/login.jsp_ will be rendered to the user. |
-| <pre>GET /login/ForGotpasSworD HTTP/1.0</pre> | <pre>getForgotPassword(request)</pre> | By default matching in Routes for paths and parameters is case insensitive. This can be changed in <a href="http://baswerc.github.io/routes/javadoc/org/baswell/routes/RoutesConfiguration.html#caseInsensitive">RoutesConfiguration.caseInsensitve</a>.|
-
 
 ## Routes Configuration
 
