@@ -146,7 +146,7 @@ public class LoginRoutes
   public void postForgotPassword(HttpServletRequest request)
   {
     ...
-    throw new RedirectTo("/home");
+    throw new RedirectTo("/login");
   }
 }
 ```
@@ -155,7 +155,7 @@ public class LoginRoutes
   <thead>
     <tr>
       <th align="left">HTTP Request</th>
-      <th align="left">Matched Method</t>
+      <th align="left">Method Called</t>
     </tr>
   </thead>
   <tbody>
@@ -164,7 +164,8 @@ public class LoginRoutes
        <td><pre>get(request)</pre></td>
     </tr>
     <tr>
-      <td colspan="2">By default the class name is used to form the first url segment, in this case <i>/login</i>. Method names that just contain HTTP methods (ex. <i>get</i>, <i>post</i>)
+      <td colspan="2">By default the class name is used to form the first url segment, in this case <i>/login</i>. If the class name ends in <i>Routes</i>, <i>Route</i>, <i>Controller</i>, or
+       <i>Handler</i> then this part of the class name will be removed from the path segment.Method names that just contain HTTP methods (ex. <i>get</i>, <i>post</i>)
       don't add anything to the matched path. The JSP file at _/WEB-INF/jsps/login.jsp_ will be rendered to the user.</td>
     </tr>
     <tr>
@@ -194,19 +195,12 @@ public class LoginRoutes
     </tr>
 
     <tr>
-       <td><pre></pre></td>
-       <td><pre></pre></td>
+       <td><pre><pre>POST /login/forgotpassword HTTP/1.1</pre></td>
+       <td><pre>postForgotPassword(request)</pre></td>
     </tr>
     <tr>
-      <td colspan="2"></td>
-    </tr>
-
-    <tr>
-       <td><pre></pre></td>
-       <td><pre></pre></td>
-    </tr>
-    <tr>
-      <td colspan="2"></td>
+      <td colspan="2">You can use the helper class <a href="http://baswerc.github.io/routes/javadoc/org/baswell/routes/RedirectTo.html">RedirectTo</a> to redirect the
+      client to another page.</td>
     </tr>
   </tbody>
 </table>
