@@ -173,7 +173,7 @@ public class LoginRoutes
        <td><pre>post(request, response)</pre></td>
     </tr>
     <tr>
-      <td colspan="2">Since this method does not return anything, it must handle the content sent back to the user with HttpServletResponse object.</td>
+      <td colspan="2">Since this method does not return anything, it must handle the content sent back to the user with the HttpServletResponse object.</td>
     </tr>
 
     <tr>
@@ -202,6 +202,16 @@ public class LoginRoutes
       <td colspan="2">You can use the helper class <a href="http://baswerc.github.io/routes/javadoc/org/baswell/routes/RedirectTo.html">RedirectTo</a> to redirect the
       client to another page.</td>
     </tr>
+    <tr>
+       <td><pre>PUT /login HTTP/1.0</pre></td>
+       <td><i>No Match</i></td>
+    </tr>
+    <tr>
+      <td colspan="2">Would need a <i>put()</i> method defined for this request to be matched. You can also combine HTTP methods together so for example the
+      method <i>postPut()</i> would be called for both <i>POST</i> and <i>PUT</i> requests with the path <i>/login</i></td>
+    </tr>
+
+
   </tbody>
 </table>
 
