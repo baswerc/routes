@@ -44,7 +44,7 @@ public class RoutesConfiguration
   public String rootForwardPath = "/WEB-INF/jsps";
 
   /**
-   * Is route path matching case insensitive?
+   * Is route path and parameter matching case insensitive?
    *
    * Default value: <status>false</status>
    */
