@@ -32,6 +32,11 @@ class AvailableLibraries
     return classAvailable("com.google.gson.Gson");
   }
 
+  boolean jacksonAvailable()
+  {
+    return classAvailable("com.fasterxml.jackson.databind.ObjectMapper");
+  }
+
   boolean classAvailable(String className)
   {
     if (classesLoad.containsKey(className))

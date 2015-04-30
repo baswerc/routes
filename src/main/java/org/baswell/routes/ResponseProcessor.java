@@ -33,6 +33,7 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import org.jdom2.Document;
 import org.jdom2.Element;
@@ -134,6 +135,11 @@ class ResponseProcessor
   void sendGson(Object response, HttpServletResponse servletResponse) throws IOException
   {
     servletResponse.getWriter().write(new Gson().toJson(response));
+  }
+
+  void sendJackson(Object response, HttpServletResponse servletResponse) throws IOException
+  {
+    new ObjectMapper().writeValue(servletResponse.getWriter(), response);
   }
 
   void sendNode(Object response, HttpServletResponse servletResponse) throws IOException
