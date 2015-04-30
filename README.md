@@ -124,7 +124,7 @@ else
 Routes imposes no class hierarchies or interfaces on your classes. There are two ways to tell Routes how your Java objects are matched to HTTP requests, by convention or by using the Routes
 annotations. The following examples show how both these methods work.
 
-### Example One
+### Example One: By Convention
 ```Java
 public class LoginRoutes
 {
@@ -204,7 +204,7 @@ public class LoginRoutes
     </tr>
     <tr>
        <td><pre>PUT /login HTTP/1.0</pre></td>
-       <td><i>No Match</i></td>
+       <td><i>404</i></td>
     </tr>
     <tr>
       <td colspan="2">Would need a <i>put()</i> method defined for this request to be matched. You can also combine HTTP methods together so for example the
@@ -215,7 +215,60 @@ public class LoginRoutes
   </tbody>
 </table>
 
+### Example Two: Using Annotations
+```Java
+@Routes(value="/", forwardPath="login")
+public class MyLoginRoutes
+{
+  @Route("/login")
+  public String getLoginPage(HttpServletRequest request)
+  {
+    ...
+    return "login.jsp";
+  }
+
+  @Route(value = "/login", respondsToMethods = {HttpMethod.POST, HttpMethod.PUT})
+  public void doLogin(HttpServletRequest request, HttpServletResponse response)
+  {...}
+
+  @Route(value = "/forgot_password", respondsToMethods = {HttpMethod.GET})
+  public String showForgotPassword(HttpServletRequest request)
+  {
+    ...
+    return "forgotpassword.jsp";
+  }
+
+  public void postForgotPassword(HttpServletRequest request)
+  {
+    ...
+    throw new RedirectTo("/login");
+  }
+}
+```
+<table>
+  <thead>
+    <tr>
+      <th align="left">HTTP Request</th>
+      <th align="left">Method Called</t>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+       <td><pre>GET /login HTTP/1.0</pre></td>
+       <td><pre>get(request)</pre></td>
+    </tr>
+    <tr>
+      <td colspan="2">By default the class name is used to form the first url segment, in this case <i>/login</i>. If the class name ends in <i>Routes</i>, <i>Route</i>, <i>Controller</i>, or
+       <i>Handler</i> then this part of the class name will be removed from the path segment.Method names that just contain HTTP methods (ex. <i>get</i>, <i>post</i>)
+      don't add anything to the matched path. The JSP file at _/WEB-INF/jsps/login.jsp_ will be rendered to the user.</td>
+    </tr>
+    <tr>
+  </tbody>
+</table>
+
 ## Routes Configuration
 
 ## Routes Helpers
+
+## Routes Meta Page
 
