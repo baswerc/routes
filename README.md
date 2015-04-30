@@ -147,7 +147,7 @@ public class ApiRoutes
 
 | HTTP Request        | Matched Method | Remarks  |
 | :------------------- |:-------------- | :--------|
-| `GET /api HTTP/1.0` | `get(request)`          | The JSP file at _/WEB-INF/jsps/login.jsp_ will be rendered to the user.|
+| <nobr>`GET /api HTTP/1.0`</nobr> | `get(request)`          | The JSP file at _/WEB-INF/jsps/login.jsp_ will be rendered to the user.|
 | `POST /api HTTP/1.0` | `post(request, response)`          |          |
 
 
