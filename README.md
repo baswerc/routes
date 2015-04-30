@@ -129,17 +129,21 @@ public class ApiRoutes
   public String get(HttpServletRequest request, HttpServletResponse)
   {...}
 
-  public String getLogin(HttpServletRequest request, HttpServletResponse)
+  public String post(HttpServletRequest request, HttpServletResponse)
   {...}
 
-  public String postLogin(HttpServletRequest request, HttpServletResponse)
+  public String getForgotPassword(HttpServletRequest request, HttpServletResponse)
+  {...}
+
+  public String postForgotPassword(HttpServletRequest request, HttpServletResponse)
   {...}
 }
 ```
 
 | HTTP Request        | Matched Method | Remarks  |
-| ------------------- |:-------------: | :--------|
+| ------------------- |:-------------- | :--------|
 | `GET /api HTTP/1.0` | `get`          |          |
+| `POST /api HTTP/1.0` | `post`          |          |
 
 
 
