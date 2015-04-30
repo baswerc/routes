@@ -137,9 +137,17 @@ public class ApiRoutes
 }
 ```
 
+| HTTP Request        | Matched Method | Remarks  |
+| ------------------- |:-------------: | :--------|
+| `GET /api HTTP/1.0` | `get`          |          |
+
+
+
+
+
 #### Matched HTTP Requests
 
 ```
-GET /api HTTP/1.0
+
 ...
 ```
