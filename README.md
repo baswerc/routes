@@ -147,8 +147,8 @@ public class ApiRoutes
 
 | HTTP Request        | Matched Method | Remarks  |
 | :------------------- |:-------------- | :--------|
-| <pre>GET /api HTTP/1.0</pre> | <pre>get(request)</pre>          | The JSP file at _/WEB-INF/jsps/login.jsp_ will be rendered to the user.|
-| <pre>POST /api HTTP/1.0</pre> | <pre>post(request, response)</pre>          |          |
+| <pre>GET /api HTTP/1.0</pre> | <pre>get(request)</pre> | The JSP file at _/WEB-INF/jsps/login.jsp_ will be rendered to the user. |
+| <pre>POST /api HTTP/1.0</pre> | <pre>post(request, response)</pre> | Since this method does not return anything, it must handle the content sent back to the user with HttpServletResponse object. |
 
 
 
