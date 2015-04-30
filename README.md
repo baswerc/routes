@@ -151,10 +151,10 @@ public class LoginRoutes
 }
 ```
 
-<table style="text-align: left">
+<table>
   <thead>
     <tr>
-      <th style="text-align: left">HTTP Request</th>
+      <th align="left">HTTP Request</th>
       <th>Matched Method</t>
     </tr>
   </thead>
