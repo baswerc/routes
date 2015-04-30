@@ -117,13 +117,29 @@ else
 ```
 
 
-## Route Mapping
+## Routes By Examples
 
-Routes imposes no class hierarchies or interfaces on your status. There are two ways to tell Routes how your Java objects
+Routes imposes no class hierarchies or interfaces on your classes. There are two ways to tell Routes how your Java objects are matched to HTTP requests, by convention or by using the Routes
+annotations. The following examples show how both these methods work.
 
-### Convention Based Routing
+### Example One
+```Java
+public class ApiRoutes
+{
+  public String get(HttpServletRequest request, HttpServletResponse)
+  {...}
 
+  public String getLogin(HttpServletRequest request, HttpServletResponse)
+  {...}
 
-### Routes Annotations
+  public String postLogin(HttpServletRequest request, HttpServletResponse)
+  {...}
+}
+```
 
+#### Matched HTTP Requests
 
+```
+GET /api HTTP/1.0
+...
+```
