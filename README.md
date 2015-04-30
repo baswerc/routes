@@ -151,7 +151,7 @@ public class LoginRoutes
 }
 ```
 
-<table>
+<table style="text-align: left">
   <thead>
     <tr>
       <th>HTTP Request</th>
@@ -160,8 +160,8 @@ public class LoginRoutes
   </thead>
   <tbody>
     <tr>
-       <td><pre>GET /login HTTP/1.0</pre></td>
-       <td> <pre>get(request)</pre></td>
+       <td>_GET /login HTTP/1.0_</td>
+       <td>_get(request)_</td>
     </tr>
     <tr>
       <td colspan="2">By default the class name is used to form the first url segment, in this case _/login_. Method names that just contain HTTP methods (ex. _get_, _post_) don't add anything to the matched path. The JSP file at _/WEB-INF/jsps/login.jsp_ will be rendered to the user.</td>
