@@ -126,12 +126,12 @@ annotations. The following examples show how both these methods work.
 
 ### Example One
 ```Java
-public class ApiRoutes
+public class LoginRoutes
 {
   public String get(HttpServletRequest request)
   {
-  ...
-  return "login.jsp";
+    ...
+    return "login.jsp";
   }
 
   public void post(HttpServletRequest request, HttpServletResponse response)
@@ -147,8 +147,8 @@ public class ApiRoutes
 
 | HTTP Request        | Matched Method | Remarks  |
 | :------------------- |:-------------- | :--------|
-| <pre>GET /api HTTP/1.0</pre> | <pre>get(request)</pre> | The JSP file at _/WEB-INF/jsps/login.jsp_ will be rendered to the user. |
-| <pre>POST /api HTTP/1.0</pre> | <pre>post(request, response)</pre> | Since this method does not return anything, it must handle the content sent back to the user with HttpServletResponse object. |
+| <pre>GET /login HTTP/1.0</pre> | <pre>get(request)</pre> | By default the class name is used to form the first url segment, in this case _/login_. Method names that just contain HTTP methods (ex. _get_, _post_) don't add anything to the matched path. The JSP file at _/WEB-INF/jsps/login.jsp_ will be rendered to the user. |
+| <pre>POST /login HTTP/1.0</pre> | <pre>post(request, response)</pre> | Since this method does not return anything, it must handle the content sent back to the user with HttpServletResponse object. |
 
 
 
