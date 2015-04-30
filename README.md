@@ -116,6 +116,8 @@ else
 ...
 ```
 
+## RouteTable
+
 
 ## Routes By Examples
 
@@ -126,10 +128,13 @@ annotations. The following examples show how both these methods work.
 ```Java
 public class ApiRoutes
 {
-  public String get(HttpServletRequest request, HttpServletResponse response)
-  {...}
+  public String get(HttpServletRequest request)
+  {
+  ...
+  return "login.jsp";
+  }
 
-  public String post(HttpServletRequest request, HttpServletResponse response)
+  public void post(HttpServletRequest request, HttpServletResponse response)
   {...}
 
   public String getForgotPassword(HttpServletRequest request, HttpServletResponse response)
@@ -142,7 +147,7 @@ public class ApiRoutes
 
 | HTTP Request        | Matched Method | Remarks  |
 | :------------------- |:-------------- | :--------|
-| `GET /api HTTP/1.0` | `get(request, response)`          |          |
+| `GET /api HTTP/1.0` | `get(request)`          | The JSP file at _/WEB-INF/jsps/login.jsp_ will be rendered to the user.|
 | `POST /api HTTP/1.0` | `post(request, response)`          |          |
 
 
