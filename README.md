@@ -499,34 +499,33 @@ expired=false&active=true</pre></td>
 
 
 ### Example Four: Pattern Matching
-So far all path and parameter matching has been with fixed values but Routes also supports regular expressions. To use a regular expression place the value between curly brackets `{}`. The value
+So far all path and parameter matching has been with fixed values. Routes also supports regular expressions. To use a regular expression place the value between curly brackets `{}`. The value
 between these brackets must be a valid <a href="http://docs.oracle.com/javase/7/docs/api/java/util/regex/Pattern.html">Java regular expressions</a> with the following exceptions:
 
 * `{*}` The single wildcard is a shortcut for `{.*}`
 * `{**}` A double wildcard can only be used for url paths and indicates it match against more than one path segment.
 * `{}` An empty set of brackets indicates that the regular expression is specified by a method parameter (next section).
 
-Since the exact value of path segments and parameters aren't known when a Routes method is invoked (all that is known is that the value matches the expression) these
-values can be input parameters to the method. Routes doesn't use method parameter annotations since it's the author's opinion that these hurt the readability of code.
-Instead method pattern values are set in the order they are specified in @Route. You can any of the following types for pattern parameters:
+The value matched against a path or parameter pattern can be passed in as a method parameter when the route method is invoked. The following list shows the acceptable Java types to use
+as method pattern parameters and how the value of the path or parameter is converted.
 
-* String
-* Character
-* char
-* Boolean
-* boolean
-* Byte
-* byte
-* Short
-* short
-* Integer
-* int
-* Long
-* long
-* Float
-* float
-* Double
-* double
+* String: value
+* Character: value.charAt(0)
+* char: value.chartAt(0)
+* Boolean: Boolean.parseBoolean(value)
+* boolean: Boolean.parseBoolean(value)
+* Byte: Byte.parseByte(value)
+* byte: Byte.parseByte(value)
+* Short: Short.parseShort(value)
+* short: Short.parseShort(value)
+* Integer: Integer.parseInt(value)
+* int: Integer.parse(value)
+* Long: Long.parseLong(value)
+* long: Long.parseLong(value)
+* Float: Float.parseFloat(value)
+* float: Float.parseFloat(value)
+* Double: Double.parseDouble(value)
+* double: Double.parseDouble(value)
 
 ```Java
 @Routes("/users")
@@ -664,8 +663,7 @@ request, "profile-basic")</pre></td>
 ### Example Five: Method Parameter Patterns
 Method parameter patterns are specified by an empty set of curly brackets _{}_. When these are used it means the pattern to be used should be inferred from the method parameter this pattern
 value is mapped to. The method parameter type must be one of the standard types defined in the previous section (Boolean, Byte, Short, Integer, Long, etc.) and it must be present in the method
-declaration. A Routes exception will be thrown when the RoutingTable is built if a method parameter pattern is specified in the path or parameter section and there is no matching method parameter. For
-example the following routes class is invalid.
+declaration. An exception will be thrown when _{}_ is used in the path or parameter section and there is no matching method parameter. For example the following routes class is invalid.
 ```Java
 @Routes("/invalid")
 public class InvalidRoutes
@@ -675,13 +673,14 @@ public class InvalidRoutes
   {...}
 }
 ```
-And the following will result in a RoutesException `routingTable.add(InvalidRoutes.class).build()`.
+The following will result in a RoutesException `routingTable.add(InvalidRoutes.class).build()`.
+
 ```Java
 @Routes("/users")
 public class UserRoutes
 {
-  @Route("{}")
-  public String getUserByIdInPath(int userId, HttpServletRequest request)
+  @Route("{}?showDetails={}")
+  public String getUserByIdInPath(int userId, boolean showDetails, HttpServletRequest request)
   {...}
 
   @Route("?id={}")
@@ -712,25 +711,29 @@ public class UserRoutes
   </thead>
   <tbody>
     <tr>
-       <td><pre>GET /users/23 HTTP/1.1</pre></td>
-       <td><pre>getUserByIdInPath(23, request)</pre></td>
+       <td><pre>GET /users/23?showDetails=true HTTP/1.1</pre></td>
+       <td><pre>getUserByIdInPath(23, true, request)</pre></td>
     </tr>
     <tr>
-      <td colspan="2">The .</td>
+       <td><pre>GET /users/23?showDetails=nope HTTP/1.1</pre></td>
+       <td><pre>404</pre></td>
+    </tr>
+    <tr>
+      <td colspan="2">.</td>
     </tr>
     <tr>
        <td><pre>GET /users?id=23 HTTP/1.1</pre></td>
        <td><pre>getUserByIdInParamter(23, request)</pre></td>
     </tr>
     <tr>
-      <td colspan="2">Regular expression for parameters work the same as paths.</td>
+      <td colspan="2"></td>
     </tr>
     <tr>
        <td><pre>GET /users?id=baswerc HTTP/1.1</pre></td>
        <td><pre>404</pre></td>
     </tr>
     <tr>
-      <td colspan="2">The HTTP request does match any Routes because <i>baswerc</i> does not match the pattern <i>{\d+}</i>.</td>
+      <td colspan="2"></td>
     </tr>
     <tr>
        <td><pre>GET /users/baswerc HTTP/1.1</pre></td>
@@ -749,16 +752,14 @@ public class UserRoutes
        <td><pre>404</pre></td>
     </tr>
     <tr>
-      <td colspan="2">The wildcard pattern <i>{*}</i> will match against any value. In this example any value in the segment after <i>/users</i> that is not numeric will be matched
-      to this method (since the numeric pattern method <i>getUsersByIdInPath</i> comes first in the class declaration it takes precedence). Note a wildcard declaration in a path or
-      parameter will match against any value but the value must present (empty is not a match.</td>
+      <td colspan="2"></td>
     </tr>
     <tr>
        <td><pre>GET /users/23/basic-blue HTTP/1.1</pre></td>
        <td><pre>getShowUserProfileInPath(23, request)</pre></td>
     </tr>
     <tr>
-      <td colspan="2">Pattern values are supplied as method parameters in the order they were specified. You don't have to specify method parameters for all patterns in the route.</td>
+      <td colspan="2"></td>
     </tr>
     <tr>
        <td><pre>GET /users/23?profile=basic-blue HTTP/1.1</pre></td>
@@ -766,7 +767,7 @@ public class UserRoutes
 request, "profile-basic")</pre></td>
     </tr>
     <tr>
-      <td colspan="2">Pattern value parameters can be intermingled with the other allowed route method parameter types (ex. HttpServletRequest).</td>
+      <td colspan="2"></td>
     </tr>
     <tr>
        <td><pre>GET /users/23/changepassword HTTP/1.1</pre></td>
@@ -774,12 +775,10 @@ request, "profile-basic")</pre></td>
     </tr>
     <tr>
        <td><pre>GET /users/baswerc/changepassword HTTP/1.1</pre></td>
-       <td><pre>throw new RoutesException()</pre></td>
+       <td><pre>404</pre></td>
     </tr>
     <tr>
-      <td colspan="2">Routes does not try to verify that path or parameter patterns are correctly mapped to method parameter types. If a path or parameter value cannot be coerced into
-      method parameter value (ex. NumberFormatException) a <a href="http://baswerc.github.io/routes/javadoc/org/baswell/routes/RoutesException.html">RoutesException</a> will be thrown
-      and the request will end in error. Method parameter patterns discussed in this section can help with this.</td>
+      <td colspan="2"></td>
     </tr>
   </tbody>
 </table>

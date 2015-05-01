@@ -31,6 +31,14 @@ import javax.servlet.http.HttpServletResponse;
 
 class RoutesMethods
 {
+  public static void main(String[] args) throws Exception
+  {
+    for (Map.Entry<Class, String> entry : typesToPatterns.entrySet())
+    {
+      System.out.println(entry.getKey().getSimpleName() + " " + entry.getValue());
+    }
+  }
+
   static int size(List list)
   {
     return list == null ? 0 : list.size();
