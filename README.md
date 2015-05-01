@@ -468,7 +468,7 @@ public class ApiRoutes
       then the default parameter value will be used for the match comparison if the parameter is not provided in the request.</td>
     </tr>
     <tr>
-       <td><pre>GET /api/users?expired=false&admin=true&format=json HTTP/1.1</pre></td>
+       <td><pre>GET /api/users?expired=false&admin=true HTTP/1.1</pre></td>
        <td><pre>getActiveAdministrators(request)</pre></td>
     </tr>
     <tr>
