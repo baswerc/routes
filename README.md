@@ -39,7 +39,7 @@ Routes requires the Java Servlet API 2.4 or greater. Routes has no other externa
 ## Servlet Container Configuration
 There are three different ways Routes can be used within a Servlet container.
 
-### RoutesServlet
+### Routes Servlet
 
 The <a href="http://baswerc.github.io/routes/javadoc/org/baswell/routes/RoutesServlet.html">RoutesServlet</a> can be used to map HTTP requests to routes. Any HTTP request the `RoutesServlet` does not find a
 matching route for is returned a 404 (`HttpServletResponse.setStatus(404)`).
@@ -55,7 +55,7 @@ matching route for is returned a 404 (`HttpServletResponse.setStatus(404)`).
 </servlet-mapping>
 ````
 
-### RoutesFilter
+### Routes Filter
 
 The `RoutesFilter` may work better when Routes is not the only means of serving content for your application.
 
@@ -96,9 +96,9 @@ This parameter is a comma delimited list of Java regular expressions. In this ex
 In this example all HTTP requests except URL paths that end with with `.html` or `.jsp` will be candidates for routes. Both `ONLY` and `EXCEPT` must be a list of valid Java regular expressions or an exception
 will be thrown when the `RoutesFilter` is initialized.
 
-### RoutesEngine
+### Routes Engine
 
-Both `RoutesServlet` and `RoutesFilter` use `RoutesEngine` to match HTTP requests to routes. It can be used in your status to manually handle when routes should be used to process HTTP requests.
+Both `RoutesServlet` and `RoutesFilter` use `RoutesEngine` to match HTTP requests to routes. It can be used directly to manually handle when routes should be used to process HTTP requests.
 
 ```Java
 ...
@@ -116,7 +116,7 @@ else
 ...
 ```
 
-## The RoutingTable
+## The Routing Table
 
 
 ## Routes By Example
@@ -212,7 +212,7 @@ public class LoginRoutes
     </tr>
     <tr>
        <td><pre>PUT /login HTTP/1.1</pre></td>
-       <td><i>404</i></td>
+       <td><pre>404</pre></td>
     </tr>
     <tr>
       <td colspan="2">Would need a <i>put()</i> method defined for this request to be matched. You can also combine HTTP methods together so for example the
@@ -306,7 +306,7 @@ public class MyLoginRoutes
        <td><pre>404</pre></td>
     </tr>
     <tr>
-      <td colspan="2">Since <i>postForgotPassword</i> is not annotated, it is not a candidate for HTTP requests. This can be override using <a href="http://baswerc.github.io/routes/javadoc/org/baswell/routes/Routes.html#routeUnannotatedPublicMethods()">Routes.routeUnannotatedPublicMethods</a>
+      <td colspan="2">Since <i>postForgotPassword</i> is not annotated, it is not a candidate for HTTP requests. This can be overridden using <a href="http://baswerc.github.io/routes/javadoc/org/baswell/routes/Routes.html#routeUnannotatedPublicMethods()">Routes.routeUnannotatedPublicMethods</a>
       or <a href="http://baswerc.github.io/routes/javadoc/org/baswell/routes/RoutesConfiguration.html#routeUnannotatedPublicMethods">RoutesConfiguration.routeUnannotatedPublicMethods</a>.</td>
     </tr>
     <tr>
@@ -315,6 +315,96 @@ public class MyLoginRoutes
 
 
 ### Example Three: Mixed
+```Java
+abstract public class BaseRoutes
+{
+  public String getSomeResource(HttpServletRequest request)
+  {...}
+
+  @Route(value="faq")
+  public String getFAQ(HttpServletRequest request)
+  {...}
+}
+
+@Routes(value="/login", routeUnannotatedPublicMethods=true, forwardPath="/login")
+public class MyLoginRoutes extends BaseRoutes
+{
+  @Route
+  public String getLoginPage(HttpServletRequest request)
+  {
+    ...
+    return "login.jsp";
+  }
+
+  @Route(value = "/forgotpassword", respondsToMethods = {HttpMethod.GET})
+  public String showForgotPassword(HttpServletRequest request)
+  {
+    ...
+    return "forgotpassword.jsp";
+  }
+
+  public void postForgotPassword(HttpServletRequest request)
+  {
+    ...
+    throw new RedirectTo("/login");
+  }
+}
+```
+<table>
+  <thead>
+    <tr>
+      <th align="left">HTTP Request</th>
+      <th align="left">Method Called</t>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+       <td><pre>GET /login HTTP/1.1</pre></td>
+       <td><pre>get(request)</pre></td>
+    </tr>
+    <tr>
+      <td colspan="2">The root level path match is specified as <i>/login</i> in (<a href="http://baswerc.github.io/routes/javadoc/org/baswell/routes/Routes.html#value()">Routes.value</a>)
+      since @Route doesn't specify a value, this is the full path matched for this method.</td>
+    </tr>
+    <tr>
+       <td><pre>GET /login/forgotpassword HTTP/1.1</pre></td>
+       <td><pre>showForgotPassword(request)</pre></td>
+    </tr>
+    <tr>
+      <td colspan="2">The path specified @Route is appended onto the path specified in @Routes to form the full match path <i>/login/forgotpassword</li>. The JSP file at <i>/login/forgotpassword.jsp</i> will be rendered to the user
+      since @Routes.forwardPath starts with a <i>/</i>.</td>
+    </tr>
+    <tr>
+       <td><pre>POST /login/forgotpassword HTTP/1.1</pre></td>
+       <td><pre>postForgotPassword(request)</pre></td>
+    </tr>
+    <tr>
+      <td colspan="2">Since @Routes.routeUnannotatedPublicMethods is true, this public method is a candidate for HTTP requests. Both the path and accepted HTTP methods are taken by convention
+      from the method name. Since @Routes.value is specified the path taken from this method name is appended to this value to form the full match path (<i>/login/forgotpassword</i>).</td>
+    </tr>
+    <tr>
+       <td><pre>GET /login/someresource HTTP/1.1</pre></td>
+       <td><pre>404</pre></td>
+    </tr>
+    <tr>
+       <td><pre>GET /someresource HTTP/1.1</pre></td>
+       <td><pre>404</pre></td>
+    </tr>
+    <tr>
+      <td colspan="2">@Routes.routeUnannotatedPublicMethods only applies to the immediate class. Public, unannotated methods from super classes are not HTTP request candidates.</td>
+    </tr>
+    <tr>
+       <td><pre>GET /login/faq HTTP/1.1</pre></td>
+       <td><pre>getFAQ(request)</pre></td>
+    </tr>
+    <tr>
+      <td colspan="2">Annotated super class methods are candidates for HTTP requests. If BaseRoutes declared a @Routes it would be ignored, @Routes is only used if present on the immediate
+      class (MyLoginRoutes).</td>
+    </tr>
+
+  </tbody>
+</table>
+
 
 ### Example Four: Parameter Matching
 
@@ -325,10 +415,11 @@ public class MyLoginRoutes
 ### Example Six: Responding To Media Types
 
 
+## Routes Helpers
+
+## Pre & Post Route Events
 
 ## Routes Configuration
-
-## Routes Helpers
 
 ## Routes Meta Page
 
