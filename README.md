@@ -430,8 +430,18 @@ public class ApiRoutes
   @Route("/users?expired=false&admin=true", defaultParameters="expired=false")
   public String getActiveAdministrators(HttpServletRequest request)
   {
-
+    ...
+    return "activeAdministrators.jsp";
   }
+
+  @Route("/users?expired=false&admin=true", defaultParameters="expired=false")
+  public String postActiveAdministrators(HttpServletRequest request)
+  {
+    ...
+    return "activeAdministrators.jsp";
+  }
+
+
 }
 ```
 <table>
@@ -475,6 +485,16 @@ public class ApiRoutes
       <td colspan="2">Multiple parameters are delimited with <i>&</i>. Route methods with more parameter checks will be checked first which is why getActiveAdministrators is called here instead of
       getActiveUsers even though getActiveUsers is listed first.</td>
     </tr>
+    <tr>
+       <td><pre>POST /api/users HTTP/1.1
+                Content-Type: application/x-www-form-urlencoded
+
+                expired=false&active=true</pre></td>
+       <td><pre>postActiveAdministrators(request)</pre></td>
+    </tr>
+    <tr>
+      <td colspan="2">Parameters can be specified from the query string or from the body content when form encoded.</td>
+    </tr>
 
   </tbody>
 </table>
@@ -486,12 +506,13 @@ public class ApiRoutes
 
 ### Example Six: Responding To Media Types
 
-
 ## Routes Helpers
 
 ## Pre & Post Route Events
 
 ## Routes Configuration
+
+## Supported Libraries
 
 ## Routes Meta Page
 
