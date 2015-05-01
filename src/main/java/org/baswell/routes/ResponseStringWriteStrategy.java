@@ -18,6 +18,7 @@ package org.baswell.routes;
 enum ResponseStringWriteStrategy
 {
   GSON,
+  JACKSON,
   W3C_NODE,
   JAXB,
   JDOM2_DOCUMENT,

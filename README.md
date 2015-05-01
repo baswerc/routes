@@ -116,14 +116,159 @@ else
 ...
 ```
 
-
-## Route Mapping
-
-Routes imposes no class hierarchies or interfaces on your status. There are two ways to tell Routes how your Java objects
-
-### Convention Based Routing
+## RouteTable
 
 
-### Routes Annotations
+## Routes By Examples
 
+Routes imposes no class hierarchies or interfaces on your classes. There are two ways to tell Routes how your Java objects are matched to HTTP requests, by convention or by using the Routes
+annotations. The following examples show how both these methods work.
+
+### Example One: By Convention
+```Java
+public class LoginRoutes
+{
+  public String get(HttpServletRequest request)
+  {
+    ...
+    return "login.jsp";
+  }
+
+  public void post(HttpServletRequest request, HttpServletResponse response)
+  {...}
+
+  public String getForgotPassword(HttpServletRequest request)
+  {
+    ...
+    return "login/forgotpassword.jsp";
+  }
+
+  public void postForgotPassword(HttpServletRequest request)
+  {
+    ...
+    throw new RedirectTo("/login");
+  }
+}
+```
+
+<table>
+  <thead>
+    <tr>
+      <th align="left">HTTP Request</th>
+      <th align="left">Method Called</t>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+       <td><pre>GET /login HTTP/1.0</pre></td>
+       <td><pre>get(request)</pre></td>
+    </tr>
+    <tr>
+      <td colspan="2">By default the class name is used to form the first url segment, in this case <i>/login</i>. If the class name ends in <i>Routes</i>, <i>Route</i>, <i>Controller</i>, or
+       <i>Handler</i> then this part of the class name will be removed from the path segment.Method names that just contain HTTP methods (ex. <i>get</i>, <i>post</i>)
+      don't add anything to the matched path. The JSP file at _/WEB-INF/jsps/login.jsp_ will be rendered to the user.</td>
+    </tr>
+    <tr>
+       <td><pre>POST /login HTTP/1.1</pre></td>
+       <td><pre>post(request, response)</pre></td>
+    </tr>
+    <tr>
+      <td colspan="2">Since this method does not return anything, it must handle the content sent back to the user with the HttpServletResponse object.</td>
+    </tr>
+
+    <tr>
+       <td><pre>GET /login/forgotpassword HTTP/1.1</pre></td>
+       <td><pre>getForgotPassword(request)</pre></td>
+    </tr>
+    <tr>
+      <td colspan="2">The remaining method name after all HTTP methods are removed from the begging forms the next url segment to match.
+      The JSP file at _/WEB-INF/jsps/login.jsp_ will be rendered to the user.</td>
+    </tr>
+
+    <tr>
+       <td><pre>/login/ForGotpasSworD HTTP/1.1</pre></td>
+       <td><pre>getForgotPassword(request)</pre></td>
+    </tr>
+    <tr>
+      <td colspan="2">By default matching in Routes for paths and parameters is case insensitive. This can be changed in
+      <a href="http://baswerc.github.io/routes/javadoc/org/baswell/routes/RoutesConfiguration.html#caseInsensitive">RoutesConfiguration.caseInsensitve</a>.</td>
+    </tr>
+
+    <tr>
+       <td><pre><pre>POST /login/forgotpassword HTTP/1.1</pre></td>
+       <td><pre>postForgotPassword(request)</pre></td>
+    </tr>
+    <tr>
+      <td colspan="2">You can use the helper class <a href="http://baswerc.github.io/routes/javadoc/org/baswell/routes/RedirectTo.html">RedirectTo</a> to redirect the
+      client to another page.</td>
+    </tr>
+    <tr>
+       <td><pre>PUT /login HTTP/1.0</pre></td>
+       <td><i>404</i></td>
+    </tr>
+    <tr>
+      <td colspan="2">Would need a <i>put()</i> method defined for this request to be matched. You can also combine HTTP methods together so for example the
+      method <i>postPut()</i> would be called for both <i>POST</i> and <i>PUT</i> requests with the path <i>/login</i></td>
+    </tr>
+
+
+  </tbody>
+</table>
+
+### Example Two: Using Annotations
+```Java
+@Routes(value="/", forwardPath="login")
+public class MyLoginRoutes
+{
+  @Route("/login")
+  public String getLoginPage(HttpServletRequest request)
+  {
+    ...
+    return "login.jsp";
+  }
+
+  @Route(value = "/login", respondsToMethods = {HttpMethod.POST, HttpMethod.PUT})
+  public void doLogin(HttpServletRequest request, HttpServletResponse response)
+  {...}
+
+  @Route(value = "/forgot_password", respondsToMethods = {HttpMethod.GET})
+  public String showForgotPassword(HttpServletRequest request)
+  {
+    ...
+    return "forgotpassword.jsp";
+  }
+
+  public void postForgotPassword(HttpServletRequest request)
+  {
+    ...
+    throw new RedirectTo("/login");
+  }
+}
+```
+<table>
+  <thead>
+    <tr>
+      <th align="left">HTTP Request</th>
+      <th align="left">Method Called</t>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+       <td><pre>GET /login HTTP/1.0</pre></td>
+       <td><pre>get(request)</pre></td>
+    </tr>
+    <tr>
+      <td colspan="2">By default the class name is used to form the first url segment, in this case <i>/login</i>. If the class name ends in <i>Routes</i>, <i>Route</i>, <i>Controller</i>, or
+       <i>Handler</i> then this part of the class name will be removed from the path segment.Method names that just contain HTTP methods (ex. <i>get</i>, <i>post</i>)
+      don't add anything to the matched path. The JSP file at _/WEB-INF/jsps/login.jsp_ will be rendered to the user.</td>
+    </tr>
+    <tr>
+  </tbody>
+</table>
+
+## Routes Configuration
+
+## Routes Helpers
+
+## Routes Meta Page
 

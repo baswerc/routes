@@ -100,6 +100,11 @@ class ResponseTypeMapper
     {
       return pair(ResponseStringWriteStrategy.GSON, MIMETypes.JSON);
     }
+    else if ((((mediaType != null) && (mediaType == MediaType.JSON)))
+        && availableLibraries.jacksonAvailable())
+    {
+      return pair(ResponseStringWriteStrategy.JACKSON, MIMETypes.JSON);
+    }
     else
     {
       return null;
