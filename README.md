@@ -623,7 +623,9 @@ public class UserRoutes
     </tr>
     <tr>
        <td><pre>GET /users/23?profile=basic-blue HTTP/1.1</pre></td>
-       <td><pre>getShowUserProfileInParameter(23, request, "profile-basic")</pre></td>
+       <td><pre>getShowUserProfileInParameter(23,
+                                              request,
+                                              "profile-basic")</pre></td>
     </tr>
     <tr>
       <td colspan="2">Pattern value parameters can be intermingled with the other allowed route method parameter types (ex. HttpServletRequest).</td>
