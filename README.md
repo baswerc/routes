@@ -119,15 +119,14 @@ else
 ## The RoutingTable
 
 
-## Routes By Examples
+## Routes By Example
 
 Routes imposes no class hierarchies or interfaces on your classes. There are two ways to tell Routes how your Java objects are matched to HTTP requests, by convention or by using the Routes
-annotations. If your Routes class (any class or object you add to the <a href="http://baswerc.github.io/routes/javadoc/org/baswell/routes/RoutingTable.html">RoutingTable</a>) has no Routes annotations
-then all public methods are candidates to being matched to incoming HTTP requests. Routes use a convention for converting unannotated classes and methods to HTTP candidates that you can override using
-<a href="http://baswerc.github.io/routes/javadoc/org/baswell/routes/RouteByConvention.html">RouteByConvention</a>.
+annotations. If your class has no Routes annotations then all public methods are candidates to being matched to incoming HTTP requests (only the immediate class, public methods of any super classes are not candidates).
+Routes use a convention for converting unannotated classes and methods to HTTP candidates that you can override using <a href="http://baswerc.github.io/routes/javadoc/org/baswell/routes/RouteByConvention.html">RouteByConvention</a>.
 
-The Routes annotations at the class level, <a href="http://baswerc.github.io/routes/javadoc/org/baswell/routes/Routes.html">Routes</a> and method level <a href="http://baswerc.github.io/routes/javadoc/org/baswell/routes/Route.html">Route</a>
-provide full control over how methods are matched to HTTP requests. By default if your class has at least one of these annotations then only methods with the {@code Route} annotations can be matched to HTTP requests (public, unannotated
+The annotations <a href="http://baswerc.github.io/routes/javadoc/org/baswell/routes/Routes.html">Routes</a> (class level) and <a href="http://baswerc.github.io/routes/javadoc/org/baswell/routes/Route.html">Route</a> (method level)
+provide full control over how methods are matched to HTTP requests. By default if your class has at least one of these annotations then only methods with the `Route` annotations can be matched to HTTP requests (public, unannotated
 methods will not be candidates). This can be override for entire class with <a href="http://baswerc.github.io/routes/javadoc/org/baswell/routes/Routes.html#routeUnannotatedPublicMethods()">Routes.routeUnannotatedPublicMethods</a> or
 globally with <a href="http://baswerc.github.io/routes/javadoc/org/baswell/routes/RoutesConfiguration.html#routeUnannotatedPublicMethods">RoutesConfiguration.routeUnannotatedPublicMethods</a>.
 
@@ -271,25 +270,27 @@ public class MyLoginRoutes
     </tr>
     <tr>
       <td colspan="2">If no root level path annotation is specified (<a href="http://baswerc.github.io/routes/javadoc/org/baswell/routes/Routes.html#value()">Routes.value</a>) then the path specified in
-      <a href="">Root.value</a> will form the full match path. Since</td>
+      <a href="http://baswerc.github.io/routes/javadoc/org/baswell/routes/Route.html#value()">Root.value</a> will form the full match path. Since no <a href="http://baswerc.github.io/routes/javadoc/org/baswell/routes/Route.html#respondsToMethods()">Route.respondsToMethod</a>
+      was specified in the annotation the accepted HTTP methods are taken from the method name as in the convention based approach.</td>
     </tr>
     <tr>
 
     <tr>
-       <td><pre></pre></td>
-       <td><pre></pre></td>
+       <td><pre>POST /login HTTP/1.0</pre></td>
+       <td><pre>doLogin(request, response)</pre></td>
     </tr>
     <tr>
-      <td colspan="2"></td>
+      <td colspan="2">Since both <a href="http://baswerc.github.io/routes/javadoc/org/baswell/routes/Routes.html#value()">Routes.value</a> and <a href="http://baswerc.github.io/routes/javadoc/org/baswell/routes/Route.html#respondsToMethods()">Route.respondsToMethod</a> are
+       specified the method name has no impact on which HTTP requests are matched.</td>
     </tr>
     <tr>
 
     <tr>
-       <td><pre></pre></td>
-       <td><pre></pre></td>
+       <td><pre>PUT /login HTTP/1.0</pre></td>
+       <td><pre>doLogin(request, response)</pre></td>
     </tr>
     <tr>
-      <td colspan="2"></td>
+      <td colspan="2">All HTTP methods specified in the <a href="http://baswerc.github.io/routes/javadoc/org/baswell/routes/Route.html#respondsToMethods()">Route.respondsToMethod</a> array will be candidates for matches.</td>
     </tr>
     <tr>
 
@@ -336,6 +337,7 @@ public class MyLoginRoutes
 
 ### Example Three: Mixed
 
+### Example Four: Parameter Matching
 
 ### Example Four: Pattern Matching
 
