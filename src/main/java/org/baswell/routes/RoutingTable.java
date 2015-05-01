@@ -105,7 +105,7 @@ public class RoutingTable
    *
    * @throws RoutesException If an added route is configured incorrectly.
    */
-  public synchronized void build() throws RoutesException
+  public void build() throws RoutesException
   {
     Parser parser = new Parser();
     CriteriaBuilder criteriaBuilder = new CriteriaBuilder();
@@ -129,7 +129,27 @@ public class RoutingTable
       if (routesAnnotation == null)
       {
         numRoutesPaths = 1;
-        routeUnannotatedPublicMethods = routesConfiguration.routeUnannotatedPublicMethods;
+        if (routesConfiguration.routeUnannotatedPublicMethods)
+        {
+          routeUnannotatedPublicMethods = true;
+        }
+        else
+        {
+          /*
+           * If this an empty class with no Route annotations then we're going to route the public methods since it
+           * was added to the RoutingTable
+           */
+          boolean routeAnnotationFound = false;
+          for (Method method : routesClass.getMethods())
+          {
+            if (method.getAnnotation(Route.class) != null)
+            {
+              routeAnnotationFound = true;
+              break;
+            }
+          }
+          routeUnannotatedPublicMethods = !routeAnnotationFound;
+        }
       }
       else
       {

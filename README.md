@@ -121,13 +121,13 @@ else
 
 ## Routes By Example
 
-Routes imposes no class hierarchies or interfaces on your classes. There are two ways to tell Routes how your Java objects are matched to HTTP requests, by convention or by using the Routes
-annotations. If your class has no Routes annotations then all public methods are candidates to being matched to incoming HTTP requests (only the immediate class, public methods of any super classes are not candidates).
+Routes imposes no class hierarchies or interfaces on your classes. There are two ways to tell Routes how your Java objects are matched to HTTP requests, by convention or by using annotations. If your class has no
+Routes annotations then all public methods are candidates to being matched to incoming HTTP requests (only the immediate class, public methods of any super classes are not candidates).
 Routes use a convention for converting unannotated classes and methods to HTTP candidates that you can override using <a href="http://baswerc.github.io/routes/javadoc/org/baswell/routes/RouteByConvention.html">RouteByConvention</a>.
 
 The annotations <a href="http://baswerc.github.io/routes/javadoc/org/baswell/routes/Routes.html">Routes</a> (class level) and <a href="http://baswerc.github.io/routes/javadoc/org/baswell/routes/Route.html">Route</a> (method level)
 provide full control over how methods are matched to HTTP requests. By default if your class has at least one of these annotations then only methods with the `Route` annotations can be matched to HTTP requests (public, unannotated
-methods will not be candidates). This can be override for entire class with <a href="http://baswerc.github.io/routes/javadoc/org/baswell/routes/Routes.html#routeUnannotatedPublicMethods()">Routes.routeUnannotatedPublicMethods</a> or
+methods will not be candidates). This can be override for the entire class with <a href="http://baswerc.github.io/routes/javadoc/org/baswell/routes/Routes.html#routeUnannotatedPublicMethods()">Routes.routeUnannotatedPublicMethods</a> or
 globally with <a href="http://baswerc.github.io/routes/javadoc/org/baswell/routes/RoutesConfiguration.html#routeUnannotatedPublicMethods">RoutesConfiguration.routeUnannotatedPublicMethods</a>.
 
 The following examples show how both these methods work.
@@ -168,7 +168,7 @@ public class LoginRoutes
   </thead>
   <tbody>
     <tr>
-       <td><pre>GET /login HTTP/1.0</pre></td>
+       <td><pre>GET /login HTTP/1.1</pre></td>
        <td><pre>get(request)</pre></td>
     </tr>
     <tr>
@@ -211,7 +211,7 @@ public class LoginRoutes
       client to another page.</td>
     </tr>
     <tr>
-       <td><pre>PUT /login HTTP/1.0</pre></td>
+       <td><pre>PUT /login HTTP/1.1</pre></td>
        <td><i>404</i></td>
     </tr>
     <tr>
@@ -225,6 +225,7 @@ public class LoginRoutes
 
 ### Example Two: Using Annotations
 ```Java
+@Routes(forwardPath="login")
 public class MyLoginRoutes
 {
   @Route("/login")
@@ -245,15 +246,11 @@ public class MyLoginRoutes
     return "forgotpassword.jsp";
   }
 
-  @Route
   public void postForgotPassword(HttpServletRequest request)
   {
     ...
     throw new RedirectTo("/login");
   }
-
-  public String getAnotherResource(HttpServletRequest request)
-  {...}
 }
 ```
 <table>
@@ -265,7 +262,7 @@ public class MyLoginRoutes
   </thead>
   <tbody>
     <tr>
-       <td><pre>GET /login HTTP/1.0</pre></td>
+       <td><pre>GET /login HTTP/1.1</pre></td>
        <td><pre>get(request)</pre></td>
     </tr>
     <tr>
@@ -276,7 +273,7 @@ public class MyLoginRoutes
     <tr>
 
     <tr>
-       <td><pre>POST /login HTTP/1.0</pre></td>
+       <td><pre>POST /login HTTP/1.1</pre></td>
        <td><pre>doLogin(request, response)</pre></td>
     </tr>
     <tr>
@@ -286,7 +283,7 @@ public class MyLoginRoutes
     <tr>
 
     <tr>
-       <td><pre>PUT /login HTTP/1.0</pre></td>
+       <td><pre>PUT /login HTTP/1.1</pre></td>
        <td><pre>doLogin(request, response)</pre></td>
     </tr>
     <tr>
@@ -295,42 +292,23 @@ public class MyLoginRoutes
     <tr>
 
     <tr>
-       <td><pre></pre></td>
-       <td><pre></pre></td>
+       <td><pre>GET /login/forgotpassword HTTP/1.1</pre></td>
+       <td><pre>showForgotPassword(request)</pre></td>
     </tr>
     <tr>
-      <td colspan="2"></td>
+      <td colspan="2">The JSP file at <i>/WEB-INF/jsps/login/forgotpassword.jsp</i> will be rendered to the user since <a href="http://baswerc.github.io/routes/javadoc/org/baswell/routes/Routes.html#forwardPath()">Routes.forwardPath</a>
+      is specified. If the forward path does not begin with a <i>/</i> then the value is appended to <a href="http://baswerc.github.io/routes/javadoc/org/baswell/routes/RoutesConfiguration.html#rootForwardPath">RoutesConfiguration.rootForwardPath</a>. If
+      the forward path was <i>/login</i> then the the JSP file <i>/login/forgotpassword.jsp</i> would be rendered.</td>
     </tr>
     <tr>
-
     <tr>
-       <td><pre></pre></td>
-       <td><pre></pre></td>
+       <td><pre>POST /forgotpassword HTTP/1.1</pre></td>
+       <td><pre>404</pre></td>
     </tr>
     <tr>
-      <td colspan="2"></td>
+      <td colspan="2">Since `postForgotPassword` is not annotated, by default, it is not a candidate for HTTP requests.</td>
     </tr>
     <tr>
-
-    <tr>
-       <td><pre></pre></td>
-       <td><pre></pre></td>
-    </tr>
-    <tr>
-      <td colspan="2"></td>
-    </tr>
-    <tr>
-
-    <tr>
-       <td><pre></pre></td>
-       <td><pre></pre></td>
-    </tr>
-    <tr>
-      <td colspan="2"></td>
-    </tr>
-    <tr>
-
-
   </tbody>
 </table>
 
