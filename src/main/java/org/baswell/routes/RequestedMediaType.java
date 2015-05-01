@@ -28,10 +28,10 @@ public class RequestedMediaType
 
   RequestedMediaType(String acceptType)
   {
-    this(acceptType, null);
+    this(acceptType, null, null);
   }
 
-  RequestedMediaType(String acceptType, RequestPath requestPath)
+  RequestedMediaType(String acceptType, RequestPath requestPath, RequestParameters requestParameters)
   {
     this.acceptType = acceptType;
     fileExtension = requestPath == null ? null : requestPath.getFileExtension();
@@ -46,6 +46,11 @@ public class RequestedMediaType
     if ((mediaType == null) && (acceptType != null))
     {
       mediaType = MediaType.findFromMimeType(acceptType);
+    }
+
+    if (mediaType == null)
+    {
+      mediaType = MediaType.findFromFormatParameter(requestParameters.get("format"));
     }
 
     this.mediaType = mediaType;

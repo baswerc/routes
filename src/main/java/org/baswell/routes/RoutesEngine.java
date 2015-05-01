@@ -102,7 +102,7 @@ public class RoutesEngine
     RequestPath requestPath = new RequestPath(servletRequest);
     RequestParameters requestParameters = new RequestParameters(servletRequest);
     HttpMethod httpMethod = HttpMethod.fromServletMethod(servletRequest.getMethod());
-    RequestedMediaType requestedMediaType = new RequestedMediaType(servletRequest.getHeader("Accept"), requestPath);
+    RequestedMediaType requestedMediaType = new RequestedMediaType(servletRequest.getHeader("Accept"), requestPath, requestParameters);
 
     MatchedRoute matchedRoute = null;
 

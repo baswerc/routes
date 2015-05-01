@@ -63,7 +63,7 @@ abstract public class EndToEndTest
     this.servletRequest = servletRequest;
     servletResponse = new TestHttpServletResponse();
     httpMethod = HttpMethod.fromServletMethod(servletRequest.getMethod());
-    requestedMediaType = new RequestedMediaType(servletRequest.getContentType(), new RequestPath(servletRequest));
+    requestedMediaType = new RequestedMediaType(servletRequest.getContentType(), new RequestPath(servletRequest), new RequestParameters(servletRequest));
     path = new RequestPath(servletRequest);
     parameters = new RequestParameters(servletRequest);
   }

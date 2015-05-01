@@ -1,5 +1,6 @@
 package org.baswell.routes.testroutes;
 
+import org.baswell.routes.RequestContent;
 import org.baswell.routes.Routes;
 
 @Routes(routeUnannotatedPublicMethods =true)
@@ -18,5 +19,9 @@ public class LoginRoutes extends BaseRoutes
   public void getForgotPassword()
   {
     methodsCalled.add("getForgotPassword");
+  }
+
+  public void postTest(RequestContent<byte[]> content)
+  {
   }
 }

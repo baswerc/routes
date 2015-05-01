@@ -111,6 +111,27 @@ public enum MediaType
     return null;
   }
 
+  /**
+   *
+   * @param formatParamter The format parameter
+   * @return The {@code MediaType} that has the same name as the format parameter (ex. format=json) or {@code null}.
+   */
+  public static MediaType findFromFormatParameter(String formatParamter)
+  {
+    if (formatParamter != null)
+    {
+      for (MediaType mediaType : values())
+      {
+        if (mediaType.toString().equalsIgnoreCase(formatParamter))
+        {
+          return mediaType;
+        }
+      }
+    }
+
+    return null;
+  }
+
   private MediaType(List<String> mimeTypes, List<String> extensions)
   {
     this.mimeTypes = mimeTypes;
