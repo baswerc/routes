@@ -306,7 +306,8 @@ public class MyLoginRoutes
        <td><pre>404</pre></td>
     </tr>
     <tr>
-      <td colspan="2">Since `postForgotPassword` is not annotated, by default, it is not a candidate for HTTP requests.</td>
+      <td colspan="2">Since <i>postForgotPassword</i> is not annotated, it is not a candidate for HTTP requests. This can be override using <a href="http://baswerc.github.io/routes/javadoc/org/baswell/routes/Routes.html#routeUnannotatedPublicMethods()">Routes.routeUnannotatedPublicMethods</a>
+      or <a href="http://baswerc.github.io/routes/javadoc/org/baswell/routes/RoutesConfiguration.html#routeUnannotatedPublicMethods">RoutesConfiguration.routeUnannotatedPublicMethods</a>.</td>
     </tr>
     <tr>
   </tbody>
