@@ -407,6 +407,47 @@ public class MyLoginRoutes extends BaseRoutes
 
 
 ### Example Four: Parameter Matching
+The previous examples use path matching exclusively to determine how HTTP requests are mapped. Request parameters can also be used as a criteria for method matching.
+
+```Java
+@Routes("/api")
+public class ApiRoutes
+{
+  @Route("/users?expired=true")
+  public String getExpiredUsers(HttpServletRequest request)
+  {
+    ...
+    return "expiredUsers.jsp";
+  }
+
+  @Route("/users?expired=false", defaultParameters="expired=false")
+  public String getActiveUsers(HttpServletRequest request)
+  {
+    ...
+    return "expiredUsers.jsp";
+  }
+}
+```
+<table>
+  <thead>
+    <tr>
+      <th align="left">HTTP Request</th>
+      <th align="left">Method Called</t>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+       <td><pre>GET /api/users?expired=true&anotherParameter=false HTTP/1.1</pre></td>
+       <td><pre>getExpiredUsers(request)</pre></td>
+    </tr>
+    <tr>
+      <td colspan="2">Parameter matching is specified by adding a query string to the end @Routes.value. All parameters specified in this query must be present and equal
+      to the value specified for a match to be made on the method. Any additional parameters provided in the request that aren't specified in the query @Routes.value query
+      string will be ignored.</td>
+    </tr>
+  </tbody>
+</table>
+
 
 ### Example Four: Pattern Matching
 
