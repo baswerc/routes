@@ -440,8 +440,6 @@ public class ApiRoutes
     ...
     return "activeAdministrators.jsp";
   }
-
-
 }
 ```
 <table>
@@ -501,6 +499,83 @@ expired=false&active=true</pre></td>
 
 
 ### Example Four: Pattern Matching
+So far all path and parameter matching has been with fixed values but Routes also supports regular expressions. To use a regular expression place the value between curly brackets `{}`. The value
+between these brackets must be a valid <a href="http://docs.oracle.com/javase/7/docs/api/java/util/regex/Pattern.html">Java regular expressions</a> with the following exceptions:
+
+* `{*}` The single wildcard is a shortcut for `{.*}`
+* `{**}` A double wildcard can only be used for url paths and indicates it match against more than one path segment.
+* `{}` An empty set of brackets indicates that the regular expression is specified by a method parameter (next section).
+
+Since the exact value of path segments and parameters aren't known when a Routes method is invoked (all that is known is that the value matches the expression) these
+values can be input parameters to the method. Routes doesn't use method parameter annotations since it's the author's opinion that these hurt the readability of code.
+Instead method pattern values are set in the order they are specified in @Route.
+
+```Java
+@Routes("/users")
+public class UserRoutes
+{
+  @Route("{\d+}")
+  public String getUserByIdInPath(int userId, HttpServletRequest request)
+  {...}
+
+  @Route("?id={\d+}")
+  public String getUserByIdInParamter(int userId, HttpServletRequest request)
+  {...}
+
+  @Route("/{*}")
+  public String getUserByName(String userName, HttpServletRequest request)
+  {...}
+
+  @Route("/{\d+}/{*}")
+  public String getShowUserProfileInPath(int userId, HttpServletRequest request)
+  {...}
+
+  @Route("/{\d+}?profileName={*}")
+  public String getShowUserProfileInParameter(int userId, HttpServletRequest request, String profileName)
+  {...}
+
+  @Route("/{*}/changepassword", defaultParameters="expired=false")
+  public String getChangePasswordById(int userId, HttpServletRequest request)
+  {...}
+
+  @Route("/{**}")
+  public String getCustomUsersNotFoundPage(HttpServletRequest request)
+  {...}
+}
+```
+<table>
+  <thead>
+    <tr>
+      <th align="left">HTTP Request</th>
+      <th align="left">Method Called</t>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+       <td><pre>GET /users/23 HTTP/1.1</pre></td>
+       <td><pre>getUserByIdInPath(23, request)</pre></td>
+    </tr>
+    <tr>
+      <td colspan="2">The regular expression <i>{\d+}</i> will match any numeric value. The numeric value matched will be provided in the <i>userId</i> parameter when invoked. If this method had no
+      Integer parameter the HTTP request would still be matched and the method would be invoked without the value being provided.</td>
+    </tr>
+    <tr>
+       <td><pre>GET /users?id=23 HTTP/1.1</pre></td>
+       <td><pre>getUserByIdInParamter(23, request)</pre></td>
+    </tr>
+    <tr>
+      <td colspan="2">Regular expression for parameters work the same as paths.</td>
+    </tr>
+    <tr>
+       <td><pre>GET /users?id=baswerc HTTP/1.1</pre></td>
+       <td><pre>404</pre></td>
+    </tr>
+    <tr>
+      <td colspan="2">The HTTP request does match any Routes because <i>baswerc</i> does not match the pattern <i>{\d+}</i>.</td>
+    </tr>
+
+  </tbody>
+</table>
 
 ### Example Five: Parameter Patterns
 
