@@ -51,13 +51,13 @@ matching route for is returned a 404 (`HttpServletResponse.setStatus(404)`).
 </servlet>
 <servlet-mapping>
     <servlet-name>RoutesServlet</servlet-name>
-    <url-pattern>/*</url-pattern>
+    <url-pattern>/routes/*</url-pattern>
 </servlet-mapping>
 ````
 
 ### Routes Filter
 
-The `RoutesFilter` may work better when Routes is not the only means of serving content for your application.
+The <a href="http://baswerc.github.io/routes/javadoc/org/baswell/routes/RoutesFilter.html">RoutesFilter</a> may work better when Routes is not the only means of serving content for your application.
 
 ````xml
 <filter>
@@ -642,10 +642,148 @@ request, "profile-basic")</pre></td>
       method parameter value (ex. NumberFormatException) a <a href="http://baswerc.github.io/routes/javadoc/org/baswell/routes/RoutesException.html">RoutesException</a> will be thrown
       and the request will end in error. Method parameter patterns discussed in this section can help with this.</td>
     </tr>
+    <tr>
+       <td><pre>GET /users/something/else/goes/here HTTP/1.1</pre></td>
+       <td><pre>getCustomUsersNotFoundPage(request)</pre></td>
+    </tr>
+    <tr>
+       <td><pre>GET /users/23/abc HTTP/1.1</pre></td>
+       <td><pre>getCustomUsersNotFoundPage(request)</pre></td>
+    </tr>
+    <tr>
+       <td><pre>GET /users?one=1 HTTP/1.1</pre></td>
+       <td><pre>getCustomUsersNotFoundPage(request)</pre></td>
+    </tr>
+    <tr>
+      <td colspan="2">The double wildcard will match any arbitrary number of path segments that aren't matched by other criteria. Since the double wildcard can consume multiple path
+      segments it will not match to any method parameters.</td>
+    </tr>
   </tbody>
 </table>
 
-### Example Five: Parameter Patterns
+### Example Five: Method Parameter Patterns
+Method parameter patterns are specified by an empty set of curly brackets _{}_. When these are used it means the pattern to be used should be inferred from the method parameter this pattern
+value is mapped to. The method parameter type must be one of the standard types defined in the previous section (Boolean, Byte, Short, Integer, Long, etc.) and it must be present in the method
+declaration. A Routes exception will be thrown when the RoutingTable is built if a method parameter pattern is specified in the path or parameter section and there is no matching method parameter. For
+example the following routes class is invalid.
+```Java
+@Routes("/invalid")
+public class InvalidRoutes
+{
+  @Route("{}") // No matching method parameter to specify what regular expression is used
+  public String getInvalidRoute(HttpServletRequest request)
+  {...}
+}
+```
+And the following will result in a RoutesException `routingTable.add(InvalidRoutes.class).build()`.
+```Java
+@Routes("/users")
+public class UserRoutes
+{
+  @Route("{}")
+  public String getUserByIdInPath(int userId, HttpServletRequest request)
+  {...}
+
+  @Route("?id={}")
+  public String getUserByIdInParamter(int userId, HttpServletRequest request)
+  {...}
+
+  @Route("/{}")
+  public String getUserByName(String userName, HttpServletRequest request)
+  {...}
+
+  @Route("/{}/{.+-.+}")
+  public String getShowUserProfileInPath(int userId, String profile, HttpServletRequest request)
+  {...}
+
+  @Route("/{}?profileName={}")
+  public String getShowUserProfileInParameter(int userId,
+                                              HttpServletRequest request,
+                                              String profileName)
+  {...}
+}
+```
+<table>
+  <thead>
+    <tr>
+      <th align="left">HTTP Request</th>
+      <th align="left">Method Called</t>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+       <td><pre>GET /users/23 HTTP/1.1</pre></td>
+       <td><pre>getUserByIdInPath(23, request)</pre></td>
+    </tr>
+    <tr>
+      <td colspan="2">The .</td>
+    </tr>
+    <tr>
+       <td><pre>GET /users?id=23 HTTP/1.1</pre></td>
+       <td><pre>getUserByIdInParamter(23, request)</pre></td>
+    </tr>
+    <tr>
+      <td colspan="2">Regular expression for parameters work the same as paths.</td>
+    </tr>
+    <tr>
+       <td><pre>GET /users?id=baswerc HTTP/1.1</pre></td>
+       <td><pre>404</pre></td>
+    </tr>
+    <tr>
+      <td colspan="2">The HTTP request does match any Routes because <i>baswerc</i> does not match the pattern <i>{\d+}</i>.</td>
+    </tr>
+    <tr>
+       <td><pre>GET /users/baswerc HTTP/1.1</pre></td>
+       <td><pre>getUserByName("baswerc", request)</pre></td>
+    </tr>
+    <tr>
+       <td><pre>GET /users/23A HTTP/1.1</pre></td>
+       <td><pre>getUserByName("23A", request)</pre></td>
+    </tr>
+    <tr>
+       <td><pre>GET /users HTTP/1.1</pre></td>
+       <td><pre>404</pre></td>
+    </tr>
+    <tr>
+       <td><pre>GET /users/ HTTP/1.1</pre></td>
+       <td><pre>404</pre></td>
+    </tr>
+    <tr>
+      <td colspan="2">The wildcard pattern <i>{*}</i> will match against any value. In this example any value in the segment after <i>/users</i> that is not numeric will be matched
+      to this method (since the numeric pattern method <i>getUsersByIdInPath</i> comes first in the class declaration it takes precedence). Note a wildcard declaration in a path or
+      parameter will match against any value but the value must present (empty is not a match.</td>
+    </tr>
+    <tr>
+       <td><pre>GET /users/23/basic-blue HTTP/1.1</pre></td>
+       <td><pre>getShowUserProfileInPath(23, request)</pre></td>
+    </tr>
+    <tr>
+      <td colspan="2">Pattern values are supplied as method parameters in the order they were specified. You don't have to specify method parameters for all patterns in the route.</td>
+    </tr>
+    <tr>
+       <td><pre>GET /users/23?profile=basic-blue HTTP/1.1</pre></td>
+       <td><pre>getShowUserProfileInParameter(23,
+request, "profile-basic")</pre></td>
+    </tr>
+    <tr>
+      <td colspan="2">Pattern value parameters can be intermingled with the other allowed route method parameter types (ex. HttpServletRequest).</td>
+    </tr>
+    <tr>
+       <td><pre>GET /users/23/changepassword HTTP/1.1</pre></td>
+       <td><pre>getChangePasswordById(23, request)</pre></td>
+    </tr>
+    <tr>
+       <td><pre>GET /users/baswerc/changepassword HTTP/1.1</pre></td>
+       <td><pre>throw new RoutesException()</pre></td>
+    </tr>
+    <tr>
+      <td colspan="2">Routes does not try to verify that path or parameter patterns are correctly mapped to method parameter types. If a path or parameter value cannot be coerced into
+      method parameter value (ex. NumberFormatException) a <a href="http://baswerc.github.io/routes/javadoc/org/baswell/routes/RoutesException.html">RoutesException</a> will be thrown
+      and the request will end in error. Method parameter patterns discussed in this section can help with this.</td>
+    </tr>
+  </tbody>
+</table>
+
 
 ### Example Six: Responding To Media Types
 
