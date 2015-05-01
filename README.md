@@ -573,6 +573,27 @@ public class UserRoutes
     <tr>
       <td colspan="2">The HTTP request does match any Routes because <i>baswerc</i> does not match the pattern <i>{\d+}</i>.</td>
     </tr>
+    <tr>
+       <td><pre>GET /users/baswerc HTTP/1.1</pre></td>
+       <td><pre>getUserByName("baswerc", request)</pre></td>
+    </tr>
+    <tr>
+       <td><pre>GET /users/23A HTTP/1.1</pre></td>
+       <td><pre>getUserByName("23A", request)</pre></td>
+    </tr>
+    <tr>
+       <td><pre>GET /users HTTP/1.1</pre></td>
+       <td><pre>404</pre></td>
+    </tr>
+    <tr>
+       <td><pre>GET /users/ HTTP/1.1</pre></td>
+       <td><pre>404</pre></td>
+    </tr>
+    <tr>
+      <td colspan="2">The wildcard pattern <i>{*}</i> will match against any value. In this example any value in the segment after <i>/users<i> will be matched
+      to this method (since the numeric pattern method <i>getUsersByIdInPath</i> comes first in the class declaration). Note a wildcard declaration in a path or
+      parameter will match against any value but the value must present (empty is not a match.</td>
+    </tr>
 
   </tbody>
 </table>
