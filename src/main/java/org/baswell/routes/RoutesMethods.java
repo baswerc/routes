@@ -19,8 +19,10 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.net.URL;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -29,6 +31,11 @@ import javax.servlet.http.HttpServletResponse;
 
 class RoutesMethods
 {
+  static int size(List list)
+  {
+    return list == null ? 0 : list.size();
+  }
+
   static boolean hasEntries(Collection collection)
   {
     return (collection != null) && !collection.isEmpty();

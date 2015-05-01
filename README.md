@@ -424,7 +424,13 @@ public class ApiRoutes
   public String getActiveUsers(HttpServletRequest request)
   {
     ...
-    return "expiredUsers.jsp";
+    return "activeUsers.jsp";
+  }
+
+  @Route("/users?expired=false&admin=true", defaultParameters="expired=false")
+  public String getActiveAdministrators(HttpServletRequest request)
+  {
+
   }
 }
 ```
@@ -437,14 +443,39 @@ public class ApiRoutes
   </thead>
   <tbody>
     <tr>
-       <td><pre>GET /api/users?expired=true&anotherParameter=false HTTP/1.1</pre></td>
+       <td><pre>GET /api/users?expired=true&format=xml HTTP/1.1</pre></td>
        <td><pre>getExpiredUsers(request)</pre></td>
     </tr>
     <tr>
-      <td colspan="2">Parameter matching is specified by adding a query string to the end @Routes.value. All parameters specified in this query must be present and equal
-      to the value specified for a match to be made on the method. Any additional parameters provided in the request that aren't specified in the query @Routes.value query
+      <td colspan="2">Parameter matching is specified by adding a query string to the end @Route.value. All parameters specified in this query must be present and equal
+      to the value specified for a match to be made on the method. Any additional parameters provided in the request that aren't specified in the query @Route.value query
       string will be ignored.</td>
     </tr>
+    <tr>
+       <td><pre>GET /api/users?expired=TRUE HTTP/1.1</pre></td>
+       <td><pre>getExpiredUsers(request)</pre></td>
+    </tr>
+    <tr>
+      <td colspan="2">By default matching in Routes for paths and parameters is case insensitive. This can be changed in
+      <a href="http://baswerc.github.io/routes/javadoc/org/baswell/routes/RoutesConfiguration.html#caseInsensitive">RoutesConfiguration.caseInsensitve</a>.</td>
+    </tr>
+    <tr>
+       <td><pre>GET /api/users?format=json HTTP/1.1</pre></td>
+       <td><pre>getActiveUsers(request)</pre></td>
+    </tr>
+    <tr>
+      <td colspan="2">If default values are specified for parameters using <a href="http://baswerc.github.io/routes/javadoc/org/baswell/routes/Route.html#defaultParameters()">@Route.defaultParameters</a>
+      then the default parameter value will be used for the match comparison if the parameter is not provided in the request.</td>
+    </tr>
+    <tr>
+       <td><pre>GET /api/users?expired=false&admin=true&format=json HTTP/1.1</pre></td>
+       <td><pre>getActiveAdministrators(request)</pre></td>
+    </tr>
+    <tr>
+      <td colspan="2">Multiple parameters are delimited with <i>&</i>. Route methods with more parameter checks will be checked first which is why getActiveAdministrators is called here instead of
+      getActiveUsers even though getActiveUsers is listed first.</td>
+    </tr>
+
   </tbody>
 </table>
 

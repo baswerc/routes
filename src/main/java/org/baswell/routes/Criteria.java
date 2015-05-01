@@ -23,6 +23,8 @@ import java.util.regex.Matcher;
 
 import org.baswell.routes.CriterionForPathSegment.RequestPathSegmentCrierionType;
 
+import static org.baswell.routes.RoutesMethods.*;
+
 class Criteria implements Comparable<Criteria>
 {
   final List<CriterionForPathSegment> pathCriteria;
@@ -167,7 +169,21 @@ class Criteria implements Comparable<Criteria>
     {
       if (routeConfiguration.respondsToMedia.size() == other.routeConfiguration.respondsToMedia.size())
       {
-        return 0;
+        int numberParameters = size(parameterCriteria);
+        int otherNumberParameters = size(other.parameterCriteria);
+
+        if (numberParameters > otherNumberParameters)
+        {
+          return -1;
+        }
+        else if (otherNumberParameters > numberParameters)
+        {
+          return 1;
+        }
+        else
+        {
+          return 0;
+        }
       }
       else if (routeConfiguration.respondsToMedia.isEmpty())
       {
