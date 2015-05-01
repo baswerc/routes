@@ -277,20 +277,13 @@ public class MyLoginRoutes
        <td><pre>doLogin(request, response)</pre></td>
     </tr>
     <tr>
-      <td colspan="2">Since both <a href="http://baswerc.github.io/routes/javadoc/org/baswell/routes/Routes.html#value()">Routes.value</a> and <a href="http://baswerc.github.io/routes/javadoc/org/baswell/routes/Route.html#respondsToMethods()">Route.respondsToMethod</a> are
-       specified the method name has no impact on which HTTP requests are matched.</td>
-    </tr>
-    <tr>
-
-    <tr>
        <td><pre>PUT /login HTTP/1.1</pre></td>
        <td><pre>doLogin(request, response)</pre></td>
     </tr>
     <tr>
-      <td colspan="2">All HTTP methods specified in the <a href="http://baswerc.github.io/routes/javadoc/org/baswell/routes/Route.html#respondsToMethods()">Route.respondsToMethod</a> array will be candidates for matches.</td>
+      <td colspan="2">Since both <a href="http://baswerc.github.io/routes/javadoc/org/baswell/routes/Routes.html#value()">Routes.value</a> and <a href="http://baswerc.github.io/routes/javadoc/org/baswell/routes/Route.html#respondsToMethods()">Route.respondsToMethod</a> are
+       specified the method name has no impact on which HTTP requests are matched.</td>
     </tr>
-    <tr>
-
     <tr>
        <td><pre>GET /login/forgotpassword HTTP/1.1</pre></td>
        <td><pre>showForgotPassword(request)</pre></td>
