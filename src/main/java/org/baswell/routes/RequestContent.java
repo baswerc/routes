@@ -20,6 +20,8 @@ public class RequestContent<ContentType extends Object>
 
   private ContentType content;
 
+  private boolean contentLoaded;
+
   RequestContent(HttpServletRequest request, MediaType mediaType, Class<ContentType> contentClass, AvailableLibraries libraries)
   {
     this.request = request;

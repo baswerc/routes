@@ -22,7 +22,7 @@ import java.util.List;
  *
  * Convention for mapping routes where annotations aren't explicitly provided.
  *
- * @see RouteByLowercaseConvention
+ * @see org.baswell.routes.RoutesConfiguration#routeByConvention
  */
 public interface RouteByConvention
 {

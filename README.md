@@ -116,13 +116,22 @@ else
 ...
 ```
 
-## RouteTable
+## The RoutingTable
 
 
 ## Routes By Examples
 
 Routes imposes no class hierarchies or interfaces on your classes. There are two ways to tell Routes how your Java objects are matched to HTTP requests, by convention or by using the Routes
-annotations. The following examples show how both these methods work.
+annotations. If your Routes class (any class or object you add to the <a href="http://baswerc.github.io/routes/javadoc/org/baswell/routes/RoutingTable.html">RoutingTable</a>) has no Routes annotations
+then all public methods are candidates to being matched to incoming HTTP requests. Routes use a convention for converting unannotated classes and methods to HTTP candidates that you can override using
+<a href="http://baswerc.github.io/routes/javadoc/org/baswell/routes/RouteByConvention.html">RouteByConvention</a>.
+
+The Routes annotations at the class level, <a href="http://baswerc.github.io/routes/javadoc/org/baswell/routes/Routes.html">Routes</a> and method level <a href="http://baswerc.github.io/routes/javadoc/org/baswell/routes/Route.html">Route</a>
+provide full control over how methods are matched to HTTP requests. By default if your class has at least one of these annotations then only methods with the {@code Route} annotations can be matched to HTTP requests (public, unannotated
+methods will not be candidates). This can be override for entire class with <a href="http://baswerc.github.io/routes/javadoc/org/baswell/routes/Routes.html#routeUnannotatedPublicMethods()">Routes.routeUnannotatedPublicMethods</a> or
+globally with <a href="http://baswerc.github.io/routes/javadoc/org/baswell/routes/RoutesConfiguration.html#routeUnannotatedPublicMethods">RoutesConfiguration.routeUnannotatedPublicMethods</a>.
+
+The following examples show how both these methods work.
 
 ### Example One: By Convention
 ```Java
@@ -166,7 +175,7 @@ public class LoginRoutes
     <tr>
       <td colspan="2">By default the class name is used to form the first url segment, in this case <i>/login</i>. If the class name ends in <i>Routes</i>, <i>Route</i>, <i>Controller</i>, or
        <i>Handler</i> then this part of the class name will be removed from the path segment.Method names that just contain HTTP methods (ex. <i>get</i>, <i>post</i>)
-      don't add anything to the matched path. The JSP file at _/WEB-INF/jsps/login.jsp_ will be rendered to the user.</td>
+      don't add anything to the matched path. The JSP file at <i>/WEB-INF/jsps/login.jsp</i> will be rendered to the user.</td>
     </tr>
     <tr>
        <td><pre>POST /login HTTP/1.1</pre></td>
@@ -217,7 +226,6 @@ public class LoginRoutes
 
 ### Example Two: Using Annotations
 ```Java
-@Routes(value="/", forwardPath="login")
 public class MyLoginRoutes
 {
   @Route("/login")
@@ -231,18 +239,22 @@ public class MyLoginRoutes
   public void doLogin(HttpServletRequest request, HttpServletResponse response)
   {...}
 
-  @Route(value = "/forgot_password", respondsToMethods = {HttpMethod.GET})
+  @Route(value = "/login/forgotpassword", respondsToMethods = {HttpMethod.GET})
   public String showForgotPassword(HttpServletRequest request)
   {
     ...
     return "forgotpassword.jsp";
   }
 
+  @Route
   public void postForgotPassword(HttpServletRequest request)
   {
     ...
     throw new RedirectTo("/login");
   }
+
+  public String getAnotherResource(HttpServletRequest request)
+  {...}
 }
 ```
 <table>
@@ -258,13 +270,80 @@ public class MyLoginRoutes
        <td><pre>get(request)</pre></td>
     </tr>
     <tr>
-      <td colspan="2">By default the class name is used to form the first url segment, in this case <i>/login</i>. If the class name ends in <i>Routes</i>, <i>Route</i>, <i>Controller</i>, or
-       <i>Handler</i> then this part of the class name will be removed from the path segment.Method names that just contain HTTP methods (ex. <i>get</i>, <i>post</i>)
-      don't add anything to the matched path. The JSP file at _/WEB-INF/jsps/login.jsp_ will be rendered to the user.</td>
+      <td colspan="2">If no root level path annotation is specified (<a href="http://baswerc.github.io/routes/javadoc/org/baswell/routes/Routes.html#value()">Routes.value</a>) then the path specified in
+      <a href="">Root.value</a> will form the full match path. Since</td>
     </tr>
     <tr>
+
+    <tr>
+       <td><pre></pre></td>
+       <td><pre></pre></td>
+    </tr>
+    <tr>
+      <td colspan="2"></td>
+    </tr>
+    <tr>
+
+    <tr>
+       <td><pre></pre></td>
+       <td><pre></pre></td>
+    </tr>
+    <tr>
+      <td colspan="2"></td>
+    </tr>
+    <tr>
+
+    <tr>
+       <td><pre></pre></td>
+       <td><pre></pre></td>
+    </tr>
+    <tr>
+      <td colspan="2"></td>
+    </tr>
+    <tr>
+
+    <tr>
+       <td><pre></pre></td>
+       <td><pre></pre></td>
+    </tr>
+    <tr>
+      <td colspan="2"></td>
+    </tr>
+    <tr>
+
+    <tr>
+       <td><pre></pre></td>
+       <td><pre></pre></td>
+    </tr>
+    <tr>
+      <td colspan="2"></td>
+    </tr>
+    <tr>
+
+    <tr>
+       <td><pre></pre></td>
+       <td><pre></pre></td>
+    </tr>
+    <tr>
+      <td colspan="2"></td>
+    </tr>
+    <tr>
+
+
   </tbody>
 </table>
+
+
+### Example Three: Mixed
+
+
+### Example Four: Pattern Matching
+
+### Example Five: Parameter Patterns
+
+### Example Six: Responding To Media Types
+
+
 
 ## Routes Configuration
 

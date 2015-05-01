@@ -107,7 +107,6 @@ public class RoutingTable
    */
   public synchronized void build() throws RoutesException
   {
-    System.out.println("HERE");
     Parser parser = new Parser();
     CriteriaBuilder criteriaBuilder = new CriteriaBuilder();
     MethodParametersBuilder parametersBuilder = new MethodParametersBuilder();
