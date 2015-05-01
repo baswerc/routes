@@ -487,9 +487,9 @@ public class ApiRoutes
     </tr>
     <tr>
        <td><pre>POST /api/users HTTP/1.1
-                Content-Type: application/x-www-form-urlencoded
+Content-Type: application/x-www-form-urlencoded
 
-                expired=false&active=true</pre></td>
+expired=false&active=true</pre></td>
        <td><pre>postActiveAdministrators(request)</pre></td>
     </tr>
     <tr>
