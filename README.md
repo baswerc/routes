@@ -692,7 +692,9 @@ public class UserRoutes
   {...}
 
   @Route("/{}/{.+-.+}")
-  public String getShowUserProfileInPath(int userId, String profile, HttpServletRequest request)
+  public String getShowUserProfileInPath(int userId,
+                                         String profile,
+                                         HttpServletRequest request)
   {...}
 
   @Route("/{}?profileName={}")
@@ -719,7 +721,7 @@ public class UserRoutes
        <td><pre>404</pre></td>
     </tr>
     <tr>
-      <td colspan="2">.</td>
+      <td colspan="2"></td>
     </tr>
     <tr>
        <td><pre>GET /users?id=23 HTTP/1.1</pre></td>
