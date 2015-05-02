@@ -660,11 +660,13 @@ declaration. An exception will be thrown when `{}` is used in the path or parame
 ```Java
 public class InvalidRoutes
 {
-  @Route("/valid/{}") // {} matches to the method parameter id
+  // {} matches to the method parameter id
+  @Route("/valid/{}") 
   public String getValidRoute(int id, HttpServletRequest request)
   {...}
 
-  @Route("/invalid/{}") // No matching method parameter to specify what regular expression is used
+  // No matching method parameter to specify what regular expression is used
+  @Route("/invalid/{}") 
   public String getInvalidRoute(HttpServletRequest request)
   {...}
 }
