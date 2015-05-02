@@ -29,11 +29,6 @@ public class RequestContent<ContentType extends Object>
     this.contentClass = contentClass;
   }
 
-  public void test(RequestContent<String> myparameter)
-  {
-
-  }
-
   public ContentType get()
   {
     if (contentLoaded)

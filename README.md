@@ -654,14 +654,17 @@ request, "profile-basic")</pre></td>
 </table>
 
 ### Example Five: Method Parameter Patterns
-Method parameter patterns are specified by an empty set of curly brackets _{}_. When these are used it means the pattern to be used should be inferred from the method parameter this pattern
-value is mapped to. The method parameter type must be one of the standard types defined in the previous section (Boolean, Byte, Short, Integer, Long, etc.) and it must be present in the method
-declaration. An exception will be thrown when _{}_ is used in the path or parameter section and there is no matching method parameter. For example the following routes class is invalid.
+Method parameter patterns are specified by an empty set of curly brackets `{}`. The regular expression used for these is inferred from the method parameter this pattern
+is mapped to. The method parameter must be one of the standard types defined in the previous section (Boolean, Byte, Short, Integer, Long, etc.) and it must be present in the method
+declaration. An exception will be thrown when `{}` is used in the path or parameter section and there is no matching method parameter. For example the following routes class is invalid.
 ```Java
-@Routes("/invalid")
 public class InvalidRoutes
 {
-  @Route("{}") // No matching method parameter to specify what regular expression is used
+  @Route("/valid/{}") // {} matches to the method parameter id
+  public String getValidRoute(int id, HttpServletRequest request)
+  {...}
+
+  @Route("/invalid/{}") // No matching method parameter to specify what regular expression is used
   public String getInvalidRoute(HttpServletRequest request)
   {...}
 }
@@ -673,7 +676,9 @@ The following will result in a RoutesException `routingTable.add(InvalidRoutes.c
 public class UserRoutes
 {
   @Route("{}?showDetails={}")
-  public String getUserByIdInPath(int userId, boolean showDetails, HttpServletRequest request)
+  public String getUserByIdInPath(int userId, 
+                                  boolean showDetails, 
+                                  HttpServletRequest request)
   {...}
 
   @Route("?id={}")
@@ -710,44 +715,22 @@ public class UserRoutes
        <td><pre>getUserByIdInPath(23, true, request)</pre></td>
     </tr>
     <tr>
-       <td><pre>GET /users/23?showDetails=nope HTTP/1.1</pre></td>
-       <td><pre>404</pre></td>
-    </tr>
-    <tr>
-      <td colspan="2"></td>
+      <td colspan="2">The method parameter userId is of type int. This means the regular expression pattern used will match any
+      value that can be coerced into a Java int.</td>
     </tr>
     <tr>
        <td><pre>GET /users?id=23 HTTP/1.1</pre></td>
        <td><pre>getUserByIdInParamter(23, request)</pre></td>
     </tr>
     <tr>
-      <td colspan="2"></td>
+      <td colspan="2">Method parameter patterns can be used for url path and parameter matching.</td>
     </tr>
     <tr>
-       <td><pre>GET /users?id=baswerc HTTP/1.1</pre></td>
-       <td><pre>404</pre></td>
+      <td><pre>GET /users/baswerc HTTP/1.1</pre></td>
+      <td><pre>getUserByName("baswerc", request)</pre></td>
     </tr>
     <tr>
-      <td colspan="2"></td>
-    </tr>
-    <tr>
-       <td><pre>GET /users/baswerc HTTP/1.1</pre></td>
-       <td><pre>getUserByName("baswerc", request)</pre></td>
-    </tr>
-    <tr>
-       <td><pre>GET /users/23A HTTP/1.1</pre></td>
-       <td><pre>getUserByName("23A", request)</pre></td>
-    </tr>
-    <tr>
-       <td><pre>GET /users HTTP/1.1</pre></td>
-       <td><pre>404</pre></td>
-    </tr>
-    <tr>
-       <td><pre>GET /users/ HTTP/1.1</pre></td>
-       <td><pre>404</pre></td>
-    </tr>
-    <tr>
-      <td colspan="2"></td>
+      <td colspan="2">String method parameters will match any value.</td>
     </tr>
     <tr>
        <td><pre>GET /users/23/basic-blue HTTP/1.1</pre></td>
@@ -764,20 +747,8 @@ request, "profile-basic")</pre></td>
     <tr>
       <td colspan="2"></td>
     </tr>
-    <tr>
-       <td><pre>GET /users/23/changepassword HTTP/1.1</pre></td>
-       <td><pre>getChangePasswordById(23, request)</pre></td>
-    </tr>
-    <tr>
-       <td><pre>GET /users/baswerc/changepassword HTTP/1.1</pre></td>
-       <td><pre>404</pre></td>
-    </tr>
-    <tr>
-      <td colspan="2"></td>
-    </tr>
   </tbody>
 </table>
-
 
 ### Example Six: Responding To Media Types
 
