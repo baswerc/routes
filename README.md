@@ -20,7 +20,7 @@ into an object that accepts HTTP _GET_ requests at the path _/api/users_ and ren
 ## Getting Started
 
 ### Direct Download
-You can download <a href="https://github.com/baswerc/routes/releases/download/1.1/routes-1.1.jar">routes-1.0.jar</a> directly and place in your project.
+You can download <a href="https://github.com/baswerc/routes/releases/download/1.1/routes-1.1.jar">routes-1.1.jar</a> directly and place in your project.
 
 ### Using Maven
 Add the following dependency into your Maven project:
