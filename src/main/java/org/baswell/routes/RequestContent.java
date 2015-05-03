@@ -34,15 +34,14 @@ import java.util.Set;
 
 import static org.baswell.routes.TypeMapper.*;
 
+/**
+ * Convenience class for accessing the content of a request.
+ *
+ *
+ * @param <ContentType>
+ */
 public class RequestContent<ContentType extends Object>
 {
-  static public void main(String[] args) throws Exception
-  {
-    ParameterizedType pt = (ParameterizedType)RequestContent.class.getMethod("test", RequestContent.class).getGenericParameterTypes()[0];
-
-    System.out.println(pt.getActualTypeArguments()[0]);
-  }
-
   private final RoutesConfiguration configuration;
 
   private final HttpServletRequest request;
