@@ -1008,3 +1008,28 @@ Routes can serve up a web page that allows you test various URL paths, parameter
 for the meta page with <a href="http://baswerc.github.io/routes/javadoc/org/baswell/routes/RoutesConfiguration.html#routesMetaPath">RoutesConfiguration.routesMetaPath</a>. You must make sure this meta
 page does not collide with any of your route method criteria (the route methods will always win when this happens). If you want to deploy this utility in a non-development environment you can enable
 authentication and authorization for this utility using <a href="http://baswerc.github.io/routes/javadoc/org/baswell/routes/MetaAuthenticator.html">MetaAuthenticator</a>.
+
+# Additional Documentation
+
+* <a href="http://baswerc.github.io/routes/javadoc/">Javadoc</a>
+
+# Developed By
+
+Corey Baswell - <a href="mailto:corey.baswell@gmail.com">corey.baswell@gmail.com</a>
+
+# License
+````
+Copyright 2015 Corey Baswell
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+````
