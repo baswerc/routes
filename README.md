@@ -936,7 +936,7 @@ abstract class AuthenticatedRoutes
 }
 
 @Routes("/")
-public class HomeRoutes
+public class HomeRoutes extends AuthenticatedRoutes
 {
   // BeforeRoute and AfterRoute methods called.
   @Route
