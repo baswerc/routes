@@ -1,7 +1,7 @@
 Routes
 ======
 
-Routes is a Java library for mapping HTTP requests to plain Java object methods. Routes runs within a Java servlet container and is alternative to processing HTTP requests with the Servlet
+Routes is a Java library for mapping HTTP requests to plain Java object methods. Routes runs within a Java servlet container and is an alternative to processing HTTP requests with the Servlet
 API. Routes makes it easy to turn this:
 
 ```Java
@@ -15,7 +15,7 @@ public class ApiRoutes
   }
 }
 ```
-into an object that accepts HTTP _GET_ requests at the path _/api/users_ and renders the loaded users with the JSP file _users.jsp_.
+into an object that accepts HTTP _GET_ requests at the path _/api/users_ and renders the loaded users with the JSP file _/WEB-INF/jsps/users.jsp_.
 
 ## Getting Started
 
