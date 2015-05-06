@@ -38,6 +38,11 @@ public class RequestedMediaType
 
     MediaType mediaType = null;
 
+    if (requestParameters != null)
+    {
+      mediaType = MediaType.findFromMediaTypeParameter(requestParameters.get("mediaType"));
+    }
+
     if (fileExtension != null)
     {
       mediaType = MediaType.findFromExtension(fileExtension);
@@ -46,11 +51,6 @@ public class RequestedMediaType
     if ((mediaType == null) && (acceptType != null))
     {
       mediaType = MediaType.findFromMimeType(acceptType);
-    }
-
-    if (mediaType == null)
-    {
-      mediaType = MediaType.findFromFormatParameter(requestParameters.get("format"));
     }
 
     this.mediaType = mediaType;

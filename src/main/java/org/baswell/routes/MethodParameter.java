@@ -26,6 +26,9 @@ class MethodParameter
   final String requestParameterName;
   
   final MethodPathParameterType routhPathParameterType;
+
+  final Class requestContentClass;
+
   
   MethodParameter(MethodRouteParameterType type)
   {
@@ -34,6 +37,7 @@ class MethodParameter
     this.groupIndex = null;
     this.requestParameterName = null;
     routhPathParameterType = null;
+    requestContentClass = null;
   }
 
   MethodParameter(MethodRouteParameterType type, Integer segmentIndex, Integer groupIndex, MethodPathParameterType routhPathParameterType)
@@ -43,6 +47,7 @@ class MethodParameter
     this.groupIndex = groupIndex;
     this.routhPathParameterType = routhPathParameterType;
     this.requestParameterName = null;
+    requestContentClass = null;
   }
 
   MethodParameter(MethodRouteParameterType type, String requestParameterName, Integer groupIndex, MethodPathParameterType routhPathParameterType)
@@ -52,5 +57,17 @@ class MethodParameter
     this.groupIndex = groupIndex;
     this.routhPathParameterType = routhPathParameterType;
     this.segmentIndex = null;
+    requestContentClass = null;
   }
+
+  MethodParameter(MethodRouteParameterType type, Class requestContentClass)
+  {
+    this.type = type;
+    this.requestContentClass = requestContentClass;
+    segmentIndex = null;
+    groupIndex = null;
+    requestParameterName = null;
+    routhPathParameterType = null;
+  }
+
 }

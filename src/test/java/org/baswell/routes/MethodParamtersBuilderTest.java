@@ -1,3 +1,18 @@
+/*
+ * Copyright 2015 Corey Baswell
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *  http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package org.baswell.routes;
 
 import static org.baswell.routes.MethodParametersBuilder.*;
@@ -76,7 +91,7 @@ public class MethodParamtersBuilderTest
     assertEquals(parameters.size(), 7);
     assertEquals(parameters.get(0).type, MethodRouteParameterType.REQUEST_PARAMETERS);
     assertEquals(parameters.get(1).type, MethodRouteParameterType.REQUEST_PATH);
-    assertEquals(parameters.get(2).type, MethodRouteParameterType.FORMAT);
+    assertEquals(parameters.get(2).type, MethodRouteParameterType.REQUESTED_MEDIA_TYPE);
     assertEquals(parameters.get(3).type, MethodRouteParameterType.SERVLET_REQUEST);
     assertEquals(parameters.get(4).type, MethodRouteParameterType.SERVLET_RESPONSE);
     assertEquals(parameters.get(5).type, MethodRouteParameterType.PARAMETER_MAP);

@@ -13,18 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.baswell.routes.testroutes;
+package org.baswell.routes;
 
-import org.baswell.routes.Route;
-import org.baswell.routes.Routes;
-
-@Routes("/combined")
-public class CombinedRoutes extends BaseRoutes
+enum ContentConversionType
 {
-  @Route(value = "/one", returnedStringIsContent = true)
-  public String getOne()
-  {
-    methodsCalled.add("getOne");
-    return "One";
-  }
+  GSON,
+  JACKSON,
+  W3C_NODE,
+  JAXB,
+  JDOM2_DOCUMENT,
+  JDOM2_ELEMENT,
+  TO_STRING;
+
+  ContentConversionType()
+  {}
 }

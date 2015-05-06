@@ -46,6 +46,7 @@ class MethodParametersBuilder
     CriterionForParameter currentParameterCriteron = null;
 
     boolean pathSegmentsProcessed = false;
+    Class allowedRequestContentClass = null;
     
     PARAMETERS_LOOP: for (int i = 0; i < parameters.length; i++)
     {
@@ -71,9 +72,22 @@ class MethodParametersBuilder
       {
         routeParameters.add(new MethodParameter(MethodRouteParameterType.REQUEST_PARAMETERS));
       }
+      else if (parameterClass == RequestContent.class)
+      {
+        Class requestContentClass = (Class)((ParameterizedType)method.getGenericParameterTypes()[i]).getActualTypeArguments()[0];
+
+        if ((allowedRequestContentClass != null) && (allowedRequestContentClass != requestContentClass))
+        {
+          throw new RoutesException("RequestContent with different types are not allowed.");
+        }
+
+        allowedRequestContentClass = requestContentClass;
+
+        routeParameters.add(new MethodParameter(MethodRouteParameterType.REQUEST_CONTENT, requestContentClass));
+      }
       else if (parameterClass == RequestedMediaType.class)
       {
-        routeParameters.add(new MethodParameter(MethodRouteParameterType.FORMAT));
+        routeParameters.add(new MethodParameter(MethodRouteParameterType.REQUESTED_MEDIA_TYPE));
       }
       else if (parameterClass == URL.class)
       {

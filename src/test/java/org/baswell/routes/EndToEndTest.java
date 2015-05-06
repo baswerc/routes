@@ -1,3 +1,18 @@
+/*
+ * Copyright 2015 Corey Baswell
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *  http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package org.baswell.routes;
 
 import java.io.IOException;
@@ -22,7 +37,9 @@ abstract public class EndToEndTest
   protected HttpMethod httpMethod;
 
   protected RequestedMediaType requestedMediaType;
-  
+
+  protected RequestContent requestContent;
+
   protected RequestPath path;
   
   protected RequestParameters parameters;
@@ -66,6 +83,8 @@ abstract public class EndToEndTest
     requestedMediaType = new RequestedMediaType(servletRequest.getContentType(), new RequestPath(servletRequest), new RequestParameters(servletRequest));
     path = new RequestPath(servletRequest);
     parameters = new RequestParameters(servletRequest);
+
+    requestContent = new RequestContent(routesConfiguration, servletRequest, String.class, requestedMediaType, "text/xml", new AvailableLibraries());
   }
 
   protected void assertNotFound(TestHttpServletRequest servletRequest)
@@ -101,7 +120,7 @@ abstract public class EndToEndTest
     assertNotNull(node);
     try
     {
-      pipeline.invoke(node.routeNode, servletRequest, servletResponse, httpMethod, requestedMediaType, path, parameters, node.pathMatchers, node.parameterMatchers);
+      pipeline.invoke(node.routeNode, servletRequest, servletResponse, httpMethod, requestedMediaType, path, parameters, requestContent, node.pathMatchers, node.parameterMatchers);
       servletResponse.writer.close();
     }
     catch (RouteInstanceBorrowException e)
