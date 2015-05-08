@@ -47,9 +47,11 @@ class MethodInvoker
   
   private RequestedMediaType requestedMediaType;
 
+  private RequestContent requestContent;
+
   private URL url;
 
-  MethodInvoker(HttpServletRequest request, HttpServletResponse response, HttpMethod httpMethod, RequestPath requestPath, RequestParameters requestParameters, RequestedMediaType requestedMediaType, RouteConfiguration routeConfiguration)
+  MethodInvoker(HttpServletRequest request, HttpServletResponse response, HttpMethod httpMethod, RequestPath requestPath, RequestParameters requestParameters, RequestedMediaType requestedMediaType, RequestContent requestContent, RouteConfiguration routeConfiguration)
   {
     this.request = request;
     this.response = response;
@@ -57,6 +59,7 @@ class MethodInvoker
     this.requestPath = requestPath;
     this.requestParameters = requestParameters;
     this.requestedMediaType = requestedMediaType;
+    this.requestContent = requestContent;
     this.routeConfiguration = routeConfiguration;
   }
   
@@ -102,8 +105,12 @@ class MethodInvoker
             invokeParameters[i] = request.getSession();
             break;
             
-          case FORMAT:
+          case REQUESTED_MEDIA_TYPE:
             invokeParameters[i] = requestedMediaType;
+            break;
+
+          case REQUEST_CONTENT:
+            invokeParameters[i] = requestContent;
             break;
 
           case URL:

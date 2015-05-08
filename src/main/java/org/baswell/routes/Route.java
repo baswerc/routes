@@ -42,7 +42,7 @@ public @interface Route
   /**
    * The type of media this route knows how to serve. If not provided the request media type will not be used as a criteria for matching this route.
    */
-  MediaType[] respondsToMedia() default {};
+  MediaType[] respondsToMediaRequests() default {};
 
   /**
    * <p>

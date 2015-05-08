@@ -46,7 +46,7 @@ public @interface Routes
 
   /**
    * <p>
-   * The default type of media all routes in this class know how to serve. Overridden by {@link Route#respondsToMedia()}.
+   * The default type of media all routes in this class know how to serve. Overridden by {@link Route#respondsToMediaRequests()}.
    * </p>
    */
   MediaType[] defaultRespondsToMedia() default {};

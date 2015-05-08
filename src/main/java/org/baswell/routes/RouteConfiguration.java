@@ -134,7 +134,7 @@ class RouteConfiguration
       }
       
       tags.addAll(Arrays.asList(route.tags()));
-      respondsToMedia.addAll(Arrays.asList(route.respondsToMedia()));
+      respondsToMedia.addAll(Arrays.asList(route.respondsToMediaRequests()));
     }
   }
   

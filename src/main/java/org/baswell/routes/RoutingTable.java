@@ -27,7 +27,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
 
-import static org.baswell.routes.ResponseTypeMapper.*;
+import static org.baswell.routes.TypeMapper.*;
 import static org.baswell.routes.RoutesMethods.*;
 
 /**
@@ -83,6 +83,29 @@ public class RoutingTable
   {
     this.routesConfiguration = routesConfiguration == null ? new RoutesConfiguration() : routesConfiguration;
     RoutingTable.theRoutingTable = this;
+  }
+
+  /**
+   * Calls {@link #add} for each object in the given list. Can be used in spring XML mappings as:
+   * <code>
+   * <bean id="routingTable" class="org.baswell.routes.RoutingTable" init-method="build">
+   *   <property name="routes">
+   *     <list>
+   *       <ref bean="loginRoutes"/>
+   *       <ref bean="homeRoutes"/>
+   *       <ref bean="helpRoutes"/>
+   *     </list>
+   *   </property>
+   * </bean>
+   * </code>
+   * @param routeObjects The list of route objects to add to the routing table.
+   */
+  public synchronized void setRoutes(List<Object> routeObjects)
+  {
+    for (Object routeObject : routeObjects)
+    {
+      add(routeObject);
+    }
   }
 
   /**
@@ -175,17 +198,17 @@ public class RoutingTable
             Criteria criteria = criteriaBuilder.buildCriteria(method, tree, routeConfiguration, routesConfiguration);
             List<MethodParameter> parameters = parametersBuilder.buildParameters(method, criteria);
             ResponseType responseType = mapResponseType(method, routeConfiguration);
-            ResponseStringWriteStrategy responseStringWriteStrategy;
+            ContentConversionType contentConversionType;
             if (responseType == ResponseType.STRING_CONTENT)
             {
-              Pair<ResponseStringWriteStrategy, String> stringWriteStrategyStringPair = mapResponseStringWriteStrategy(method, routeConfiguration.respondsToMedia, routeConfiguration.contentType, availableLibraries);
+              Pair<ContentConversionType, String> stringWriteStrategyStringPair = mapContentConversionType(method, routeConfiguration.respondsToMedia, routeConfiguration.contentType, availableLibraries);
               if (stringWriteStrategyStringPair == null)
               {
-                responseStringWriteStrategy = null;
+                contentConversionType = null;
               }
               else
               {
-                responseStringWriteStrategy = stringWriteStrategyStringPair.x;
+                contentConversionType = stringWriteStrategyStringPair.x;
                 if (nullEmpty(routeConfiguration.contentType))
                 {
                   routeConfiguration.contentType = stringWriteStrategyStringPair.y;
@@ -194,7 +217,7 @@ public class RoutingTable
             }
             else
             {
-              responseStringWriteStrategy = null;
+              contentConversionType = null;
             }
 
             List<BeforeRouteNode> beforeNodes = new ArrayList<BeforeRouteNode>();
@@ -215,7 +238,7 @@ public class RoutingTable
               }
             }
 
-            classRoutes.add(new RouteNode(routeNodes.size(), method, routeConfiguration, routeInstance, criteria, parameters, responseType, responseStringWriteStrategy, beforeNodes, afterNodes));
+            classRoutes.add(new RouteNode(routeNodes.size(), method, routeConfiguration, routeInstance, criteria, parameters, responseType, contentConversionType, beforeNodes, afterNodes));
           }
         }
       }

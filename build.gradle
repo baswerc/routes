@@ -13,8 +13,16 @@ apply plugin: 'java'
 apply plugin: 'maven'
 apply plugin: 'signing'
 
+if (JavaVersion.current().isJava8Compatible()) {
+    allprojects {
+        tasks.withType(Javadoc) {
+            options.addStringOption('Xdoclint:none', '-quiet')
+        }
+    }
+}
 
-version = 1.0
+
+version = 1.1
 sourceCompatibility = 1.6
 
 task writeNewPom << {

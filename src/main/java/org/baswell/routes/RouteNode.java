@@ -34,13 +34,13 @@ class RouteNode implements Comparable<RouteNode>
   
   final ResponseType responseType;
 
-  final ResponseStringWriteStrategy responseStringWriteStrategy;
+  final ContentConversionType contentConversionType;
   
   final List<BeforeRouteNode> beforeRouteNodes;
 
   final List<AfterRouteNode> afterRouteNodes;
 
-  RouteNode(int index, Method method, RouteConfiguration routeConfiguration, RouteInstance instance, Criteria criteria, List<MethodParameter> parameters, ResponseType responseType, ResponseStringWriteStrategy responseStringWriteStrategy, List<BeforeRouteNode> beforeRouteNodes, final List<AfterRouteNode> afterRouteNodes)
+  RouteNode(int index, Method method, RouteConfiguration routeConfiguration, RouteInstance instance, Criteria criteria, List<MethodParameter> parameters, ResponseType responseType, ContentConversionType contentConversionType, List<BeforeRouteNode> beforeRouteNodes, final List<AfterRouteNode> afterRouteNodes)
   {
     this.index = index;
     this.method = method;
@@ -49,9 +49,44 @@ class RouteNode implements Comparable<RouteNode>
     this.criteria = criteria;
     this.parameters = parameters;
     this.responseType = responseType;
-    this.responseStringWriteStrategy = responseStringWriteStrategy;
+    this.contentConversionType = contentConversionType;
     this.beforeRouteNodes = beforeRouteNodes;
     this.afterRouteNodes = afterRouteNodes;
+  }
+
+  Class getRequestContentClass()
+  {
+    for (MethodParameter parameter : parameters)
+    {
+      if (parameter.type == MethodRouteParameterType.REQUEST_CONTENT)
+      {
+        return parameter.requestContentClass;
+      }
+    }
+
+    for (BeforeRouteNode beforeRouteNode : beforeRouteNodes)
+    {
+      for (MethodParameter parameter : beforeRouteNode.parameters)
+      {
+        if (parameter.type == MethodRouteParameterType.REQUEST_CONTENT)
+        {
+          return parameter.requestContentClass;
+        }
+      }
+    }
+
+    for (AfterRouteNode afterRouteNode : afterRouteNodes)
+    {
+      for (MethodParameter parameter : afterRouteNode.parameters)
+      {
+        if (parameter.type == MethodRouteParameterType.REQUEST_CONTENT)
+        {
+          return parameter.requestContentClass;
+        }
+      }
+    }
+
+    return null;
   }
 
   @Override

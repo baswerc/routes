@@ -22,7 +22,7 @@ import static java.util.Arrays.*;
 /**
  * Media types that Routes is aware of. A media type has one or more mime types and one more file extensions.
  *
- * @see org.baswell.routes.Route#respondsToMedia()
+ * @see org.baswell.routes.Route#respondsToMediaRequests()
  * @see RequestedMediaType#mediaType
  */
 
@@ -113,16 +113,16 @@ public enum MediaType
 
   /**
    *
-   * @param formatParamter The format parameter
-   * @return The {@code MediaType} that has the same name as the format parameter (ex. format=json) or {@code null}.
+   * @param mediaTypeParameter The media type parameter
+   * @return The {@code MediaType} that has the same name as the format parameter (ex. mediaType=json) or {@code null}.
    */
-  public static MediaType findFromFormatParameter(String formatParamter)
+  public static MediaType findFromMediaTypeParameter(String mediaTypeParameter)
   {
-    if (formatParamter != null)
+    if (mediaTypeParameter != null)
     {
       for (MediaType mediaType : values())
       {
-        if (mediaType.toString().equalsIgnoreCase(formatParamter))
+        if (mediaType.toString().equalsIgnoreCase(mediaTypeParameter))
         {
           return mediaType;
         }

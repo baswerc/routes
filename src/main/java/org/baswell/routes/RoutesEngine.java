@@ -49,6 +49,8 @@ public class RoutesEngine
 
   private final RoutesLogger logger;
 
+  private final AvailableLibraries availableLibraries = new AvailableLibraries();
+
   /**
    * If the routingTable has not already been built the  {@link RoutingTable#build()} method will be called on the first
    * request received.
@@ -103,6 +105,8 @@ public class RoutesEngine
     RequestParameters requestParameters = new RequestParameters(servletRequest);
     HttpMethod httpMethod = HttpMethod.fromServletMethod(servletRequest.getMethod());
     RequestedMediaType requestedMediaType = new RequestedMediaType(servletRequest.getHeader("Accept"), requestPath, requestParameters);
+    RequestContent requestContent = null;
+
 
     MatchedRoute matchedRoute = null;
 
@@ -118,9 +122,15 @@ public class RoutesEngine
 
     if (matchedRoute != null)
     {
+      Class requestContentClass = matchedRoute.routeNode.getRequestContentClass();
+      if (requestContentClass != null)
+      {
+        requestContent = new RequestContent(routingTable.routesConfiguration, servletRequest, requestContentClass, requestedMediaType, matchedRoute.routeNode.routeConfiguration.contentType, availableLibraries);
+      }
+
       try
       {
-        pipeline.invoke(matchedRoute.routeNode, servletRequest, servletResponse, httpMethod, requestedMediaType, requestPath, requestParameters, matchedRoute.pathMatchers, matchedRoute.parameterMatchers);
+        pipeline.invoke(matchedRoute.routeNode, servletRequest, servletResponse, httpMethod, requestedMediaType, requestPath, requestParameters, requestContent, matchedRoute.pathMatchers, matchedRoute.parameterMatchers);
 
         if (routingTable.routesConfiguration.routesCache != null)
         {

@@ -40,7 +40,7 @@ import org.jdom2.Element;
 import org.jdom2.output.XMLOutputter;
 import org.w3c.dom.Node;
 
-import static org.baswell.routes.ResponseTypeMapper.*;
+import static org.baswell.routes.TypeMapper.*;
 import static org.baswell.routes.RoutesMethods.*;
 
 class ResponseProcessor
@@ -54,7 +54,7 @@ class ResponseProcessor
     this.routesConfiguration = routesConfiguration;
   }
   
-  void processResponse(ResponseType responseType, ResponseStringWriteStrategy responseStringWriteStrategy, Object response, String contentType, RouteConfiguration routeConfiguration, HttpServletRequest servletRequest, HttpServletResponse servletResponse) throws IOException, ServletException
+  void processResponse(ResponseType responseType, ContentConversionType contentConversionType, Object response, String contentType, RouteConfiguration routeConfiguration, HttpServletRequest servletRequest, HttpServletResponse servletResponse) throws IOException, ServletException
   {
     if (response != null)
     {
@@ -70,16 +70,16 @@ class ResponseProcessor
           
         case STRING_CONTENT:
 
-          if (responseStringWriteStrategy == null)
+          if (contentConversionType == null)
           {
-            Pair<ResponseStringWriteStrategy, String> strategyContentTypePair = mapResponseStringWriteStrategy(response, routeConfiguration.respondsToMedia, routeConfiguration.contentType, availableLibraries);
+            Pair<ContentConversionType, String> strategyContentTypePair = mapContentConversionType(response, routeConfiguration.respondsToMedia, routeConfiguration.contentType, availableLibraries);
             if (strategyContentTypePair == null)
             {
-              responseStringWriteStrategy = ResponseStringWriteStrategy.TO_STRING;
+              contentConversionType = ContentConversionType.TO_STRING;
             }
             else
             {
-              responseStringWriteStrategy = strategyContentTypePair.x;
+              contentConversionType = strategyContentTypePair.x;
               if (nullEmpty(servletResponse.getContentType()) && hasContent(strategyContentTypePair.y))
               {
                 servletResponse.setContentType(strategyContentTypePair.y);
@@ -87,10 +87,14 @@ class ResponseProcessor
             }
           }
 
-          switch(responseStringWriteStrategy)
+          switch(contentConversionType)
           {
             case GSON:
               sendGson(response, servletResponse);
+              break;
+
+            case JACKSON:
+              sendJackson(response, servletResponse);
               break;
 
             case W3C_NODE:

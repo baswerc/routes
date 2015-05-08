@@ -42,9 +42,9 @@ class MethodPipeline
   }
   
   void invoke(RouteNode routeNode, HttpServletRequest servletRequest, HttpServletResponse servletResponse, HttpMethod httpMethod,
-              RequestedMediaType requestedMediaType, RequestPath path, RequestParameters parameters, List<Matcher> pathMatchers, Map<String, Matcher> parameterMatchers) throws IOException, ServletException, RouteInstanceBorrowException
+              RequestedMediaType requestedMediaType, RequestPath path, RequestParameters parameters, RequestContent requestContent, List<Matcher> pathMatchers, Map<String, Matcher> parameterMatchers) throws IOException, ServletException, RouteInstanceBorrowException
   {
-    MethodInvoker invoker = new MethodInvoker(servletRequest, servletResponse, httpMethod, path, parameters, requestedMediaType, routeNode.routeConfiguration);
+    MethodInvoker invoker = new MethodInvoker(servletRequest, servletResponse, httpMethod, path, parameters, requestedMediaType, requestContent, routeNode.routeConfiguration);
     Object routeInstance = routeNode.instance.create();
 
     try
@@ -73,7 +73,7 @@ class MethodPipeline
       }
 
       Object response = invoker.invoke(routeInstance, routeNode.method, routeNode.parameters, pathMatchers, parameterMatchers);
-      responseProcessor.processResponse(routeNode.responseType, routeNode.responseStringWriteStrategy, response, routeNode.routeConfiguration.contentType, routeNode.routeConfiguration, servletRequest, servletResponse);
+      responseProcessor.processResponse(routeNode.responseType, routeNode.contentConversionType, response, routeNode.routeConfiguration.contentType, routeNode.routeConfiguration, servletRequest, servletResponse);
 
       boolean success = getStatus(servletResponse) < 300;
       for (AfterRouteNode afterNode : routeNode.afterRouteNodes)
