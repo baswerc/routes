@@ -33,11 +33,6 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.gson.Gson;
-import org.jdom2.Document;
-import org.jdom2.Element;
-import org.jdom2.output.XMLOutputter;
 import org.w3c.dom.Node;
 
 import static org.baswell.routes.TypeMapper.*;
@@ -90,11 +85,11 @@ class ResponseProcessor
           switch(contentConversionType)
           {
             case GSON:
-              sendGson(response, servletResponse);
+              GSONBridge.sendGson(response, servletResponse);
               break;
 
             case JACKSON:
-              sendJackson(response, servletResponse);
+              JacksonBridge.sendJackson(response, servletResponse);
               break;
 
             case W3C_NODE:
@@ -106,11 +101,11 @@ class ResponseProcessor
               break;
 
             case JDOM2_DOCUMENT:
-              sendJdom2Document(response, servletResponse);
+              JDOMBridge.sendJdom2Document(response, servletResponse);
               break;
 
             case JDOM2_ELEMENT:
-              sendJdom2Element(response, servletResponse);
+              JDOMBridge.sendJdom2Element(response, servletResponse);
               break;
 
             case TO_STRING:
@@ -136,16 +131,6 @@ class ResponseProcessor
     }
   }
 
-  void sendGson(Object response, HttpServletResponse servletResponse) throws IOException
-  {
-    servletResponse.getWriter().write(new Gson().toJson(response));
-  }
-
-  void sendJackson(Object response, HttpServletResponse servletResponse) throws IOException
-  {
-    new ObjectMapper().writeValue(servletResponse.getWriter(), response);
-  }
-
   void sendNode(Object response, HttpServletResponse servletResponse) throws IOException
   {
     try
@@ -168,16 +153,6 @@ class ResponseProcessor
     {
       throw new RuntimeException(e);
     }
-  }
-
-  void sendJdom2Document(Object response, HttpServletResponse servletResponse) throws IOException
-  {
-    new XMLOutputter().output((Document)response, servletResponse.getWriter());
-  }
-
-  void sendJdom2Element(Object response, HttpServletResponse servletResponse) throws IOException
-  {
-    new XMLOutputter().output((Element)response, servletResponse.getWriter());
   }
 
   void sendToString(Object response, HttpServletResponse servletResponse) throws IOException

@@ -15,12 +15,6 @@
  */
 package org.baswell.routes;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.type.TypeFactory;
-import com.google.gson.Gson;
-import org.jdom2.Document;
-import org.jdom2.JDOMException;
-import org.jdom2.input.SAXBuilder;
 import org.xml.sax.SAXException;
 
 import javax.servlet.http.HttpServletRequest;
@@ -113,12 +107,12 @@ public class RequestContent<ContentType extends Object>
               content = (ContentType) new String(contentBytes);
               break;
 
-            case JACKSON:
-              content = (ContentType) new ObjectMapper().readValue(contentBytes, TypeFactory.defaultInstance().constructType(contentType));
+            case GSON:
+              content = GSONBridge.parseGson(contentBytes, contentType);
               break;
 
-            case GSON:
-              content = (ContentType) new Gson().fromJson(new String(contentBytes), contentType);
+            case JACKSON:
+              content = JacksonBridge.parseJackson(contentBytes, contentType);
               break;
 
             case JAXB:
@@ -134,31 +128,11 @@ public class RequestContent<ContentType extends Object>
 
             case JDOM2_DOCUMENT:
             case JDOM2_ELEMENT:
-              try
-              {
-                Document document = new SAXBuilder().build(new StringReader(new String(contentBytes)));
-                content = (ContentType) ((contentConversionType == ContentConversionType.JDOM2_DOCUMENT) ? document : document.getRootElement());
-              }
-              catch (JDOMException e)
-              {
-                throw new RoutesException("Unable to create RequestContent class: " + contentClass.getName(), e);
-              }
+              content = parseJDOM(contentBytes, contentConversionType);
               break;
 
             case W3C_NODE:
-              try
-              {
-                org.w3c.dom.Document document = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(new ByteArrayInputStream(contentBytes));
-                content = (ContentType) (contentType == org.w3c.dom.Document.class ? document : document.getDocumentElement());
-              }
-              catch (ParserConfigurationException e)
-              {
-                throw new RoutesException("Unable to create RequestContent class: " + contentClass.getName(), e);
-              }
-              catch (SAXException e)
-              {
-                throw new RoutesException("Unable to create RequestContent class: " + contentClass.getName(), e);
-              }
+              content = parseNode(contentBytes);
               break;
           }
         }
@@ -167,6 +141,29 @@ public class RequestContent<ContentType extends Object>
       return content;
     }
   }
+
+  ContentType parseJDOM(byte[] contentBytes, ContentConversionType contentConversionType) throws IOException
+  {
+    return (ContentType)JDOMBridge.parseRequestContent(contentBytes, contentConversionType, contentClass);
+  }
+
+  ContentType parseNode(byte[] contentBytes) throws IOException
+  {
+    try
+    {
+      org.w3c.dom.Document document = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(new ByteArrayInputStream(contentBytes));
+      return (ContentType) (contentType == org.w3c.dom.Document.class ? document : document.getDocumentElement());
+    }
+    catch (ParserConfigurationException e)
+    {
+      throw new RoutesException("Unable to create RequestContent class: " + contentClass.getName(), e);
+    }
+    catch (SAXException e)
+    {
+      throw new RoutesException("Unable to create RequestContent class: " + contentClass.getName(), e);
+    }
+  }
+
 
   byte[] getContent() throws IOException
   {
