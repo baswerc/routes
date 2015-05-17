@@ -34,7 +34,7 @@ Add the following dependency into your Maven project:
 ````
 
 ### Dependencies
-Routes requires the Java Servlet API 2.4 or greater. Routes has no other external dependencies.
+Routes runs within a Java Servlet container at API 2.4 or greater. Routes has no other external dependencies.
 
 ## Servlet Container Configuration
 There are three different ways Routes can be used within a Servlet container.
