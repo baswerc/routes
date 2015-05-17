@@ -15,6 +15,8 @@
  */
 package org.baswell.routes;
 
+import java.lang.reflect.Type;
+
 class MethodParameter
 {
   final MethodRouteParameterType type;
@@ -27,9 +29,8 @@ class MethodParameter
   
   final MethodPathParameterType routhPathParameterType;
 
-  final Class requestContentClass;
+  final Type requestContentType;
 
-  
   MethodParameter(MethodRouteParameterType type)
   {
     this.type = type;
@@ -37,7 +38,7 @@ class MethodParameter
     this.groupIndex = null;
     this.requestParameterName = null;
     routhPathParameterType = null;
-    requestContentClass = null;
+    requestContentType = null;
   }
 
   MethodParameter(MethodRouteParameterType type, Integer segmentIndex, Integer groupIndex, MethodPathParameterType routhPathParameterType)
@@ -47,7 +48,7 @@ class MethodParameter
     this.groupIndex = groupIndex;
     this.routhPathParameterType = routhPathParameterType;
     this.requestParameterName = null;
-    requestContentClass = null;
+    requestContentType = null;
   }
 
   MethodParameter(MethodRouteParameterType type, String requestParameterName, Integer groupIndex, MethodPathParameterType routhPathParameterType)
@@ -57,13 +58,13 @@ class MethodParameter
     this.groupIndex = groupIndex;
     this.routhPathParameterType = routhPathParameterType;
     this.segmentIndex = null;
-    requestContentClass = null;
+    requestContentType = null;
   }
 
-  MethodParameter(MethodRouteParameterType type, Class requestContentClass)
+  MethodParameter(MethodRouteParameterType type, Type requestContentType)
   {
     this.type = type;
-    this.requestContentClass = requestContentClass;
+    this.requestContentType = requestContentType;
     segmentIndex = null;
     groupIndex = null;
     requestParameterName = null;

@@ -16,6 +16,7 @@
 package org.baswell.routes;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.type.TypeFactory;
 import com.google.gson.Gson;
 import org.jdom2.Document;
 import org.jdom2.JDOMException;
@@ -29,10 +30,12 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.*;
 import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.util.HashSet;
 import java.util.Set;
 
 import static org.baswell.routes.TypeMapper.*;
+import static org.baswell.routes.RoutesMethods.*;
 
 /**
  * Convenience class for accessing the content of a request.
@@ -46,11 +49,15 @@ public class RequestContent<ContentType extends Object>
 
   private final HttpServletRequest request;
 
+  private final Type contentType;
+
   private final Class contentClass;
+
+  private final String requestContentType;
 
   private final RequestedMediaType requestedMediaType;
 
-  private final String definedContentType;
+  private final String returnedContentType;
 
   private final AvailableLibraries availableLibraries;
 
@@ -58,14 +65,17 @@ public class RequestContent<ContentType extends Object>
 
   private boolean contentLoaded;
 
-  RequestContent(RoutesConfiguration configuration, HttpServletRequest request, Class<ContentType> contentClass, RequestedMediaType requestedMediaType, String definedContentType, AvailableLibraries availableLibraries)
+  RequestContent(RoutesConfiguration configuration, HttpServletRequest request, Type contentType, String requestContentType, RequestedMediaType requestedMediaType, String returnedContentType, AvailableLibraries availableLibraries)
   {
     this.configuration = configuration;
     this.request = request;
-    this.contentClass = contentClass;
+    this.contentType = contentType;
+    this.requestContentType = requestContentType;
     this.requestedMediaType = requestedMediaType;
-    this.definedContentType = definedContentType;
+    this.returnedContentType = returnedContentType;
     this.availableLibraries = availableLibraries;
+
+    contentClass = getClassFromType(contentType);
   }
 
   public ContentType get() throws IOException, RoutesException
@@ -88,7 +98,8 @@ public class RequestContent<ContentType extends Object>
           mediaTypes.add(requestedMediaType.mediaType);
         }
 
-        Pair<ContentConversionType, String> conversionTypeStringPair = mapContentConversionType(contentClass, mediaTypes, definedContentType, availableLibraries);
+        String mimeType = hasContent(requestContentType) ? requestContentType : returnedContentType;
+        Pair<ContentConversionType, String> conversionTypeStringPair = mapContentConversionType(contentClass, mediaTypes, mimeType, availableLibraries);
         if (conversionTypeStringPair == null)
         {
           content = (ContentType) contentBytes;
@@ -102,12 +113,12 @@ public class RequestContent<ContentType extends Object>
               content = (ContentType) new String(contentBytes);
               break;
 
-            case GSON:
-              content = (ContentType) new Gson().fromJson(new String(contentBytes), contentClass);
+            case JACKSON:
+              content = (ContentType) new ObjectMapper().readValue(contentBytes, TypeFactory.defaultInstance().constructType(contentType));
               break;
 
-            case JACKSON:
-              content = (ContentType) new ObjectMapper().readValue(contentBytes, contentClass);
+            case GSON:
+              content = (ContentType) new Gson().fromJson(new String(contentBytes), contentType);
               break;
 
             case JAXB:
@@ -138,7 +149,7 @@ public class RequestContent<ContentType extends Object>
               try
               {
                 org.w3c.dom.Document document = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(new ByteArrayInputStream(contentBytes));
-                content = (ContentType) (contentClass == org.w3c.dom.Document.class ? document : document.getDocumentElement());
+                content = (ContentType) (contentType == org.w3c.dom.Document.class ? document : document.getDocumentElement());
               }
               catch (ParserConfigurationException e)
               {
@@ -176,6 +187,22 @@ public class RequestContent<ContentType extends Object>
       }
 
       return bytes.size() == 0 ? null : bytes.toByteArray();
+    }
+  }
+
+  static Class getClassFromType(Type type)
+  {
+    if (type instanceof Class)
+    {
+      return (Class)type;
+    }
+    else if (type instanceof ParameterizedType)
+    {
+      return getClassFromType(((ParameterizedType)type).getRawType());
+    }
+    else
+    {
+      return null;
     }
   }
 

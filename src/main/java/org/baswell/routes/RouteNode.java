@@ -16,6 +16,7 @@
 package org.baswell.routes;
 
 import java.lang.reflect.Method;
+import java.lang.reflect.Type;
 import java.util.List;
 
 class RouteNode implements Comparable<RouteNode>
@@ -54,13 +55,13 @@ class RouteNode implements Comparable<RouteNode>
     this.afterRouteNodes = afterRouteNodes;
   }
 
-  Class getRequestContentClass()
+  Type getRequestContentType()
   {
     for (MethodParameter parameter : parameters)
     {
       if (parameter.type == MethodRouteParameterType.REQUEST_CONTENT)
       {
-        return parameter.requestContentClass;
+        return parameter.requestContentType;
       }
     }
 
@@ -70,7 +71,7 @@ class RouteNode implements Comparable<RouteNode>
       {
         if (parameter.type == MethodRouteParameterType.REQUEST_CONTENT)
         {
-          return parameter.requestContentClass;
+          return parameter.requestContentType;
         }
       }
     }
@@ -81,7 +82,7 @@ class RouteNode implements Comparable<RouteNode>
       {
         if (parameter.type == MethodRouteParameterType.REQUEST_CONTENT)
         {
-          return parameter.requestContentClass;
+          return parameter.requestContentType;
         }
       }
     }

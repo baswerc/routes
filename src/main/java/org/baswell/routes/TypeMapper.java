@@ -65,7 +65,7 @@ class TypeMapper
     String returnClassName = classType.getCanonicalName();
     String returnTypePackage = classType.getPackage().getName();
 
-    MediaType mediaType = contentType == null ? null : MediaType.findFromMimeType(contentType);
+    MediaType mediaType = nullEmpty(contentType) ? null : MediaType.findFromMimeType(contentType);
     if ((mediaType == null) && (respondToMedia != null) && (respondToMedia.size() == 1))
     {
       mediaType = respondToMedia.iterator().next();

@@ -19,6 +19,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.lang.reflect.Type;
 
 /**
  * <p>
@@ -122,10 +123,10 @@ public class RoutesEngine
 
     if (matchedRoute != null)
     {
-      Class requestContentClass = matchedRoute.routeNode.getRequestContentClass();
-      if (requestContentClass != null)
+      Type requestContentType = matchedRoute.routeNode.getRequestContentType();
+      if (requestContentType != null)
       {
-        requestContent = new RequestContent(routingTable.routesConfiguration, servletRequest, requestContentClass, requestedMediaType, matchedRoute.routeNode.routeConfiguration.contentType, availableLibraries);
+        requestContent = new RequestContent(routingTable.routesConfiguration, servletRequest, requestContentType, servletRequest.getContentType(), requestedMediaType, matchedRoute.routeNode.routeConfiguration.contentType, availableLibraries);
       }
 
       try
