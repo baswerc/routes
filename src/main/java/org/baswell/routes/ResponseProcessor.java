@@ -109,6 +109,7 @@ class ResponseProcessor
               break;
 
             case TO_STRING:
+            case JSON_SIMPLE:
             default:
               sendToString(response, servletResponse);
               break;

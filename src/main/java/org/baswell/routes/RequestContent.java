@@ -107,6 +107,10 @@ public class RequestContent<ContentType extends Object>
               content = (ContentType) new String(contentBytes);
               break;
 
+            case JSON_SIMPLE:
+              content = JSONSimpleBridge.parseJson(contentBytes);
+              break;
+
             case GSON:
               content = GSONBridge.parseGson(contentBytes, contentType);
               break;

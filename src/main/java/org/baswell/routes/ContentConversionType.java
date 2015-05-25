@@ -17,6 +17,7 @@ package org.baswell.routes;
 
 enum ContentConversionType
 {
+  JSON_SIMPLE,
   GSON,
   JACKSON,
   W3C_NODE,

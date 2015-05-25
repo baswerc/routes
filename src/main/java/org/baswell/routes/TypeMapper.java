@@ -71,9 +71,9 @@ class TypeMapper
       mediaType = respondToMedia.iterator().next();
     }
 
-    if (returnTypePackage.startsWith("org.json"))
+    if (returnTypePackage.equals("org.json.simple"))
     {
-      return pair(ContentConversionType.TO_STRING, MIMETypes.JSON);
+      return pair(ContentConversionType.JSON_SIMPLE, MIMETypes.JSON);
     }
     else if (returnTypePackage.startsWith("org.w3c.dom"))
     {
