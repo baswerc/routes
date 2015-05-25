@@ -15,17 +15,69 @@
  */
 package org.baswell.routes;
 
+import javax.xml.bind.annotation.XmlRootElement;
+
+import static org.baswell.routes.MIMETypes.*;
+import static org.baswell.routes.RoutesMethods.classImplementsInterface;
+
 enum ContentConversionType
 {
-  JSON_SIMPLE,
-  GSON,
-  JACKSON,
-  W3C_NODE,
-  JAXB,
-  JDOM2_DOCUMENT,
-  JDOM2_ELEMENT,
-  TO_STRING;
+  JSON_SIMPLE(JSON),
+  GSON(JSON),
+  JACKSON(JSON),
+  W3C_NODE(XML),
+  JAXB(XML),
+  JDOM2_DOCUMENT(XML),
+  JDOM2_ELEMENT(XML),
+  TO_STRING(null);
 
-  ContentConversionType()
-  {}
+  public final String mimeType;
+
+  ContentConversionType(String mimeType)
+  {
+    this.mimeType = mimeType;
+  }
+
+  static ContentConversionType mapContentConversionType(Class conversionType, MediaType mediaType, AvailableLibraries availableLibraries)
+  {
+    String returnClassName = conversionType.getCanonicalName();
+    String returnTypePackage = conversionType.getPackage().getName();
+
+    if (returnTypePackage.equals("org.json.simple"))
+    {
+      return ContentConversionType.JSON_SIMPLE;
+    }
+    else if (returnTypePackage.startsWith("org.w3c.dom"))
+    {
+      return ContentConversionType.W3C_NODE;
+    }
+    else if (returnClassName.equals("org.jdom2.Document"))
+    {
+      return ContentConversionType.JDOM2_DOCUMENT;
+    }
+    else if (returnClassName.equals("org.jdom2.Element"))
+    {
+      return ContentConversionType.JDOM2_ELEMENT;
+    }
+    else if (conversionType.getAnnotation(XmlRootElement.class) != null)
+    {
+      return ContentConversionType.JAXB;
+    }
+    else if ((((mediaType != null) && (mediaType == MediaType.JSON))) && availableLibraries.jacksonAvailable())
+    {
+      return ContentConversionType.JACKSON;
+    }
+    else if ((((mediaType != null) && (mediaType == MediaType.JSON))) && availableLibraries.gsonAvailable())
+    {
+      return ContentConversionType.GSON;
+    }
+    else if (classImplementsInterface(conversionType, CharSequence.class))
+    {
+      return ContentConversionType.TO_STRING;
+    }
+    else
+    {
+      return null;
+    }
+  }
 }

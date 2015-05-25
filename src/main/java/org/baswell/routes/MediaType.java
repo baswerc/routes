@@ -132,6 +132,39 @@ public enum MediaType
     return null;
   }
 
+  static MediaType guessFromContent(String content)
+  {
+    content = content.trim();
+    if (content.startsWith("<"))
+    {
+      if (content.contains("http://www.w3.org/2005/Atom"))
+      {
+        return ATOM;
+      }
+
+      else if (content.contains("<rss"))
+      {
+        return RSS;
+      }
+      else if (content.toLowerCase().contains("<html"))
+      {
+        return HTML;
+      }
+      else
+      {
+        return XML;
+      }
+    }
+    else if (content.startsWith("{") || content.startsWith("["))
+    {
+      return JSON;
+    }
+    else
+    {
+      return null;
+    }
+  }
+
   private MediaType(List<String> mimeTypes, List<String> extensions)
   {
     this.mimeTypes = mimeTypes;

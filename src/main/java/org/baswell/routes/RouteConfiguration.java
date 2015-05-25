@@ -30,7 +30,9 @@ class RouteConfiguration
 
   final List<HttpMethod> respondsToMethods;
   
-  final Set<MediaType> respondsToMedia;
+  final List<MediaType> respondsToMedia;
+
+  final MediaType expectedMediaType;
   
   String contentType;
   
@@ -51,7 +53,7 @@ class RouteConfiguration
   {
     respondsToMethods = getHttpMethods(routes, route, method, routesConfiguration.routeByConvention);
     this.route = buildRoutePath(routesConfiguration.rootPath, routes, route, clazz, method, routesConfiguration.routeByConvention, routesPathIndex);
-    respondsToMedia = new HashSet<MediaType>();
+    respondsToMedia = new ArrayList<MediaType>();
     defaultParameters = new HashMap<String, List<String>>();
 
     tags = new HashSet<String>();
@@ -89,11 +91,21 @@ class RouteConfiguration
 
     if (route == null)
     {
+      expectedMediaType = null;
       contentType = ((routes == null) || (routes.defaultContentType().length() == 0)) ? routesConfiguration.defaultContentType : routes.defaultContentType();
       returnedStringIsContent = ((routes == null) || (routes.defaultReturnedStringIsContent().length == 0)) ? routesConfiguration.defaultReturnedStringIsContent : routes.defaultReturnedStringIsContent()[0];
     }
     else
     {
+      if (route.expectedRequestMediaType().length == 0)
+      {
+        expectedMediaType = null;
+      }
+      else
+      {
+        expectedMediaType = route.expectedRequestMediaType()[0];
+      }
+
       if (route.contentType().length() == 0)
       {
         contentType = ((routes == null) || (routes.defaultContentType().length() == 0)) ? routesConfiguration.defaultContentType : routes.defaultContentType();
@@ -102,7 +114,7 @@ class RouteConfiguration
       {
         contentType = route.contentType();
       }
-      
+
       if (route.defaultParameters().length > 0)
       {
         for (String parameter : route.defaultParameters())
@@ -123,7 +135,7 @@ class RouteConfiguration
         }
       }
 
-      
+
       if (route.returnedStringIsContent().length > 0)
       {
         returnedStringIsContent = route.returnedStringIsContent()[0];
@@ -132,7 +144,7 @@ class RouteConfiguration
       {
         returnedStringIsContent = ((routes == null) || (routes.defaultReturnedStringIsContent().length == 0)) ? routesConfiguration.defaultReturnedStringIsContent : routes.defaultReturnedStringIsContent()[0];
       }
-      
+
       tags.addAll(Arrays.asList(route.tags()));
       respondsToMedia.addAll(Arrays.asList(route.respondsToMediaRequests()));
     }

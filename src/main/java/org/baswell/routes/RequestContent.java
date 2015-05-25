@@ -25,10 +25,8 @@ import javax.xml.parsers.ParserConfigurationException;
 import java.io.*;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.util.HashSet;
-import java.util.Set;
 
-import static org.baswell.routes.TypeMapper.*;
+import static org.baswell.routes.ContentConversionType.*;
 import static org.baswell.routes.RoutesMethods.*;
 
 /**
@@ -47,11 +45,9 @@ public class RequestContent<ContentType extends Object>
 
   private final Class contentClass;
 
-  private final String requestContentType;
+  private final MediaType expectedMediaType;
 
-  private final RequestedMediaType requestedMediaType;
-
-  private final String returnedContentType;
+  private final String mimeType;
 
   private final AvailableLibraries availableLibraries;
 
@@ -59,14 +55,13 @@ public class RequestContent<ContentType extends Object>
 
   private boolean contentLoaded;
 
-  RequestContent(RoutesConfiguration configuration, HttpServletRequest request, Type contentType, String requestContentType, RequestedMediaType requestedMediaType, String returnedContentType, AvailableLibraries availableLibraries)
+  RequestContent(RoutesConfiguration configuration, HttpServletRequest request, Type contentType, MediaType expectedMediaType, String mimeType, AvailableLibraries availableLibraries)
   {
     this.configuration = configuration;
     this.request = request;
     this.contentType = contentType;
-    this.requestContentType = requestContentType;
-    this.requestedMediaType = requestedMediaType;
-    this.returnedContentType = returnedContentType;
+    this.expectedMediaType = expectedMediaType;
+    this.mimeType = mimeType;
     this.availableLibraries = availableLibraries;
 
     contentClass = getClassFromType(contentType);
@@ -85,22 +80,25 @@ public class RequestContent<ContentType extends Object>
 
       if (contentBytes != null)
       {
-        Set<MediaType> mediaTypes = null;
-        if ((requestedMediaType != null) && (requestedMediaType.mediaType != null))
+        MediaType mediaType = expectedMediaType;
+
+        if ((mediaType == null) && hasContent(mimeType))
         {
-          mediaTypes = new HashSet<MediaType>();
-          mediaTypes.add(requestedMediaType.mediaType);
+          mediaType = MediaType.findFromMimeType(mimeType);
         }
 
-        String mimeType = hasContent(requestContentType) ? requestContentType : returnedContentType;
-        Pair<ContentConversionType, String> conversionTypeStringPair = mapContentConversionType(contentClass, mediaTypes, mimeType, availableLibraries);
-        if (conversionTypeStringPair == null)
+        if (mediaType == null)
+        {
+          mediaType = MediaType.guessFromContent(new String(contentBytes));
+        }
+
+        ContentConversionType contentConversionType = mapContentConversionType(contentClass, mediaType, availableLibraries);
+        if (contentConversionType == null)
         {
           content = (ContentType) contentBytes;
         }
         else
         {
-          ContentConversionType contentConversionType = conversionTypeStringPair.x;
           switch (contentConversionType)
           {
             case TO_STRING:

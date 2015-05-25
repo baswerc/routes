@@ -35,7 +35,7 @@ import javax.xml.transform.stream.StreamResult;
 
 import org.w3c.dom.Node;
 
-import static org.baswell.routes.TypeMapper.*;
+import static org.baswell.routes.ContentConversionType.*;
 import static org.baswell.routes.RoutesMethods.*;
 
 class ResponseProcessor
@@ -67,29 +67,37 @@ class ResponseProcessor
 
           if (contentConversionType == null)
           {
-            Pair<ContentConversionType, String> strategyContentTypePair = mapContentConversionType(response, routeConfiguration.respondsToMedia, routeConfiguration.contentType, availableLibraries);
-            if (strategyContentTypePair == null)
+            MediaType mediaType = null;
+            if (hasContent(routeConfiguration.contentType))
+            {
+              mediaType = MediaType.findFromMimeType(routeConfiguration.contentType);
+            }
+
+            if ((mediaType == null) && (routeConfiguration.respondsToMedia.size() == 1))
+            {
+              mediaType = routeConfiguration.respondsToMedia.get(0);
+            }
+
+            contentConversionType = mapContentConversionType(response.getClass(), mediaType, availableLibraries);
+            if (contentConversionType == null)
             {
               contentConversionType = ContentConversionType.TO_STRING;
             }
-            else
+
+            if (nullEmpty(servletResponse.getContentType()) && contentConversionType.mimeType != null)
             {
-              contentConversionType = strategyContentTypePair.x;
-              if (nullEmpty(servletResponse.getContentType()) && hasContent(strategyContentTypePair.y))
-              {
-                servletResponse.setContentType(strategyContentTypePair.y);
-              }
+              servletResponse.setContentType(contentConversionType.mimeType);
             }
           }
 
           switch(contentConversionType)
           {
-            case GSON:
-              GSONBridge.sendGson(response, servletResponse);
-              break;
-
             case JACKSON:
               JacksonBridge.sendJackson(response, servletResponse);
+              break;
+
+            case GSON:
+              GSONBridge.sendGson(response, servletResponse);
               break;
 
             case W3C_NODE:

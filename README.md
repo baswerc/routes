@@ -1,7 +1,7 @@
 Routes
 ======
 
-Routes is a Java library for mapping HTTP requests to plain Java object methods. Routes runs within a Java servlet container and is an alternative to processing HTTP requests with the Servlet
+Routes is a Java library for mapping HTTP requests to Java object methods. Routes runs within a Java servlet container and is an alternative to processing HTTP requests with the Servlet
 API. Routes makes it easy to turn this:
 
 ```Java
@@ -20,7 +20,7 @@ into an object that accepts HTTP _GET_ requests at the path _/api/users_ and ren
 ## Getting Started
 
 ### Direct Download
-You can download <a href="https://github.com/baswerc/routes/releases/download/v1.1/routes-1.1.jar">routes-1.1.jar</a> directly and place in your project.
+You can download <a href="https://github.com/baswerc/routes/releases/download/v1.2/routes-1.2.jar">routes-1.2.jar</a> directly and place in your project.
 
 ### Using Maven
 Add the following dependency into your Maven project:
@@ -29,7 +29,7 @@ Add the following dependency into your Maven project:
 <dependency>
     <groupId>org.baswell</groupId>
     <artifactId>routes</artifactId>
-    <version>1.1</version>
+    <version>1.2</version>
 </dependency>
 ````
 
@@ -70,12 +70,12 @@ The <a href="http://baswerc.github.io/routes/javadoc/org/baswell/routes/RoutesFi
 </filter-mapping>
 ````
 
-This filter should be placed last in your filter chain. Chain processing will end in this filter when a route method match is found (`chain.doFilter` is not called).
-If no match is found, then chain.doFilter will be called so further processing can occur. This will allow, for example, to still serve up file resources (ex. html, jsp) directly as long as
-none of your routes match the file resource URL.
+This filter should be placed last in your filter chain because chain processing will end here when a route match is found (`chain.doFilter` is not called).
+If no match is found, then `chain.doFilter` will be called so further processing can occur. This allows, for example, your application to serve up file resources 
+(ex. html, jsp) directly as long as none of your routes match the file resource URL.
 
 In addition to the `filter-mapping` configuration, you can control which HTTP requests are candidates for routes with the `ONLY` and `EXCEPT` filter parameters
-(this can improve performance when it's known that certain HTTP paths won't match any routes).
+(this can improve performance when it's known that certain HTTP paths won't map to routes).
 
 ````xml
 <init-param>
@@ -122,11 +122,12 @@ been added call the `build()` method to build the routing table. This method wil
 
 ```Java
 RoutingTable routingTable = new RoutingTable();
-routingTable.add(new IndexRoutes()).add(new HomeRoutes()).add(new HelpRoutes()).build();
+routingTable.add(new IndexRoutes(), new HomeRoutes(), new HelpRoutes()).build();
 ```
 
-The `RoutingTable` should be treated as a singleton in your application. A static attribute will be set by the `RoutingTable` when constructed that the `RoutingServlet` and `RoutingFilter` will use when called (these objects
-will be instantiated by the servlet container). You can either add your route class objects or instance objects to the `RoutingTable`.
+The `RoutingTable` should be treated as a singleton in your application. A static attribute will be set by the `RoutingTable` when constructed that the `RoutingServlet` and `RoutingFilter` will use when called. 
+
+You can either add your route class objects or instance objects to the `RoutingTable`.
 
 ```Java
 // Both of these are acceptable
@@ -138,7 +139,7 @@ If you add a class object then Routes will instantiate a new instance of this cl
 <a href="http://baswerc.github.io/routes/javadoc/org/baswell/routes/RouteInstancePool.html">RouteInstancePool</a>). If you add an instance object then that instance object will be used for every
 matched HTTP request. This means the route class *must be thread safe*.
 
-If you are using Spring to wire all your objects then you can configure the `RoutingTable` using the `setRoutes()` method as:
+If you are using Spring for dependency injection you can configure the `RoutingTable` using the `setRoutes()` method as:
 
 ```XML
 <bean id="routingTable" class="org.baswell.routes.RoutingTable" init-method="build">
@@ -162,8 +163,6 @@ The annotations <a href="http://baswerc.github.io/routes/javadoc/org/baswell/rou
 provide full control over how methods are matched to HTTP requests. By default if your class has at least one of these annotations then only methods with the `Route` annotations can be matched to HTTP requests (public, unannotated
 methods will not be candidates). This can be override for the entire class with <a href="http://baswerc.github.io/routes/javadoc/org/baswell/routes/Routes.html#routeUnannotatedPublicMethods()">Routes.routeUnannotatedPublicMethods</a> or
 globally with <a href="http://baswerc.github.io/routes/javadoc/org/baswell/routes/RoutesConfiguration.html#routeUnannotatedPublicMethods">RoutesConfiguration.routeUnannotatedPublicMethods</a>.
-
-The following examples show how both these methods work.
 
 ### Example One: By Convention
 ```Java
@@ -205,7 +204,8 @@ public class LoginRoutes
     <tr>
       <td colspan="2">By default the class name is used to form the first url segment, in this case <i>/login</i>. If the class name ends in <i>Routes</i>, <i>Route</i>, <i>Controller</i>, or
        <i>Handler</i> then this part of the class name will be removed from the path segment.Method names that just contain HTTP methods (ex. <i>get</i>, <i>post</i>)
-      don't add anything to the matched path. The JSP file at <i>/WEB-INF/jsps/login.jsp</i> will be rendered to the user.</td>
+      don't add anything to the matched path. The JSP file at <i>/WEB-INF/jsps/login.jsp</i> will be rendered to the user. You can change the root JSP directory with
+      <a href="http://baswerc.github.io/routes/javadoc/org/baswell/routes/RoutesConfiguration.html#rootForwardPath">RoutesConfiguration.rootForwardPath</a></td>
     </tr>
     <tr>
        <td><pre>POST /login HTTP/1.1</pre></td>
@@ -229,7 +229,7 @@ public class LoginRoutes
        <td><pre>getForgotPassword(request)</pre></td>
     </tr>
     <tr>
-      <td colspan="2">By default matching in Routes for paths and parameters is case insensitive. This can be changed in
+      <td colspan="2">By default matching in Routes for paths and parameters is case insensitive. This can be changed with
       <a href="http://baswerc.github.io/routes/javadoc/org/baswell/routes/RoutesConfiguration.html#caseInsensitive">RoutesConfiguration.caseInsensitve</a>.</td>
     </tr>
     <tr>
@@ -906,6 +906,78 @@ Your route methods can have the following parameter types.
 
 If a route method declares any other parameter types then a <a href="http://baswerc.github.io/routes/javadoc/org/baswell/routes/RoutesException.html">RoutesException</a> will be thrown when the RoutingTable is built.
 
+## Request Content
+
+You can process the content a client sends in the request by using <a href="http://baswerc.github.io/routes/javadoc/org/baswell/routes/RequestContent.html">RequestContent</a> as a parameter to your route method. When you define the `RequestContent` container
+you should specify the class that the request content will be mapped to.
+
+```Java
+
+@Routes("/api")
+public class APIRoutes()
+{
+  @Route(expectedRequestMediaType = MediaType.JSON)
+  public void putUser(RequestContent<User> requestContent) throws IOException
+  {
+    User user = requestContent.get();
+    ...
+  }
+}
+```
+
+In this example Routes will try to map the submitted request content to the specified `User` class. Routes current supports the following libraries for automatic conversion of request content.
+
+* <a href="https://code.google.com/p/json-simple/">JSONSimple</a>
+* <a href="https://github.com/google/gson">GSON</a>
+* <a href="https://github.com/FasterXML/jackson-core">Jackson</a>
+* <a href="https://docs.oracle.com/javase/tutorial/jaxb/intro/">JAXB</a>
+* <a href="http://docs.oracle.com/javase/7/docs/api/org/w3c/dom/package-summary.html">W3C DOM</a>
+* <a href="http://www.jdom.org/">JDOM2</a>
+
+To automatically convert the request content, Routes must determine the content type of request. The request content type is determined in the following order.
+
+1. If the type of `RequestContent` requires a certain content type then Routes will use that content type. For example `RequestContent<org.json.simple.JSONObject>` dictates that the request content is JSON and `RequestContent<org.w3c.Node>` dictates the request content is XML.
+2. If <a href="http://baswerc.github.io/routes/javadoc/org/baswell/routes/Route.html#expectedRequestMediaType()">Route.expectedRequestMediaType</a> is specified then Routes will use that content type.
+3. If the _Content-Type_ header is set it the request, Routes will use this content type.
+4. Routes will (very rudimentary) try to guess the content type from the content submitted.
+
+## Response Content
+
+If your routes method returns something other than `String`, Routes will try to determine the type of the object and the correction response action based upon that type. For example if the routes method returns
+a `org.json.simple.JSONObject`, Routes will set the content type of the response (if not already set) to _application/json_ and send `toJSONString()` as the response of the HTTP request.
+
+For libraries such as <a href="https://github.com/google/gson">GSON</a> and <a href="https://github.com/FasterXML/jackson-core">Jackson</a> that operate on plain Java objects, you can give a hint to Routes on how to convert the returned object by using <a href="http://baswerc.github.io/routes/javadoc/org/baswell/routes/Route.html#contentType()">@Route.contentType</a>.
+
+```Java
+@Routes("/api")
+public class APIRoutes()
+{
+  // If GSON is available on your application's classpath, then Routes will send back the
+  // users list as servletResponse.getWriter().write(new Gson().toJson(users));
+  //
+  // Otherwise if Jackson is available on your application's classpath then Routes will
+  // send back the users list as new
+  // ObjectMapper().writeValue(servletResponse.getWriter(), users);
+  @Route(value="/users", contentType = MIMETypes.JSON)
+  public List<User> getUsers()
+  {
+    ...
+    return users;
+  }
+}
+```
+
+If Routes can not figure out how to convert your complex object it will simple call `toString()` on the returned object and return that as the content of the HTTP response.
+
+Routes currently supports the following libraries for automatic conversion.
+
+* <a href="https://code.google.com/p/json-simple/">JSONSimple</a>
+* <a href="https://github.com/google/gson">GSON</a>
+* <a href="https://github.com/FasterXML/jackson-core">Jackson</a>
+* <a href="https://docs.oracle.com/javase/tutorial/jaxb/intro/">JAXB</a>
+* <a href="http://docs.oracle.com/javase/7/docs/api/org/w3c/dom/package-summary.html">W3C DOM</a>
+* <a href="http://www.jdom.org/">JDOM2</a>
+
 ## Pre & Post Route Events
 
 You can tell Routes to make calls before and after a route method is invoked using the <a href="http://baswerc.github.io/routes/javadoc/org/baswell/routes/BeforeRoute.html">@BeforeRoute</a> and
@@ -963,43 +1035,6 @@ configuration.rootForwardPath = "/jsps";
 RoutingTable routingTable = new RoutingTable(configuration);
 ...
 ```
-
-## Automatic Conversion
-
-If your routes method returns something other than `String`, Routes will try to determine the type of the object and the correction response action based upon that type. For example if the routes method returns
-a `org.json.simple.JSONObject`, Routes will set the content type of the response (if not already set) to _application/json_ and send `toJSONString()` as the response of the HTTP request.
-
-For libraries such as <a href="https://github.com/google/gson">GSON</a> and <a href="https://github.com/FasterXML/jackson-core">Jackson</a> that operate on plain Java objects, you can give a hint to Routes on how to convert the returned object by using <a href="http://baswerc.github.io/routes/javadoc/org/baswell/routes/Route.html#contentType()">@Route.contentType</a>.
-
-```Java
-@Routes("/api")
-public class APIRoutes()
-{
-  // If GSON is available on your application's classpath, then Routes will send back the
-  // users list as servletResponse.getWriter().write(new Gson().toJson(users));
-  //
-  // Otherwise if Jackson is available on your application's classpath then Routes will
-  // send back the users list as new
-  // ObjectMapper().writeValue(servletResponse.getWriter(), users);
-  @Route(value="/users", contentType = MIMETypes.JSON)
-  public List<User> getUsers()
-  {
-    ...
-    return users;
-  }
-}
-```
-
-If Routes can not figure out how to convert your complex object it will simple call `toString()` on the returned object and return that as the content of the HTTP response.
-
-Routes currently supports the following libraries for automatic conversion.
-
-* <a href="https://code.google.com/p/json-simple/">JSONSimple</a>
-* <a href="https://github.com/google/gson">GSON</a>
-* <a href="https://github.com/FasterXML/jackson-core">Jackson</a>
-* <a href="https://docs.oracle.com/javase/tutorial/jaxb/intro/">JAXB</a>
-* <a href="http://docs.oracle.com/javase/7/docs/api/org/w3c/dom/package-summary.html">W3C DOM</a>
-* <a href="http://www.jdom.org/">JDOM2</a>
 
 
 ## Routes Meta Page

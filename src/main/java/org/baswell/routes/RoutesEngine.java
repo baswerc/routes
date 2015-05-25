@@ -126,7 +126,7 @@ public class RoutesEngine
       Type requestContentType = matchedRoute.routeNode.getRequestContentType();
       if (requestContentType != null)
       {
-        requestContent = new RequestContent(routingTable.routesConfiguration, servletRequest, requestContentType, servletRequest.getContentType(), requestedMediaType, matchedRoute.routeNode.routeConfiguration.contentType, availableLibraries);
+        requestContent = new RequestContent(routingTable.routesConfiguration, servletRequest, requestContentType, matchedRoute.routeNode.routeConfiguration.expectedMediaType, servletRequest.getContentType(), availableLibraries);
       }
 
       try

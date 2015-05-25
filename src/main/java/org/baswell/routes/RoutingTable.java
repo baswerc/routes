@@ -15,6 +15,8 @@
  */
 package org.baswell.routes;
 
+import javax.print.attribute.standard.Media;
+import java.io.InputStream;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
@@ -27,7 +29,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
 
-import static org.baswell.routes.TypeMapper.*;
+import static org.baswell.routes.ContentConversionType.*;
 import static org.baswell.routes.RoutesMethods.*;
 
 /**
@@ -199,20 +201,28 @@ public class RoutingTable
             List<MethodParameter> parameters = parametersBuilder.buildParameters(method, criteria);
             ResponseType responseType = mapResponseType(method, routeConfiguration);
             ContentConversionType contentConversionType;
+
+            /*
+             * Try to map the content version type statically. If the method is strongly typed this should work. If it's more dynamic (for example returns a java.lang.Object) then
+             * we won't be able to map it here and will have to map it dyanmically on each request.
+             */
             if (responseType == ResponseType.STRING_CONTENT)
             {
-              Pair<ContentConversionType, String> stringWriteStrategyStringPair = mapContentConversionType(method, routeConfiguration.respondsToMedia, routeConfiguration.contentType, availableLibraries);
-              if (stringWriteStrategyStringPair == null)
+              MediaType mediaType = null;
+              if (hasContent(routeConfiguration.contentType))
               {
-                contentConversionType = null;
+                mediaType = MediaType.findFromMimeType(routeConfiguration.contentType);
               }
-              else
+
+              if ((mediaType == null) && (routeConfiguration.respondsToMedia.size() == 1))
               {
-                contentConversionType = stringWriteStrategyStringPair.x;
-                if (nullEmpty(routeConfiguration.contentType))
-                {
-                  routeConfiguration.contentType = stringWriteStrategyStringPair.y;
-                }
+                mediaType = routeConfiguration.respondsToMedia.get(0);
+              }
+
+              contentConversionType = mapContentConversionType(method.getReturnType(), mediaType, availableLibraries);
+              if ((contentConversionType != null) && nullEmpty(routeConfiguration.contentType))
+              {
+                routeConfiguration.contentType = contentConversionType.mimeType;
               }
             }
             else
@@ -394,6 +404,31 @@ public class RoutingTable
     else
     {
       return false;
+    }
+  }
+
+  static ResponseType mapResponseType(Method method, RouteConfiguration routeConfiguration)
+  {
+    Class returnType = method.getReturnType();
+    if ((returnType == void.class) || (returnType == Void.class))
+    {
+      return ResponseType.VOID;
+    }
+    else if (returnType.isArray() && (returnType.getComponentType() == byte.class))
+    {
+      return ResponseType.BYTES_CONTENT;
+    }
+    else if (returnType == InputStream.class)
+    {
+      return ResponseType.STREAM_CONTENT;
+    }
+    else if ((returnType == String.class) && !routeConfiguration.returnedStringIsContent)
+    {
+      return ResponseType.FORWARD_DISPATCH;
+    }
+    else
+    {
+      return ResponseType.STRING_CONTENT;
     }
   }
 }

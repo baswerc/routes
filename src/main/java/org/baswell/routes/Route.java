@@ -45,6 +45,15 @@ public @interface Route
   MediaType[] respondsToMediaRequests() default {};
 
   /**
+   * <p>The expected media type of the request content. Use this to tell Routes how to parse the content for {@code RequestContent}.</p>
+   *
+   * <p>This should be used as a single value. Only the first value in the array will be used.</p>
+   *
+   * @see RequestContent
+   */
+  MediaType[] expectedRequestMediaType() default {};
+
+  /**
    * <p>
    * The content type to set in the response for this route. This can be overridden by calling {@link javax.servlet.http.HttpServletResponse#setContentType(String)}
    * from within the route method.
