@@ -1036,13 +1036,14 @@ RoutingTable routingTable = new RoutingTable(configuration);
 ...
 ```
 
-
 ## Routes Meta Page
 
 Routes can serve up a web page that allows you test various URL paths, parameter and media type combinations to see which of your route methods will be selected. To enable this tool specify the path
 for the meta page with <a href="http://baswerc.github.io/routes/javadoc/org/baswell/routes/RoutesConfiguration.html#routesMetaPath">RoutesConfiguration.routesMetaPath</a>. You must make sure this meta
 page does not collide with any of your route method criteria (the route methods will always win when this happens). If you want to deploy this utility in a non-development environment you can enable
 authentication and authorization for this utility using <a href="http://baswerc.github.io/routes/javadoc/org/baswell/routes/MetaAuthenticator.html">MetaAuthenticator</a>.
+
+![Image of Meta Page](http://baswerc.github.io/routes/meta.png)
 
 # Additional Documentation
 
