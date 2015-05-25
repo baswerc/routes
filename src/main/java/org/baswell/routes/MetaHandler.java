@@ -153,7 +153,7 @@ class MetaHandler
 
     RouteTableRow(RouteNode routeNode, HttpServletRequest request)
     {
-      path = routeNode.routeConfiguration.route;
+      path = routeNode.routeConfiguration.route.replace("\\", "\\\\");
       link = request.getContextPath() + path;
 
       if ((routeNode.routeConfiguration.respondsToMethods == null) || routeNode.routeConfiguration.respondsToMethods.isEmpty())

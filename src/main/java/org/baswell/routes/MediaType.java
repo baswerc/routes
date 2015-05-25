@@ -18,6 +18,7 @@ package org.baswell.routes;
 import java.util.List;
 
 import static java.util.Arrays.*;
+import static org.baswell.routes.RoutesMethods.*;
 
 /**
  * Media types that Routes is aware of. A media type has one or more mime types and one more file extensions.
@@ -63,23 +64,37 @@ public enum MediaType
 
   /**
    *
-   * @param mimeType The mime type to look for
+   * @param mimeTypes A comma delimitted list of mime types
    * @return The {@code MediaType} that has a matching mime type or {@code null}.
    */
-  public static MediaType findFromMimeType(String mimeType)
+  public static MediaType findFromMimeType(String mimeTypes)
   {
-    if (mimeType != null)
+    if (hasContent(mimeTypes))
     {
-      mimeType = mimeType.toLowerCase();
-      for (MediaType mediaType : values())
+      for (String mimeType : mimeTypes.toLowerCase().split(","))
       {
-        for (String mediaTypeMimeType : mediaType.mimeTypes)
+        if (hasContent(mimeType))
         {
-          if (mediaTypeMimeType.equals(mimeType))
+          for (MediaType mediaType : values())
           {
-            return mediaType;
+            for (String mediaTypeMimeType : mediaType.mimeTypes)
+            {
+              if (mediaTypeMimeType.equals(mimeType))
+              {
+                return mediaType;
+              }
+            }
           }
         }
+      }
+
+      if (mimeTypes.contains("html"))
+      {
+        return HTML;
+      }
+      else if (mimeTypes.contains("xml"))
+      {
+        return XML;
       }
     }
 
