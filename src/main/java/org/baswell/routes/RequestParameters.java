@@ -124,6 +124,34 @@ public class RequestParameters
 
   /**
    *
+   * @param name The parameter name.
+   * @return True if a value for the given parameter name exists and has content (not an empty string).
+   */
+  public boolean containsContent(String name)
+  {
+    if (parameters.containsKey(name))
+    {
+      List<String> values = parameters.get(name);
+      if (values != null)
+      {
+        for (String value : values)
+        {
+          if (value != null && !value.trim().isEmpty())
+          {
+            return true;
+          }
+        }
+      }
+      return false;
+    }
+    else
+    {
+      return false;
+    }
+  }
+
+  /**
+   *
    * @return A parameter map where the key is the parameter name and the value is the parameter values.
    */
   public Map<String, List<String>> getParameterListMap()
