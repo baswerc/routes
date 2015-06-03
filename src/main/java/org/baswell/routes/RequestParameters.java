@@ -23,6 +23,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import javax.servlet.http.HttpServletRequest;
+import static org.baswell.routes.RoutesMethods.*;
 
 /**
  * The parameters from an HTTP request. Default parameters for a route ({@link org.baswell.routes.Route#defaultParameters()})
@@ -194,6 +195,13 @@ public class RequestParameters
   {
     if (parameters.containsKey(name))
     {
+      for (String value : parameters.get(name))
+      {
+        if (hasContent(value))
+        {
+          return value;
+        }
+      }
       return parameters.get(name).get(0);
     }
     else
@@ -255,10 +263,7 @@ public class RequestParameters
     List<Character> values = new ArrayList<Character>();
     if (parameters.containsKey(name))
     {
-      for (String value : parameters.get(name))
-      {
-        values.add(value.charAt(0));
-      }
+      for (String value : parameters.get(name)) if (!values.isEmpty()) values.add(value.charAt(0));
     }
     return values;
   }
@@ -283,9 +288,9 @@ public class RequestParameters
    */
   public Boolean getBoolean(String name, Boolean defaultValue)
   {
-    if (parameters.containsKey(name))
+    if (hasContent(name))
     {
-      return Boolean.parseBoolean(parameters.get(name).get(0));
+      return Boolean.parseBoolean(get(name).trim());
     }
     else
     {
@@ -304,10 +309,7 @@ public class RequestParameters
     List<Boolean> values = new ArrayList<Boolean>();
     if (parameters.containsKey(name))
     {
-      for (String value : parameters.get(name))
-      {
-        values.add(Boolean.parseBoolean(value));
-      }
+      for (String value : parameters.get(name)) if (hasContent(value)) values.add(Boolean.parseBoolean(value.trim()));
     }
     return values;
   }
@@ -334,9 +336,9 @@ public class RequestParameters
    */
   public Byte getByte(String name, Byte defaultValue) throws NumberFormatException
   {
-    if (parameters.containsKey(name))
+    if (hasContent(name))
     {
-      return Byte.parseByte(parameters.get(name).get(0));
+      return Byte.parseByte(get(name));
     }
     else
     {
@@ -356,7 +358,7 @@ public class RequestParameters
     List<Byte> bytes = new ArrayList<Byte>();
     if (parameters.containsKey(name))
     {
-      for (String value : parameters.get(name)) bytes.add(Byte.parseByte(value));
+      for (String value : parameters.get(name)) if (hasContent(value)) bytes.add(Byte.parseByte(value.trim()));
     }
     return bytes;
   }
@@ -383,9 +385,9 @@ public class RequestParameters
    */
   public Short getShort(String name, Short defaultValue) throws NumberFormatException
   {
-    if (parameters.containsKey(name))
+    if (hasContent(name))
     {
-      return Short.parseShort(parameters.get(name).get(0));
+      return Short.parseShort(get(name).trim());
     }
     else
     {
@@ -405,7 +407,7 @@ public class RequestParameters
     List<Short> shorts = new ArrayList<Short>();
     if (parameters.containsKey(name))
     {
-      for (String value : parameters.get(name)) shorts.add(Short.parseShort(value));
+      for (String value : parameters.get(name)) if (hasContent(value)) shorts.add(Short.parseShort(value.trim()));
     }
     return shorts;
   }
@@ -419,7 +421,7 @@ public class RequestParameters
    */
   public Integer getInteger(String name) throws NumberFormatException
   {
-    return getInt(name, null);
+    return getInteger(name, null);
   }
 
   /**
@@ -430,11 +432,11 @@ public class RequestParameters
    * @throws java.lang.NumberFormatException If the parameter value cannot be parsed into a Integer.
    * @see java.lang.Integer#parseInt(String)
    */
-  public Integer getInt(String name, Integer defaultValue) throws NumberFormatException
+  public Integer getInteger(String name, Integer defaultValue) throws NumberFormatException
   {
-    if (parameters.containsKey(name))
+    if (hasContent(name))
     {
-      return Integer.parseInt(parameters.get(name).get(0));
+      return Integer.parseInt(get(name));
     }
     else
     {
@@ -454,7 +456,7 @@ public class RequestParameters
     List<Integer> ints = new ArrayList<Integer>();
     if (parameters.containsKey(name))
     {
-      for (String value : parameters.get(name)) ints.add(Integer.parseInt(value));
+      for (String value : parameters.get(name)) if (hasContent(value)) ints.add(Integer.parseInt(value.trim()));
     }
     return ints;
   }
@@ -481,9 +483,9 @@ public class RequestParameters
    */
   public Long getLong(String name, Long defaultValue) throws NumberFormatException
   {
-    if (parameters.containsKey(name))
+    if (hasContent(name))
     {
-      return Long.parseLong(parameters.get(name).get(0));
+      return Long.parseLong(get(name).trim());
     }
     else
     {
@@ -503,7 +505,7 @@ public class RequestParameters
     List<Long> longs = new ArrayList<Long>();
     if (parameters.containsKey(name))
     {
-      for (String value : parameters.get(name)) longs.add(Long.parseLong(value));
+      for (String value : parameters.get(name)) if (hasContent(value)) longs.add(Long.parseLong(value.trim()));
     }
     return longs;
   }
@@ -530,9 +532,9 @@ public class RequestParameters
    */
   public Float getFloat(String name, Float defaultValue) throws NumberFormatException
   {
-    if (parameters.containsKey(name))
+    if (hasContent(name))
     {
-      return Float.parseFloat(parameters.get(name).get(0));
+      return Float.parseFloat(get(name).trim());
     }
     else
     {
@@ -552,7 +554,7 @@ public class RequestParameters
     List<Float> floats = new ArrayList<Float>();
     if (parameters.containsKey(name))
     {
-      for (String value : parameters.get(name)) floats.add(Float.parseFloat(value));
+      for (String value : parameters.get(name)) if (hasContent(value)) floats.add(Float.parseFloat(value.trim()));
     }
     return floats;
   }
@@ -579,9 +581,9 @@ public class RequestParameters
    */
   public Double getDouble(String name, Double defaultValue) throws NumberFormatException
   {
-    if (parameters.containsKey(name))
+    if (hasContent(name))
     {
-      return Double.parseDouble(parameters.get(name).get(0));
+      return Double.parseDouble(get(name).trim());
     }
     else
     {
@@ -601,7 +603,7 @@ public class RequestParameters
     List<Double> doubles = new ArrayList<Double>();
     if (parameters.containsKey(name))
     {
-      for (String value : parameters.get(name)) doubles.add(Double.parseDouble(value));
+      for (String value : parameters.get(name)) if (hasContent(value)) doubles.add(Double.parseDouble(value.trim()));
     }
     return doubles;
   }
