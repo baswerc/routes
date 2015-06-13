@@ -15,11 +15,7 @@
  */
 package org.baswell.routes;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
 
 import javax.servlet.http.HttpServletRequest;
@@ -606,6 +602,47 @@ public class RequestParameters
       for (String value : parameters.get(name)) if (hasContent(value)) doubles.add(Double.parseDouble(value.trim()));
     }
     return doubles;
+  }
+
+  /**
+   * Removes the given parameter.
+   *
+   * @param name The parameter name to remove.
+   */
+  public void remove(String name)
+  {
+    parameters.remove(name);
+  }
+
+  /**
+   * Adds the given parameter. If value is an instanceof java.util.Collection the parameter will be added as multi-value.
+   *
+   * @param name The parameter name.
+   * @param value The parameter value.
+   */
+  public void put(String name, Object value)
+  {
+    List<String> values = new ArrayList<String>();
+    if (value instanceof Collection)
+    {
+      for (Object collectionValue : (Collection) value)
+      {
+        values.add(collectionValue.toString());
+      }
+    }
+    else
+    {
+      values.add(value.toString());
+    }
+
+    if (parameters.containsKey(name))
+    {
+      parameters.get(name).addAll(values);
+    }
+    else
+    {
+      parameters.put(name, values);
+    }
   }
 
   @Override
