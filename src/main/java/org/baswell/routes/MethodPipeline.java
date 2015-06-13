@@ -26,6 +26,8 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import static org.baswell.routes.RoutesMethods.getRedirectUrl;
+
 class MethodPipeline
 {
   final RoutesConfiguration routesConfiguration;
@@ -102,7 +104,7 @@ class MethodPipeline
 
       if (targetException instanceof RedirectTo)
       {
-        servletResponse.sendRedirect(((RedirectTo)targetException).redirectUrl);
+        servletResponse.sendRedirect(getRedirectUrl(((RedirectTo)targetException).redirectUrl, servletRequest));
         exceptionHandled = true;
       }
       else if (targetException instanceof ReturnHttpResponseStatus)

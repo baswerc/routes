@@ -126,12 +126,20 @@ class ResponseProcessor
           
         case FORWARD_DISPATCH:
           String path = response.toString();
-          if (!path.startsWith("/"))
+
+          if (path.startsWith("redirect:"))
           {
-            path = routeConfiguration.forwardPath + path;
+            servletResponse.sendRedirect(getRedirectUrl(path.substring(9, path.length()), servletRequest));
           }
-          
-          servletRequest.getRequestDispatcher(path).forward(servletRequest, servletResponse);
+          else
+          {
+            if (!path.startsWith("/"))
+            {
+              path = routeConfiguration.forwardPath + path;
+            }
+
+            servletRequest.getRequestDispatcher(path).forward(servletRequest, servletResponse);
+          }
           break;
           
         case VOID:

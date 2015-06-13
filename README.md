@@ -183,7 +183,7 @@ public class LoginRoutes
     return "login/forgotpassword.jsp";
   }
 
-  public void postForgotPassword(HttpServletRequest request)
+  public String postForgotPassword(HttpServletRequest request)
   {
     ...
     throw new RedirectTo("/login");
@@ -364,10 +364,10 @@ public class MyLoginRoutes extends BaseRoutes
     return "forgotpassword.jsp";
   }
 
-  public void postForgotPassword(HttpServletRequest request)
+  public String postForgotPassword(HttpServletRequest request)
   {
     ...
-    throw new RedirectTo("/login");
+    return "redirect:/login";
   }
 }
 ```
@@ -399,7 +399,8 @@ public class MyLoginRoutes extends BaseRoutes
     </tr>
     <tr>
       <td colspan="2">Since @Routes.routeUnannotatedPublicMethods is true, this public method is a candidate for HTTP requests. Both the path and accepted HTTP methods are taken by convention
-      from the method name. Since @Routes.value is specified the path taken from this method name is appended to this value to form the full match path (<i>/login/forgotpassword</i>).</td>
+      from the method name. Since @Routes.value is specified the path taken from this method name is appended to this value to form the full match path (<i>/login/forgotpassword</i>). If the returned string starts with
+      <i>redirect:</i> then a redirect (302) will be returned to the client with text after the <i>redirect:</i> key sent as the URL to redirect to.</td>
     </tr>
     <tr>
        <td><pre>GET /login/someresource HTTP/1.1</pre></td>

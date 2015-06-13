@@ -70,7 +70,6 @@ public class BasicRoutes extends BaseRoutes
     throw new RedirectTo("http://test.com/redirect");
   }
 
-
   @Route("/not_found")
   public void notFound()
   {
