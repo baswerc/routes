@@ -173,6 +173,15 @@ public class RequestParameters
 
   /**
    *
+   * @return The list of parameter names.
+   */
+  public List<String> getParameterNames()
+  {
+    return new ArrayList<String>(parameters.keySet());
+  }
+
+  /**
+   *
    * @param name The parameter name.
    * @return The parameter value or null if not present.
    */
