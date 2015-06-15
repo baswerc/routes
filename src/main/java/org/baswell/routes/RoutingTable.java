@@ -73,6 +73,8 @@ public class RoutingTable
   
   private List<RouteNode> routeNodes;
 
+  private Thread developmentModeThread;
+
   /**
    * The default {@link org.baswell.routes.RoutesConfiguration} will be used.
    */
@@ -275,14 +277,14 @@ public class RoutingTable
         {
           routesConfiguration.logger.logError("Routes is running in development mode.");
         }
-        new Thread(new Runnable()
+        developmentModeThread = new Thread(new Runnable()
         {
           @Override
           public void run()
           {
             try
             {
-              while (true)
+              while (developmentModeThread == Thread.currentThread())
               {
                 Thread.sleep(routesConfiguration.developmentReloadCycleSeconds * 1000);
 
@@ -297,9 +299,18 @@ public class RoutingTable
               }
             }
           }
-        }, "Routes Development Reloading").start();
+        }, "Routes Development Reloading");
+
+        developmentModeThread.start();
       }
     }
+  }
+
+  public void shutdown()
+  {
+    developmentModeThread = null;
+    built = false;
+    routeNodes.clear();;
   }
 
   MatchedRoute find(RequestPath path, RequestParameters parameters, HttpMethod httpMethod, RequestedMediaType requestedMediaType)
