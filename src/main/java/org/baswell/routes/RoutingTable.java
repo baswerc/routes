@@ -301,6 +301,7 @@ public class RoutingTable
           }
         }, "Routes Development Reloading");
 
+        developmentModeThread.setDaemon(true);
         developmentModeThread.start();
       }
     }
