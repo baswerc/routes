@@ -293,7 +293,7 @@ public class RequestParameters
    */
   public Boolean getBoolean(String name, Boolean defaultValue)
   {
-    if (hasContent(name))
+    if (containsContent(name))
     {
       return Boolean.parseBoolean(get(name).trim());
     }
@@ -341,7 +341,7 @@ public class RequestParameters
    */
   public Byte getByte(String name, Byte defaultValue) throws NumberFormatException
   {
-    if (hasContent(name))
+    if (containsContent(name))
     {
       return Byte.parseByte(get(name));
     }
@@ -390,7 +390,7 @@ public class RequestParameters
    */
   public Short getShort(String name, Short defaultValue) throws NumberFormatException
   {
-    if (hasContent(name))
+    if (containsContent(name))
     {
       return Short.parseShort(get(name).trim());
     }
@@ -439,7 +439,7 @@ public class RequestParameters
    */
   public Integer getInteger(String name, Integer defaultValue) throws NumberFormatException
   {
-    if (hasContent(name))
+    if (containsContent(name))
     {
       return Integer.parseInt(get(name));
     }
@@ -488,7 +488,7 @@ public class RequestParameters
    */
   public Long getLong(String name, Long defaultValue) throws NumberFormatException
   {
-    if (hasContent(name))
+    if (containsContent(name))
     {
       return Long.parseLong(get(name).trim());
     }
@@ -537,7 +537,7 @@ public class RequestParameters
    */
   public Float getFloat(String name, Float defaultValue) throws NumberFormatException
   {
-    if (hasContent(name))
+    if (containsContent(name))
     {
       return Float.parseFloat(get(name).trim());
     }
@@ -586,7 +586,7 @@ public class RequestParameters
    */
   public Double getDouble(String name, Double defaultValue) throws NumberFormatException
   {
-    if (hasContent(name))
+    if (containsContent(name))
     {
       return Double.parseDouble(get(name).trim());
     }
