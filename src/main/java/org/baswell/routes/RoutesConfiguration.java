@@ -144,6 +144,18 @@ public class RoutesConfiguration
    */
   public RoutesLogger logger = new SystemErrLogger();
 
+  /**
+   * <p>Use the <a href="https://github.com/FasterXML/jackson">Jackson</a> library for JSON serialization.</p>
+   *
+   */
+  public boolean useJacksonForJSON;
+
+  /**
+   * <p>Use the <a href="https://code.google.com/p/google-gson">GSON</a> library for JSON serialization.</p>
+   *
+   */
+  public boolean useGSONForJSON;
+
   final Map<String, Pattern> symbolsToPatterns = new HashMap<String, Pattern>();
 
   /**

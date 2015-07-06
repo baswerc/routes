@@ -20,21 +20,23 @@ import java.util.Map;
 
 class AvailableLibraries
 {
+  private final RoutesConfiguration configuration;
+
   Map<String, Boolean> classesLoad = new HashMap<String, Boolean>();
 
-  boolean jsonSimpleAvailable()
+  AvailableLibraries(RoutesConfiguration configuration)
   {
-    return classAvailable("org.json.simple.JSONObject");
+    this.configuration = configuration;
   }
 
   boolean gsonAvailable()
   {
-    return classAvailable("com.google.gson.Gson");
+    return configuration.useGSONForJSON || (!configuration.useJacksonForJSON && classAvailable("com.google.gson.Gson"));
   }
 
   boolean jacksonAvailable()
   {
-    return classAvailable("com.fasterxml.jackson.databind.ObjectMapper");
+    return configuration.useJacksonForJSON || (!configuration.useGSONForJSON && classAvailable("com.fasterxml.jackson.databind.ObjectMapper"));
   }
 
   boolean classAvailable(String className)

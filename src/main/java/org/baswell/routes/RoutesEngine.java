@@ -50,7 +50,7 @@ public class RoutesEngine
 
   private final RoutesLogger logger;
 
-  private final AvailableLibraries availableLibraries = new AvailableLibraries();
+  private final AvailableLibraries availableLibraries;
 
   /**
    * If the routingTable has not already been built the  {@link RoutingTable#build()} method will be called on the first
@@ -63,6 +63,9 @@ public class RoutesEngine
     assert routingTable != null;
 
     this.routingTable = routingTable;
+
+    availableLibraries = new AvailableLibraries(routingTable.routesConfiguration);
+
     pipeline = new MethodPipeline(routingTable.routesConfiguration);
     if (routingTable.routesConfiguration.hasRoutesMetaPath())
     {

@@ -42,11 +42,12 @@ class ResponseProcessor
 {
   private final RoutesConfiguration routesConfiguration;
 
-  private final AvailableLibraries availableLibraries = new AvailableLibraries();
+  private final AvailableLibraries availableLibraries;
 
   ResponseProcessor(RoutesConfiguration routesConfiguration)
   {
     this.routesConfiguration = routesConfiguration;
+    availableLibraries = new AvailableLibraries(routesConfiguration);
   }
   
   void processResponse(ResponseType responseType, ContentConversionType contentConversionType, Object response, String contentType, RouteConfiguration routeConfiguration, HttpServletRequest servletRequest, HttpServletResponse servletResponse) throws IOException, ServletException

@@ -84,7 +84,7 @@ abstract public class EndToEndTest
     path = new RequestPath(servletRequest);
     parameters = new RequestParameters(servletRequest);
 
-    requestContent = new RequestContent(routesConfiguration, servletRequest, String.class, MediaType.XML, "text/xml", new AvailableLibraries());
+    requestContent = new RequestContent(routesConfiguration, servletRequest, String.class, MediaType.XML, "text/xml", new AvailableLibraries(routesConfiguration));
   }
 
   protected void assertNotFound(TestHttpServletRequest servletRequest)

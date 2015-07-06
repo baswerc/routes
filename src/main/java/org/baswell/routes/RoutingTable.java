@@ -15,7 +15,6 @@
  */
 package org.baswell.routes;
 
-import javax.print.attribute.standard.Media;
 import java.io.InputStream;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -137,7 +136,7 @@ public class RoutingTable
     Parser parser = new Parser();
     CriteriaBuilder criteriaBuilder = new CriteriaBuilder();
     MethodParametersBuilder parametersBuilder = new MethodParametersBuilder();
-    AvailableLibraries availableLibraries = new AvailableLibraries();
+    AvailableLibraries availableLibraries = new AvailableLibraries(routesConfiguration);
 
     List<RouteNode> routeNodes = new ArrayList<RouteNode>();
     for (Object addedObject : addedObjects)
