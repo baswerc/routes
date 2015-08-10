@@ -91,4 +91,9 @@ public class ReturnHttpResponseStatus extends RuntimeException
   {
     this.status = status;
   }
+
+  public boolean isError()
+  {
+    return status >= 400;
+  }
 }

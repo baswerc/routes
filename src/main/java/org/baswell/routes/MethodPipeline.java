@@ -109,7 +109,15 @@ class MethodPipeline
       }
       else if (targetException instanceof ReturnHttpResponseStatus)
       {
-        servletResponse.setStatus(((ReturnHttpResponseStatus)targetException).status);
+        ReturnHttpResponseStatus returnHttpResponseStatus = (ReturnHttpResponseStatus) targetException;
+        if (returnHttpResponseStatus.isError())
+        {
+          servletResponse.sendError(returnHttpResponseStatus.status);
+        }
+        else
+        {
+          servletResponse.setStatus(returnHttpResponseStatus.status);
+        }
         exceptionHandled = true;
       }
 
