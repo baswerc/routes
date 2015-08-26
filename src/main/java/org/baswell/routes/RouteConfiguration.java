@@ -46,7 +46,7 @@ class RouteConfiguration
 
   RouteConfiguration(Class clazz, Method method, RoutesConfiguration routesConfiguration)
   {
-    this(clazz, method, routesConfiguration, method.getDeclaringClass().getAnnotation(Routes.class), method.getAnnotation(Route.class), 0);
+    this(clazz, method, routesConfiguration, new RoutesAggregate(method.getDeclaringClass()), method.getAnnotation(Route.class), 0);
   }
 
   RouteConfiguration(Class clazz, Method method, RoutesConfiguration routesConfiguration, Routes routes, Route route, int routesPathIndex)

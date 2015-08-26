@@ -147,7 +147,7 @@ public class RoutingTable
       List<BeforeRouteNode> classBeforeNodes = getBeforeRouteNodes(routesClass);
       List<AfterRouteNode> classAfterNodes = getAfterRouteNodes(routesClass);
 
-      Routes routesAnnotation = (Routes) routesClass.getAnnotation(Routes.class);
+      Routes routesAnnotation = new RoutesAggregate(routesClass);
 
       int numRoutesPaths;
       boolean routeUnannotatedPublicMethods;
