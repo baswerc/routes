@@ -9,7 +9,7 @@ import static org.baswell.routes.RoutesMethods.*;
 
 class RoutesAggregate implements Routes
 {
-  private final String route;
+  private final List<String> routes;
 
   private final String forwardPath;
 
@@ -29,7 +29,7 @@ class RoutesAggregate implements Routes
 
     if (routeses.isEmpty())
     {
-      route = null;
+      routes = new ArrayList<String>();
       forwardPath = null;
       defaultResponsesToMedia = new ArrayList<MediaType>();
       routeUnannotatedPublicMethods = null;
@@ -40,7 +40,7 @@ class RoutesAggregate implements Routes
     else if (routeses.size() == 1)
     {
       Routes routes = routeses.get(0);
-      route = routes.value().length == 0 ? null : routes.value()[0];
+      this.routes =  Arrays.asList(routes.value());
       forwardPath = routes.forwardPath();
       defaultResponsesToMedia = Arrays.asList(routes.defaultRespondsToMedia());
       routeUnannotatedPublicMethods = routes.routeUnannotatedPublicMethods().length == 0 ? null : routes.routeUnannotatedPublicMethods()[0];
@@ -50,59 +50,43 @@ class RoutesAggregate implements Routes
     }
     else
     {
-      String route = "";
-      String forwardPath = "";
+      List<String[]> routeValues = new ArrayList<String[]>();
 
-      int routeSegments = 0;
+      String forwardPath = "";
       int forwardPathSegments = 0;
 
       for (int i = routeses.size() - 1; i >= 0; i--)
       {
         Routes routes = routeses.get(i);
 
-        String[] value = routes.value();
-        if (value.length > 0 && hasContent(value[0]))
+        String[] values = routes.value();
+        if (values.length > 0)
         {
-          String routeSegment = value[0].trim();
-          if (routeSegments > 0)
+          routeValues.add(values);
+        }
+
+        String forwardPathSegment = routes.forwardPath();
+        if (hasContent(forwardPathSegment))
+        {
+          if (forwardPathSegments > 0)
           {
-            if (!route.endsWith("/"))
+            if (!forwardPath.endsWith("/"))
             {
-              route += "/";
+              forwardPath += "/";
             }
 
-            if (routeSegment.startsWith("/"))
+            if (forwardPathSegment.startsWith("/"))
             {
-              routeSegment = routeSegment.length() == 1 ? "" : routeSegment.substring(1, routeSegment.length());
+              forwardPathSegment = forwardPathSegment.length() == 1 ? "" : forwardPathSegment.substring(1, forwardPathSegment.length());
             }
           }
 
-          route += routeSegment;
-          ++routeSegments;
-
-          String forwardPathSegment = routes.forwardPath();
-          if (hasContent(forwardPathSegment))
-          {
-            if (forwardPathSegments > 0)
-            {
-              if (!forwardPath.endsWith("/"))
-              {
-                forwardPath += "/";
-              }
-
-              if (forwardPathSegment.startsWith("/"))
-              {
-                forwardPathSegment = forwardPathSegment.length() == 1 ? "" : forwardPathSegment.substring(1, forwardPathSegment.length());
-              }
-            }
-
-            forwardPath += forwardPathSegment;
-            ++forwardPathSegments;
-          }
+          forwardPath += forwardPathSegment;
+          ++forwardPathSegments;
         }
       }
 
-      this.route = route.isEmpty() ? null : route;
+      this.routes = expandRoutes(routeValues);
       this.forwardPath = forwardPath.isEmpty() ? null : forwardPath;
 
       List<MediaType> defaultResponsesToMedia = new ArrayList<MediaType>();
@@ -156,7 +140,7 @@ class RoutesAggregate implements Routes
   @Override
   public String[] value()
   {
-    return route == null ? new String[0] : new String[]{route};
+    return routes.toArray(new String[routes.size()]);
   }
 
   @Override
@@ -214,5 +198,52 @@ class RoutesAggregate implements Routes
       routeses.addAll(getRoutesHierarchy(clazz.getSuperclass()));
     }
     return routeses;
+  }
+
+  static List<String> expandRoutes(List<String[]> routesHiearchy)
+  {
+    List<String> routes = new ArrayList<String>();
+    for (String[] routeSegments : routesHiearchy)
+    {
+      if (routeSegments.length > 0)
+      {
+        List<List<String>> expandedRoutesList = new ArrayList<List<String>>();
+        for (String routeSegment : routeSegments)
+        {
+          if (hasContent(routeSegment))
+          {
+            List<String> route = new ArrayList<String>();
+            if (routes.isEmpty())
+            {
+              route.add(routeSegment);
+            }
+            else
+            {
+              for (String expandedRoute : routes)
+              {
+                if (!expandedRoute.endsWith("/"))
+                {
+                  expandedRoute += "/";
+                }
+
+                if (routeSegment.startsWith("/"))
+                {
+                  routeSegment = routeSegment.length() == 1 ? "" : routeSegment.substring(1, routeSegment.length());
+                }
+                route.add(expandedRoute + routeSegment);
+              }
+            }
+            expandedRoutesList.add(route);
+          }
+        }
+
+        routes.clear();
+        for (List<String> expandedRoutes : expandedRoutesList)
+        {
+          routes.addAll(expandedRoutes);
+        }
+      }
+    }
+    return routes;
   }
 }
