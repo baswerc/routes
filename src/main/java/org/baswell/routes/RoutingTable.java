@@ -336,6 +336,14 @@ public class RoutingTable
 
   static List<BeforeRouteNode> getBeforeRouteNodes(Class clazz) throws RoutesException
   {
+    List<Class> classHierarchy = new ArrayList<Class>();
+    classHierarchy.add(clazz);
+    Class c = clazz;
+    while ((c = c.getSuperclass()) != null)
+    {
+      classHierarchy.add(0, c);
+    }
+
     List<BeforeRouteNode> nodes = new ArrayList<BeforeRouteNode>();
     for (Method method : clazz.getMethods())
     {
@@ -343,17 +351,19 @@ public class RoutingTable
       if (beforeRoute != null)
       {
         Class returnType = method.getReturnType();
+        int hierarchyOrder = classHierarchy.indexOf(method.getDeclaringClass());
         if ((returnType == boolean.class) || (returnType == Boolean.class) || (returnType == void.class))
         {
           boolean returnsBoolean = returnType != void.class;
           List<MethodParameter> routeParameters = new MethodParametersBuilder().buildParameters(method);
-          Integer order = beforeRoute.order().length == 0 ? null : beforeRoute.order()[0];
-          nodes.add(new BeforeRouteNode(method, routeParameters, returnsBoolean, new HashSet<String>(Arrays.asList(beforeRoute.onlyTags())), new HashSet<String>(Arrays.asList(beforeRoute.exceptTags())), order));
+          Integer explicitOrder = beforeRoute.order().length == 0 ? null : beforeRoute.order()[0];
+
+          nodes.add(new BeforeRouteNode(method, routeParameters, returnsBoolean, new HashSet<String>(Arrays.asList(beforeRoute.onlyTags())), new HashSet<String>(Arrays.asList(beforeRoute.exceptTags())), explicitOrder, hierarchyOrder));
         }
         else
         {
           throw new RoutesException("Before method: " + method + " must have return type of boolean or void.");
-        } 
+        }
       }
     }
 
@@ -363,6 +373,14 @@ public class RoutingTable
 
   static List<AfterRouteNode> getAfterRouteNodes(Class clazz) throws RoutesException
   {
+    List<Class> classHierarchy = new ArrayList<Class>();
+    classHierarchy.add(clazz);
+    Class c = clazz;
+    while ((c = c.getSuperclass()) != null)
+    {
+      classHierarchy.add(0, c);
+    }
+
     List<AfterRouteNode> nodes = new ArrayList<AfterRouteNode>();
     for (Method method : clazz.getMethods())
     {
@@ -370,13 +388,14 @@ public class RoutingTable
       if (afterRoute != null)
       {
         Class returnType = method.getReturnType();
+        int hierarchyOrder = classHierarchy.indexOf(method.getDeclaringClass());
         if (returnType == void.class)
         {
           List<MethodParameter> routeParameters = new MethodParametersBuilder().buildParameters(method);
           boolean onlyOnSuccess = afterRoute.onlyOnSuccess().length == 0 ? false : afterRoute.onlyOnSuccess()[0];
           boolean onlyOnError = afterRoute.onlyOnError().length == 0 ? false : afterRoute.onlyOnError()[0];
-          Integer order = afterRoute.order().length == 0 ? null : afterRoute.order()[0];
-          nodes.add(new AfterRouteNode(method, routeParameters, new HashSet<String>(Arrays.asList(afterRoute.onlyTags())), new HashSet<String>(Arrays.asList(afterRoute.exceptTags())), onlyOnSuccess, onlyOnError, order));
+          Integer explicitOrder = afterRoute.order().length == 0 ? null : afterRoute.order()[0];
+          nodes.add(new AfterRouteNode(method, routeParameters, new HashSet<String>(Arrays.asList(afterRoute.onlyTags())), new HashSet<String>(Arrays.asList(afterRoute.exceptTags())), onlyOnSuccess, onlyOnError, explicitOrder, hierarchyOrder));
         }
         else
         {

@@ -31,31 +31,43 @@ class BeforeRouteNode implements Comparable<BeforeRouteNode>
   
   final Set<String> exceptTags;
   
-  final Integer order;
+  final Integer explicitOrder;
 
-  BeforeRouteNode(Method method, List<MethodParameter> parameters, boolean returnsBoolean, Set<String> onlyTags, Set<String> exceptTags, Integer order)
+  final int classHierarchyOrder;
+
+  BeforeRouteNode(Method method, List<MethodParameter> parameters, boolean returnsBoolean, Set<String> onlyTags, Set<String> exceptTags, Integer explicitOrder, int classHierarchyOrder)
   {
     this.method = method;
     this.parameters = parameters;
     this.returnsBoolean = returnsBoolean;
     this.onlyTags = onlyTags;
     this.exceptTags = exceptTags;
-    this.order = order;
+    this.explicitOrder = explicitOrder;
+    this.classHierarchyOrder = classHierarchyOrder;
   }
 
   @Override
   public int compareTo(BeforeRouteNode o)
   {
-    int o1 = order == null ? Integer.MAX_VALUE : order;
-    int o2 = o.order == null ? Integer.MAX_VALUE : o.order;
-    
-    if (o1 == o2)
+    if (explicitOrder == null && o.explicitOrder != null)
     {
-      return method.getName().compareTo(o.method.getName());
+      return 1;
+    }
+    else if (explicitOrder != null && o.explicitOrder == null)
+    {
+      return -1;
+    }
+    else if (explicitOrder != null && o.explicitOrder != null)
+    {
+      return explicitOrder - o.explicitOrder;
+    }
+    else if (classHierarchyOrder != o.classHierarchyOrder)
+    {
+      return classHierarchyOrder - o.classHierarchyOrder;
     }
     else
     {
-      return o1 - o2;
+      return method.getName().compareTo(o.method.getName());
     }
   }
 }
