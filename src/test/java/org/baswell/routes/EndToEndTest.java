@@ -117,7 +117,7 @@ abstract public class EndToEndTest
   protected void invoke() throws IOException, ServletException
   {
     MatchedRoute node = find();
-    assertNotNull(node);
+    assertNotNull("No route path found for: " + path, node);
     try
     {
       pipeline.invoke(node.routeNode, servletRequest, servletResponse, httpMethod, requestedMediaType, path, parameters, requestContent, node.pathMatchers, node.parameterMatchers);

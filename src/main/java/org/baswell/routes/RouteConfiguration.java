@@ -173,7 +173,7 @@ class RouteConfiguration
     if ((route != null) && !route.value().trim().isEmpty())
     {
       String routeValue = route.value().trim();
-      if (!routePath.isEmpty() && !routePath.endsWith("/") && !routeValue.startsWith("/")) routePath += "/";
+      if (!routePath.isEmpty() && !routePath.endsWith("/") && !routeValue.startsWith("/") && !routeValue.startsWith("?")) routePath += "/";
       if (routePath.endsWith("/") && routeValue.startsWith("/"))
       {
         routePath += routeValue.substring(1);
