@@ -178,7 +178,7 @@ class CriteriaBuilder
   {
     try
     {
-      return Pattern.compile(pattern);
+      return Pattern.compile(pattern, Pattern.DOTALL); // Support multi-lines for parameters
     }
     catch (PatternSyntaxException e)
     {
