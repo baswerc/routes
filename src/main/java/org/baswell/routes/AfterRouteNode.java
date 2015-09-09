@@ -67,7 +67,7 @@ class AfterRouteNode implements Comparable<AfterRouteNode>
     }
     else if (classHierarchyOrder != o.classHierarchyOrder)
     {
-      return classHierarchyOrder - o.classHierarchyOrder;
+      return o.classHierarchyOrder - classHierarchyOrder;
     }
     else
     {
