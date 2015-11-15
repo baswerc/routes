@@ -392,7 +392,7 @@ public class RequestParameters
   {
     if (containsContent(name))
     {
-      return Short.parseShort(get(name).trim());
+      return Short.parseShort(get(name).replace(",", "").trim());
     }
     else
     {
@@ -412,7 +412,7 @@ public class RequestParameters
     List<Short> shorts = new ArrayList<Short>();
     if (parameters.containsKey(name))
     {
-      for (String value : parameters.get(name)) if (hasContent(value)) shorts.add(Short.parseShort(value.trim()));
+      for (String value : parameters.get(name)) if (hasContent(value)) shorts.add(Short.parseShort(value.replace(",", "").trim()));
     }
     return shorts;
   }
@@ -441,7 +441,7 @@ public class RequestParameters
   {
     if (containsContent(name))
     {
-      return Integer.parseInt(get(name));
+      return Integer.parseInt(get(name).replace(",", ""));
     }
     else
     {
@@ -461,7 +461,7 @@ public class RequestParameters
     List<Integer> ints = new ArrayList<Integer>();
     if (parameters.containsKey(name))
     {
-      for (String value : parameters.get(name)) if (hasContent(value)) ints.add(Integer.parseInt(value.trim()));
+      for (String value : parameters.get(name)) if (hasContent(value)) ints.add(Integer.parseInt(value.replace(",", "").trim()));
     }
     return ints;
   }
@@ -490,7 +490,7 @@ public class RequestParameters
   {
     if (containsContent(name))
     {
-      return Long.parseLong(get(name).trim());
+      return Long.parseLong(get(name).replace(",", "").trim());
     }
     else
     {
@@ -510,7 +510,7 @@ public class RequestParameters
     List<Long> longs = new ArrayList<Long>();
     if (parameters.containsKey(name))
     {
-      for (String value : parameters.get(name)) if (hasContent(value)) longs.add(Long.parseLong(value.trim()));
+      for (String value : parameters.get(name)) if (hasContent(value)) longs.add(Long.parseLong(value.replace(",", "").trim()));
     }
     return longs;
   }
@@ -539,7 +539,7 @@ public class RequestParameters
   {
     if (containsContent(name))
     {
-      return Float.parseFloat(get(name).trim());
+      return Float.parseFloat(get(name).replace(",", "").trim());
     }
     else
     {
@@ -559,7 +559,7 @@ public class RequestParameters
     List<Float> floats = new ArrayList<Float>();
     if (parameters.containsKey(name))
     {
-      for (String value : parameters.get(name)) if (hasContent(value)) floats.add(Float.parseFloat(value.trim()));
+      for (String value : parameters.get(name)) if (hasContent(value)) floats.add(Float.parseFloat(value.replace(",", "").trim()));
     }
     return floats;
   }
@@ -588,7 +588,7 @@ public class RequestParameters
   {
     if (containsContent(name))
     {
-      return Double.parseDouble(get(name).trim());
+      return Double.parseDouble(get(name).replace(",", "").trim());
     }
     else
     {
@@ -608,7 +608,7 @@ public class RequestParameters
     List<Double> doubles = new ArrayList<Double>();
     if (parameters.containsKey(name))
     {
-      for (String value : parameters.get(name)) if (hasContent(value)) doubles.add(Double.parseDouble(value.trim()));
+      for (String value : parameters.get(name)) if (hasContent(value)) doubles.add(Double.parseDouble(value.replace(",", "").trim()));
     }
     return doubles;
   }
