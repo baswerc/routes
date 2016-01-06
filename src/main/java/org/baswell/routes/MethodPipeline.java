@@ -49,6 +49,7 @@ class MethodPipeline
     MethodInvoker invoker = new MethodInvoker(servletRequest, servletResponse, httpMethod, path, parameters, requestedMediaType, requestContent, routeNode.routeConfiguration);
     Object routeInstance = routeNode.instance.create();
 
+    int afterRouteMethodIndex = 0; // If an exception thrown from @AfterRoute method, don't call it again in the exception handling logic below
     try
     {
       for (BeforeRouteNode beforeNode : routeNode.beforeRouteNodes)
@@ -80,6 +81,7 @@ class MethodPipeline
       boolean success = getStatus(servletResponse) < 300;
       for (AfterRouteNode afterNode : routeNode.afterRouteNodes)
       {
+        ++afterRouteMethodIndex;
         if ((afterNode.onlyOnSuccess && !success) || (afterNode.onlyOnError && success))
         {
           continue;
@@ -91,6 +93,12 @@ class MethodPipeline
     catch (InvocationTargetException e)
     {
       Throwable targetException = e.getTargetException();
+
+      if (targetException instanceof HaltPipeline)
+      {
+        return;
+      }
+
       boolean exceptionHandled = false;
 
       if (targetException instanceof RedirectTo)
@@ -112,8 +120,9 @@ class MethodPipeline
         exceptionHandled = true;
       }
 
-      for (AfterRouteNode afterNode : routeNode.afterRouteNodes)
+      for (int i = afterRouteMethodIndex; i < routeNode.afterRouteNodes.size(); i++)
       {
+        AfterRouteNode afterNode = routeNode.afterRouteNodes.get(i);
         if (!afterNode.onlyOnSuccess)
         {
           try
