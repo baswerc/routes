@@ -84,17 +84,8 @@ class MethodPipeline
         {
           continue;
         }
-        try
-        {
-          invoker.invoke(routeInstance, afterNode.method, afterNode.parameters, pathMatchers, parameterMatchers);
-        }
-        catch (Exception e)
-        {
-          if (logger != null)
-          {
-            logger.logError("AfterRoute method: " + afterNode.method + " threw exception.", e);
-          }
-        }
+
+        invoker.invoke(routeInstance, afterNode.method, afterNode.parameters, pathMatchers, parameterMatchers);
       }
     }
     catch (InvocationTargetException e)
