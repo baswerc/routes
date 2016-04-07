@@ -20,7 +20,8 @@ import java.net.URL;
 /**
  * <p>
  * When thrown from {@link org.baswell.routes.BeforeRoute} or {@link org.baswell.routes.Route} methods the current request
- * will immediately (no further processing) be redirected to the given {@code redirectUrl}.
+ * will immediately (no further processing) be redirected to the given {@code redirectUrl}. Any {@link AfterRoute} methods
+ * for the current request will still be processed.
  * </p>
  */
 public class RedirectTo extends RuntimeException

@@ -106,6 +106,11 @@ class MethodPipeline
         servletResponse.sendRedirect(getRedirectUrl(((RedirectTo)targetException).redirectUrl, servletRequest));
         exceptionHandled = true;
       }
+      else if (targetException instanceof DisplayPath)
+      {
+        responseProcessor.forwardDispatch(((DisplayPath)targetException).pathToDisplay, servletRequest, servletResponse, routeNode.routeConfiguration);
+        exceptionHandled = true;
+      }
       else if (targetException instanceof ReturnHttpResponseStatus)
       {
         ReturnHttpResponseStatus returnHttpResponseStatus = (ReturnHttpResponseStatus) targetException;

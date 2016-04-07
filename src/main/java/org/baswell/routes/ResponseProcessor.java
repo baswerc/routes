@@ -126,26 +126,30 @@ class ResponseProcessor
           break;
           
         case FORWARD_DISPATCH:
-          String path = response.toString();
-
-          if (path.startsWith("redirect:"))
-          {
-            servletResponse.sendRedirect(getRedirectUrl(path.substring(9, path.length()), servletRequest));
-          }
-          else
-          {
-            if (!path.startsWith("/"))
-            {
-              path = routeConfiguration.forwardPath + path;
-            }
-
-            servletRequest.getRequestDispatcher(path).forward(servletRequest, servletResponse);
-          }
+          forwardDispatch(response.toString(), servletRequest, servletResponse, routeConfiguration);
           break;
           
         case VOID:
           break;
       }
+    }
+  }
+
+
+  void forwardDispatch(String path, HttpServletRequest servletRequest, HttpServletResponse servletResponse, RouteConfiguration routeConfiguration) throws IOException, ServletException
+  {
+    if (path.startsWith("redirect:"))
+    {
+      servletResponse.sendRedirect(getRedirectUrl(path.substring(9, path.length()), servletRequest));
+    }
+    else
+    {
+      if (!path.startsWith("/"))
+      {
+        path = routeConfiguration.forwardPath + path;
+      }
+
+      servletRequest.getRequestDispatcher(path).forward(servletRequest, servletResponse);
     }
   }
 
