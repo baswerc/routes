@@ -20,7 +20,7 @@ into an object that accepts HTTP _GET_ requests at the path _/api/users_ and ren
 ## Getting Started
 
 ### Direct Download
-You can download <a href="https://github.com/baswerc/routes/releases/download/v1.2/routes-1.2.jar">routes-1.2.jar</a> directly and place in your project.
+You can download <a href="https://github.com/baswerc/routes/releases/download/v1.3/routes-1.3.jar">routes-1.3.jar</a> directly and place in your project.
 
 ### Using Maven
 Add the following dependency into your Maven project:
@@ -29,7 +29,7 @@ Add the following dependency into your Maven project:
 <dependency>
     <groupId>org.baswell</groupId>
     <artifactId>routes</artifactId>
-    <version>1.2</version>
+    <version>1.3</version>
 </dependency>
 ````
 
