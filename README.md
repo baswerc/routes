@@ -239,6 +239,15 @@ public class LoginRoutes
   client to another page. Note that when this exception is thrown any <i>@AfterRoute</i> methods will not be called. If you want the after route callbacks to still take
   place you can return a string starting with the key <i>redirect:</i> such as <i>redirect:/login</i> or call <i>HttpServletResponse.sendRedirect</i> directly.</td>
 </tr>
+<tr>
+   <td><pre>PUT /login HTTP/1.1</pre></td>
+   <td><pre>404</pre></td>
+</tr>
+<tr>
+  <td colspan="2">Would need a <code>put()</code> method defined for this request to be matched. You can also combine HTTP methods together so for example the
+  method <code>postPut()</code> would be called for both <i>POST</i> and <i>PUT</i> requests with the path <i>/login</i></td>
+</tr>
+
 </tbody>
 </table>
 
