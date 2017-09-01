@@ -201,7 +201,20 @@ public class LoginRoutes
        <td><pre>GET /login HTTP/1.1</pre></td>
        <td><pre>get(request)</pre></td>
     </tr>
-  </tbody>
+<tr>
+  <td colspan="2">By default the class name is used to form the first url segment, in this case <i>/login</i>. If the class name ends in <i>Routes</i>, <i>Route</i>, <i>Controller</i>, or
+   <i>Handler</i> then this part of the class name will be removed from the path segment.Method names that just contain HTTP methods (ex. <i>get</i>, <i>post</i>)
+  don't add anything to the matched path. The JSP file at <i>/WEB-INF/jsps/login.jsp</i> will be rendered to the user. You can change the root JSP directory with
+  <a href="http://baswerc.github.io/routes/javadoc/org/baswell/routes/RoutesConfiguration.html#rootForwardPath">RoutesConfiguration.rootForwardPath</a></td>
+</tr>
+<tr>
+   <td><pre>POST /login HTTP/1.1</pre></td>
+   <td><pre>post(request, response)</pre></td>
+</tr>
+<tr>
+  <td colspan="2">Since this method does not return anything, it must handle the content sent back to the user with the <code>HttpServletResponse</code> object.</td>
+</tr>
+</tbody>
 </table>
 
 ### Example Two: Using Annotations
