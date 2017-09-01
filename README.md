@@ -201,56 +201,6 @@ public class LoginRoutes
        <td><pre>GET /login HTTP/1.1</pre></td>
        <td><pre>get(request)</pre></td>
     </tr>
-    <tr>
-      <td colspan="2">By default the class name is used to form the first url segment, in this case <i>/login</i>. If the class name ends in <i>Routes</i>, <i>Route</i>, <i>Controller</i>, or
-       <i>Handler</i> then this part of the class name will be removed from the path segment.Method names that just contain HTTP methods (ex. <i>get</i>, <i>post</i>)
-      don't add anything to the matched path. The JSP file at <i>/WEB-INF/jsps/login.jsp</i> will be rendered to the user. You can change the root JSP directory with
-      <a href="http://baswerc.github.io/routes/javadoc/org/baswell/routes/RoutesConfiguration.html#rootForwardPath">RoutesConfiguration.rootForwardPath</a></td>
-    </tr>
-    <tr>
-       <td><pre>POST /login HTTP/1.1</pre></td>
-       <td><pre>post(request, response)</pre></td>
-    </tr>
-    <tr>
-      <td colspan="2">Since this method does not return anything, it must handle the content sent back to the user with the <code>HttpServletResponse</code> object.</td>
-    </tr>
-
-    <tr>
-       <td><pre>GET /login/forgotpassword HTTP/1.1</pre></td>
-       <td><pre>getForgotPassword(request)</pre></td>
-    </tr>
-    <tr>
-      <td colspan="2">The remaining method name after all HTTP methods are removed from the begging forms the next url segment to match.
-      The JSP file at _/WEB-INF/jsps/login.jsp_ will be rendered to the user.</td>
-    </tr>
-
-    <tr>
-       <td><pre>/login/ForGotpasSworD HTTP/1.1</pre></td>
-       <td><pre>getForgotPassword(request)</pre></td>
-    </tr>
-    <tr>
-      <td colspan="2">By default matching in Routes for paths and parameters is case insensitive. This can be changed with
-      <a href="http://baswerc.github.io/routes/javadoc/org/baswell/routes/RoutesConfiguration.html#caseInsensitive">RoutesConfiguration.caseInsensitve</a>.</td>
-    </tr>
-    <tr>
-       <td><pre>POST /login/forgotpassword HTTP/1.1</pre></td>
-       <td><pre>postForgotPassword(request)</pre></td>
-    </tr>
-    <tr>
-      <td colspan="2">You can use the helper class <a href="http://baswerc.github.io/routes/javadoc/org/baswell/routes/RedirectTo.html">RedirectTo</a> to redirect the
-      client to another page. Note that when this exception is thrown any <i>@AfterRoute</i> methods will not be called. If you want the after route callbacks to still take
-      place you can return a string starting with the key <i>redirect:</i> such as <i>redirect:/login</i> or call <i>HttpServletResponse.sendRedirect</i> directly.</td>
-    </tr>
-    <tr>
-       <td><pre>PUT /login HTTP/1.1</pre></td>
-       <td><pre>404</pre></td>
-    </tr>
-    <tr>
-      <td colspan="2">Would need a <codei>put()</code> method defined for this request to be matched. You can also combine HTTP methods together so for example the
-      method <code>postPut()</code> would be called for both <i>POST</i> and <i>PUT</i> requests with the path <i>/login</i></td>
-    </tr>
-
-
   </tbody>
 </table>
 
