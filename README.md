@@ -214,6 +214,15 @@ public class LoginRoutes
 <tr>
   <td colspan="2">Since this method does not return anything, it must handle the content sent back to the user with the <code>HttpServletResponse</code> object.</td>
 </tr>
+<tr>
+   <td><pre>GET /login/forgotpassword HTTP/1.1</pre></td>
+   <td><pre>getForgotPassword(request)</pre></td>
+</tr>
+<tr>
+  <td colspan="2">The remaining method name after all HTTP methods are removed from the begging forms the next url segment to match.
+  The JSP file at _/WEB-INF/jsps/login.jsp_ will be rendered to the user.</td>
+</tr>
+
 </tbody>
 </table>
 
