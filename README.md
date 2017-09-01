@@ -234,6 +234,11 @@ public class LoginRoutes
    <td><pre>POST /login/forgotpassword HTTP/1.1</pre></td>
    <td><pre>postForgotPassword(request)</pre></td>
 </tr>
+<tr>
+  <td colspan="2">You can use the helper class <a href="http://baswerc.github.io/routes/javadoc/org/baswell/routes/RedirectTo.html">RedirectTo</a> to redirect the
+  client to another page. Note that when this exception is thrown any <i>@AfterRoute</i> methods will not be called. If you want the after route callbacks to still take
+  place you can return a string starting with the key <i>redirect:</i> such as <i>redirect:/login</i> or call <i>HttpServletResponse.sendRedirect</i> directly.</td>
+</tr>
 </tbody>
 </table>
 
