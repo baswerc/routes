@@ -140,7 +140,7 @@ class ResponseProcessor
   {
     if (path.startsWith("redirect:"))
     {
-      servletResponse.sendRedirect(getRedirectUrl(path.substring(9, path.length()), servletRequest));
+      servletResponse.sendRedirect(routesConfiguration.redirectHandler.getRedirectUrl(path.substring(9, path.length()), servletRequest));
     }
     else
     {

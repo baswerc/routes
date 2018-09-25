@@ -81,19 +81,6 @@ class RoutesMethods
     return builder.toString();
   }
 
-  static String getRedirectUrl(String url, HttpServletRequest request)
-  {
-    if (url.startsWith("/"))
-    {
-      String contextPath = request.getContextPath();
-      if (!url.startsWith(contextPath))
-      {
-        url = contextPath + url;
-      }
-    }
-    return url;
-  }
-  
   static Class getListSingleParameterType(Type listParameter)
   {
     if (listParameter instanceof ParameterizedType)

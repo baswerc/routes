@@ -156,6 +156,8 @@ public class RoutesConfiguration
    */
   public boolean useGSONForJSON;
 
+  public RoutesRedirectHandler redirectHandler = new AddContextPathRedirectHandler();
+
   final Map<String, Pattern> symbolsToPatterns = new HashMap<String, Pattern>();
 
   /**
