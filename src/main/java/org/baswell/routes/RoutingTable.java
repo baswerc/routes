@@ -121,7 +121,7 @@ public class RoutingTable
   public synchronized RoutingTable add(Object... instancesOrClasses)
   {
     built = false;
-    for (Object obj : instancesOrClasses) addedObjects.add(obj);
+    for (Object obj : instancesOrClasses) if (!addedObjects.contains(obj)) addedObjects.add(obj);
     return this;
   }
 
