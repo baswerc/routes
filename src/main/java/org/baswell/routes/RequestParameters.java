@@ -15,6 +15,9 @@
  */
 package org.baswell.routes;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
 import java.util.*;
 import java.util.Map.Entry;
 
@@ -185,7 +188,7 @@ public class RequestParameters
    * @param name The parameter name.
    * @return The parameter value or null if not present.
    */
-  public String get(String name)
+  public @Nullable String get(String name)
   {
     return get(name, null);
   }
@@ -196,7 +199,7 @@ public class RequestParameters
    * @param defaultValue The default value to return if the given parameter is not present.
    * @return The parameter value or defaultValue if not present.
    */
-  public String get(String name, String defaultValue)
+  public String get(String name, @NotNull String defaultValue)
   {
     if (parameters.containsKey(name))
     {
@@ -207,13 +210,27 @@ public class RequestParameters
           return value;
         }
       }
-      return parameters.get(name).get(0);
     }
-    else
-    {
-      return defaultValue;
-    }
+
+    return defaultValue;
   }
+
+  public @Nullable String getOptionalString(String name, @Nullable String defaultValue)
+  {
+    if (parameters.containsKey(name))
+    {
+      for (String value : parameters.get(name))
+      {
+        if (hasContent(value))
+        {
+          return value;
+        }
+      }
+    }
+
+    return defaultValue;
+  }
+
 
   /**
    *
@@ -279,28 +296,44 @@ public class RequestParameters
    * @return The parameter value parsed as a Boolean or <status>null</status> if the given parameter doesn't exist.
    * @see java.lang.Boolean#parseBoolean(String)
    */
-  public Boolean getBoolean(String name)
+  public boolean getBoolean(String name)
   {
-    return getBoolean(name, null);
+    return Boolean.parseBoolean(get(name).trim());
   }
 
-  /**
-   *
-   * @param name The parameter name
-   * @param defaultValue The value to return if the parameter doesn't exists
-   * @return The parameter value parsed as a Boolean or the given defaultValue if the given parameter doesn't exist.
-   * @see java.lang.Boolean#parseBoolean(String)
-   */
-  public Boolean getBoolean(String name, Boolean defaultValue)
+  public boolean getBoolean(String name, boolean defaultValue)
   {
     if (containsContent(name))
     {
-      return Boolean.parseBoolean(get(name).trim());
+      try
+      {
+        return Boolean.parseBoolean(get(name).trim());
+      }
+      catch (Exception e)
+      {}
     }
-    else
+
+    return defaultValue;
+  }
+
+  public @Nullable Boolean getOptionalBoolean(String name)
+  {
+    return getOptionalBoolean(name, null);
+  }
+
+  public @Nullable Boolean getOptionalBoolean(String name, @Nullable Boolean defaultValue)
+  {
+    if (containsContent(name))
     {
-      return defaultValue;
+      try
+      {
+        return Boolean.parseBoolean(get(name).trim());
+      }
+      catch (Exception e)
+      {}
     }
+
+    return defaultValue;
   }
 
   /**
@@ -311,12 +344,19 @@ public class RequestParameters
    */
   public List<Boolean> getBooleans(String name)
   {
-    List<Boolean> values = new ArrayList<Boolean>();
-    if (parameters.containsKey(name))
+    List<String> values = getValues(name);
+    List<Boolean> booleanValues = new ArrayList();
+    for (String value : values)
     {
-      for (String value : parameters.get(name)) if (hasContent(value)) values.add(Boolean.parseBoolean(value.trim()));
+      try
+      {
+        booleanValues.add(Boolean.parseBoolean(value));
+      }
+      catch (Exception e)
+      {}
     }
-    return values;
+
+    return booleanValues;
   }
 
   /**
@@ -326,29 +366,45 @@ public class RequestParameters
    * @throws java.lang.NumberFormatException If the parameter value cannot be parsed into a Byte.
    * @see java.lang.Byte#parseByte(String)
    */
-  public Byte getByte(String name) throws NumberFormatException
+  public byte getByte(String name) throws NumberFormatException
   {
-    return getByte(name, null);
+    return Byte.parseByte(getNumber(name));
   }
 
-  /**
-   *
-   * @param name The parameter name
-   * @param defaultValue The default value to return if the parameter doesn't exists.
-   * @return The parameter value parsed as a Byte or the given defaultValue if the given parameter doesn't exist.
-   * @throws java.lang.NumberFormatException If the parameter value cannot be parsed into a Byte.
-   * @see java.lang.Byte#parseByte(String)
-   */
-  public Byte getByte(String name, Byte defaultValue) throws NumberFormatException
+  public byte getByte(String name, byte defaultValue)
   {
     if (containsContent(name))
     {
-      return Byte.parseByte(get(name));
+      try
+      {
+        return Byte.parseByte(getNumber(name));
+      }
+      catch (Exception e)
+      {}
     }
-    else
+
+    return defaultValue;
+  }
+
+
+  public @Nullable Byte getOptionalByte(String name)
+  {
+    return getOptionalByte(name, null);
+  }
+
+  public @Nullable Byte getOptionalByte(String name, @Nullable Byte defaultValue)
+  {
+    if (containsContent(name))
     {
-      return defaultValue;
+      try
+      {
+        return Byte.parseByte(getNumber(name));
+      }
+      catch (Exception e)
+      {}
     }
+
+    return defaultValue;
   }
 
   /**
@@ -360,12 +416,19 @@ public class RequestParameters
    */
   public List<Byte> getBytes(String name) throws NumberFormatException
   {
-    List<Byte> bytes = new ArrayList<Byte>();
-    if (parameters.containsKey(name))
+    List<String> values = getNumbers(name);
+    List<Byte> byteValues = new ArrayList();
+    for (String value : values)
     {
-      for (String value : parameters.get(name)) if (hasContent(value)) bytes.add(Byte.parseByte(value.trim()));
+      try
+      {
+        byteValues.add(Byte.parseByte(value));
+      }
+      catch (Exception e)
+      {}
     }
-    return bytes;
+
+    return byteValues;
   }
 
   /**
@@ -375,29 +438,45 @@ public class RequestParameters
    * @throws java.lang.NumberFormatException If the parameter value cannot be parsed into a Short.
    * @see java.lang.Short#parseShort(String)
    */
-  public Short getShort(String name) throws NumberFormatException
+  public short getShort(String name) throws NumberFormatException
   {
-    return getShort(name, null);
+    return Short.parseShort(getNumber(name));
   }
 
-  /**
-   *
-   * @param name The parameter name
-   * @param defaultValue The default value to return if the parameter doesn't exists.
-   * @return The parameter value parsed as a Short or the given defaultValue if the given parameter doesn't exist.
-   * @throws java.lang.NumberFormatException If the parameter value cannot be parsed into a Short.
-   * @see java.lang.Short#parseShort(String)
-   */
-  public Short getShort(String name, Short defaultValue) throws NumberFormatException
+  public short getShort(String name, short defaultValue)
   {
     if (containsContent(name))
     {
-      return Short.parseShort(get(name).replace(",", "").trim());
+      try
+      {
+        return Short.parseShort(getNumber(name));
+      }
+      catch (Exception e)
+      {}
     }
-    else
+
+    return defaultValue;
+  }
+
+
+  public @Nullable Short getOptionalShort(String name)
+  {
+    return getOptionalShort(name, null);
+  }
+
+  public @Nullable Short getOptionalShort(String name, @Nullable Short defaultValue)
+  {
+    if (containsContent(name))
     {
-      return defaultValue;
+      try
+      {
+        return Short.parseShort(getNumber(name));
+      }
+      catch (Exception e)
+      {}
     }
+
+    return defaultValue;
   }
 
   /**
@@ -409,12 +488,19 @@ public class RequestParameters
    */
   public List<Short> getShorts(String name) throws NumberFormatException
   {
-    List<Short> shorts = new ArrayList<Short>();
-    if (parameters.containsKey(name))
+    List<String> values = getNumbers(name);
+    List<Short> shortValues = new ArrayList();
+    for (String value : values)
     {
-      for (String value : parameters.get(name)) if (hasContent(value)) shorts.add(Short.parseShort(value.replace(",", "").trim()));
+      try
+      {
+        shortValues.add(Short.parseShort(value));
+      }
+      catch (Exception e)
+      {}
     }
-    return shorts;
+
+    return shortValues;
   }
 
   /**
@@ -424,94 +510,117 @@ public class RequestParameters
    * @throws java.lang.NumberFormatException If the parameter value cannot be parsed into a Integer.
    * @see java.lang.Integer#parseInt(String)
    */
-  public Integer getInteger(String name) throws NumberFormatException
+  public int getInteger(String name) throws NumberFormatException
   {
-    return getInteger(name, null);
+    return Integer.parseInt(getNumber(name));
   }
 
-  /**
-   *
-   * @param name The parameter name
-   * @param defaultValue The default value to return if the parameter doesn't exists.
-   * @return The parameter value parsed as a Integer or the given defaultValue if the given parameter doesn't exist.
-   * @throws java.lang.NumberFormatException If the parameter value cannot be parsed into a Integer.
-   * @see java.lang.Integer#parseInt(String)
-   */
-  public Integer getInteger(String name, Integer defaultValue) throws NumberFormatException
+  public int getInteger(String name, int defaultValue)
   {
     if (containsContent(name))
     {
-      return Integer.parseInt(get(name).replace(",", ""));
+      try
+      {
+        return Integer.parseInt(getNumber(name));
+      }
+      catch (Exception e)
+      {}
     }
-    else
-    {
-      return defaultValue;
-    }
+
+    return defaultValue;
   }
 
-  /**
-   *
-   * @param name The parameter name.
-   * @return Each parameter value parsed into a Integer for the given name. If no values for the given parameter exists an empty list is returned.
-   * @throws java.lang.NumberFormatException If one of the parameter values cannot be parsed into a Integer.
-   * @see java.lang.Integer#parseInt(String)
-   */
+  public @Nullable Integer getOptionalInteger(String name)
+  {
+    return getOptionalInteger(name, null);
+  }
+
+  public @Nullable Integer getOptionalInteger(String name, @Nullable Integer defaultValue)
+  {
+    if (containsContent(name))
+    {
+      try
+      {
+        return Integer.parseInt(getNumber(name));
+      }
+      catch (Exception e)
+      {}
+    }
+
+    return defaultValue;
+  }
+
   public List<Integer> getIntegers(String name) throws NumberFormatException
   {
-    List<Integer> ints = new ArrayList<Integer>();
-    if (parameters.containsKey(name))
+    List<String> values = getNumbers(name);
+    List<Integer> integers = new ArrayList();
+    for (String value : values)
     {
-      for (String value : parameters.get(name)) if (hasContent(value)) ints.add(Integer.parseInt(value.replace(",", "").trim()));
+      try
+      {
+        integers.add(Integer.parseInt(value));
+      }
+      catch (Exception e)
+      {}
     }
-    return ints;
+
+    return integers;
   }
 
-  /**
-   *
-   * @param name The parameter name
-   * @return The parameter value parsed as a Long or <status>null</status> if the given parameter doesn't exist.
-   * @throws java.lang.NumberFormatException If the parameter value cannot be parsed into a Long.
-   * @see java.lang.Long#parseLong(String)
-   */
-  public Long getLong(String name) throws NumberFormatException
+  public long getLong(String name) throws NumberFormatException
   {
-    return getLong(name, null);
+    return Long.parseLong(getNumber(name));
   }
 
-  /**
-   *
-   * @param name The parameter name
-   * @param defaultValue The default value to return if the parameter doesn't exists.
-   * @return The parameter value parsed as a Long or the given defaultValue if the given parameter doesn't exist.
-   * @throws java.lang.NumberFormatException If the parameter value cannot be parsed into a Long.
-   * @see java.lang.Long#parseLong(String)
-   */
-  public Long getLong(String name, Long defaultValue) throws NumberFormatException
+  public long getLong(String name, long defaultValue)
   {
     if (containsContent(name))
     {
-      return Long.parseLong(get(name).replace(",", "").trim());
+      try
+      {
+        return Long.parseLong(getNumber(name));
+      }
+      catch (Exception e)
+      {}
     }
-    else
-    {
-      return defaultValue;
-    }
+
+    return defaultValue;
   }
 
-  /**
-   *
-   * @param name The parameter name.
-   * @return Each parameter value parsed into a Long for the given name. If no values for the given parameter exists an empty list is returned.
-   * @throws java.lang.NumberFormatException If one of the parameter values cannot be parsed into a Long.
-   * @see java.lang.Boolean#parseBoolean(String)
-   */
+  public @Nullable Long getOptionalLong(String name)
+  {
+    return getOptionalLong(name, null);
+  }
+
+  public @Nullable Long getOptionalLong(String name, @Nullable Long defaultValue)
+  {
+    if (containsContent(name))
+    {
+      try
+      {
+        return Long.parseLong(getNumber(name));
+      }
+      catch (Exception e)
+      {}
+    }
+
+    return defaultValue;
+  }
+
   public List<Long> getLongs(String name) throws NumberFormatException
   {
-    List<Long> longs = new ArrayList<Long>();
-    if (parameters.containsKey(name))
+    List<String> values = getNumbers(name);
+    List<Long> longs = new ArrayList();
+    for (String value : values)
     {
-      for (String value : parameters.get(name)) if (hasContent(value)) longs.add(Long.parseLong(value.replace(",", "").trim()));
+      try
+      {
+        longs.add(Long.parseLong(value));
+      }
+      catch (Exception e)
+      {}
     }
+
     return longs;
   }
 
@@ -522,45 +631,60 @@ public class RequestParameters
    * @throws java.lang.NumberFormatException If the parameter value cannot be parsed into a Float.
    * @see java.lang.Float#parseFloat(String)
    */
-  public Float getFloat(String name) throws NumberFormatException
+  public float getFloat(String name) throws NumberFormatException
   {
-    return getFloat(name, null);
+    return Float.parseFloat(getNumber(name));
   }
 
-  /**
-   *
-   * @param name The parameter name
-   * @param defaultValue The default value to return if the parameter doesn't exists.
-   * @return The parameter value parsed as a Float or the given defaultValue if the given parameter doesn't exist.
-   * @throws java.lang.NumberFormatException If the parameter value cannot be parsed into a Float.
-   * @see java.lang.Float#parseFloat(String)
-   */
-  public Float getFloat(String name, Float defaultValue) throws NumberFormatException
+  public float getFloat(String name, float defaultValue)
   {
     if (containsContent(name))
     {
-      return Float.parseFloat(get(name).replace(",", "").trim());
+      try
+      {
+        return Float.parseFloat(getNumber(name));
+      }
+      catch (Exception e)
+      {}
     }
-    else
-    {
-      return defaultValue;
-    }
+
+    return defaultValue;
   }
 
-  /**
-   *
-   * @param name The parameter name.
-   * @return Each parameter value parsed into a Float for the given name. If no values for the given parameter exists an empty list is returned.
-   * @throws java.lang.NumberFormatException If one of the parameter values cannot be parsed into a Float.
-   * @see java.lang.Long#parseLong(String)
-   */
+  public @Nullable Float getOptionalFloat(String name)
+  {
+    return getOptionalFloat(name, null);
+  }
+
+  public @Nullable Float getOptionalFloat(String name, @Nullable Float defaultValue)
+  {
+    if (containsContent(name))
+    {
+      try
+      {
+        return Float.parseFloat(getNumber(name));
+      }
+      catch (Exception e)
+      {}
+    }
+
+    return defaultValue;
+  }
+
   public List<Float> getFloats(String name) throws NumberFormatException
   {
-    List<Float> floats = new ArrayList<Float>();
-    if (parameters.containsKey(name))
+    List<String> values = getNumbers(name);
+    List<Float> floats = new ArrayList();
+    for (String value : values)
     {
-      for (String value : parameters.get(name)) if (hasContent(value)) floats.add(Float.parseFloat(value.replace(",", "").trim()));
+      try
+      {
+        floats.add(Float.parseFloat(value));
+      }
+      catch (Exception e)
+      {}
     }
+
     return floats;
   }
 
@@ -571,45 +695,60 @@ public class RequestParameters
    * @throws java.lang.NumberFormatException If the parameter value cannot be parsed into a Double.
    * @see java.lang.Double#parseDouble(String)
    */
-  public Double getDouble(String name) throws NumberFormatException
+  public double getDouble(String name) throws NumberFormatException
   {
-    return getDouble(name, null);
+    return Double.parseDouble(getNumber(name));
   }
 
-  /**
-   *
-   * @param name The parameter name
-   * @param defaultValue The default value to return if the parameter doesn't exists.
-   * @return The parameter value parsed as a Double or the given defaultValue if the given parameter doesn't exist.
-   * @throws java.lang.NumberFormatException If the parameter value cannot be parsed into a Double.
-   * @see java.lang.Double#parseDouble(String)
-   */
-  public Double getDouble(String name, Double defaultValue) throws NumberFormatException
+  public double getDouble(String name, double defaultValue)
   {
     if (containsContent(name))
     {
-      return Double.parseDouble(get(name).replace(",", "").trim());
+      try
+      {
+        return Double.parseDouble(getNumber(name));
+      }
+      catch (Exception e)
+      {}
     }
-    else
-    {
-      return defaultValue;
-    }
+
+    return defaultValue;
   }
 
-  /**
-   *
-   * @param name The parameter name.
-   * @return Each parameter value parsed into a Double for the given name. If no values for the given parameter exists an empty list is returned.
-   * @throws java.lang.NumberFormatException If one of the parameter values cannot be parsed into a Double.
-   * @see java.lang.Double#parseDouble(String)
-   */
+  public @Nullable Double getOptionalDouble(String name)
+  {
+    return getOptionalDouble(name, null);
+  }
+
+  public @Nullable Double getOptionalDouble(String name, @Nullable Double defaultValue)
+  {
+    if (containsContent(name))
+    {
+      try
+      {
+        return Double.parseDouble(getNumber(name));
+      }
+      catch (Exception e)
+      {}
+    }
+
+    return defaultValue;
+  }
+
   public List<Double> getDoubles(String name) throws NumberFormatException
   {
-    List<Double> doubles = new ArrayList<Double>();
-    if (parameters.containsKey(name))
+    List<String> values = getNumbers(name);
+    List<Double> doubles = new ArrayList();
+    for (String value : values)
     {
-      for (String value : parameters.get(name)) if (hasContent(value)) doubles.add(Double.parseDouble(value.replace(",", "").trim()));
+      try
+      {
+        doubles.add(Double.parseDouble(value));
+      }
+      catch (Exception e)
+      {}
     }
+
     return doubles;
   }
 
@@ -664,4 +803,19 @@ public class RequestParameters
   {
     parameters.put(name, values);
   }
+
+  private String getNumber(String name) { return get(name).replace(",", "").trim(); }
+
+  public List<String> getNumbers(String name)
+  {
+    List<String> numbers = new ArrayList();
+    List<String> values = getValues(name);
+    for (String value : values)
+    {
+      numbers.add(value.replace(",", "").trim());
+    }
+
+    return numbers;
+  }
+
 }

@@ -118,6 +118,21 @@ public class RoutingTable
    * @param instancesOrClasses Route class or instance objects.
    * @return This RoutingTable
    */
+  public synchronized RoutingTable register(Object... instancesOrClasses)
+  {
+    built = false;
+    for (Object obj : instancesOrClasses) if (!addedObjects.contains(obj)) addedObjects.add(obj);
+    return this;
+  }
+
+
+  /**
+   * Adds to the given objects to the routing table. Objects can be either the route class object or a route instance
+   * object.
+   *
+   * @param instancesOrClasses Route class or instance objects.
+   * @return This RoutingTable
+   */
   public synchronized RoutingTable add(Object... instancesOrClasses)
   {
     built = false;

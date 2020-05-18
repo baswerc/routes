@@ -52,7 +52,7 @@ public class BasicRoutes extends BaseRoutes
     assertEquals("is", path.get(1));
     assertEquals("a", path.get(2));
     assertEquals(test, path.get(3));
-    assertEquals(one, parameters.getInteger("one"));
+    assertEquals(one, parameters.getOptionalInteger("one"));
     assertEquals(two, parameters.getBoolean("two"));
   }
   
