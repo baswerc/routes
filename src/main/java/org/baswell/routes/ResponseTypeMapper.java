@@ -21,7 +21,7 @@ import java.lang.reflect.Method;
 import java.util.Set;
 
 import static org.baswell.routes.RoutesMethods.*;
-import static org.baswell.routes.Pair.*;
+import static org.baswell.routes.RoutesPair.*;
 
 class ResponseTypeMapper
 {
@@ -50,17 +50,17 @@ class ResponseTypeMapper
     }
   }
 
-  static Pair<ResponseStringWriteStrategy, String> mapResponseStringWriteStrategy(Method method, Set<MediaType> respondToMedia, String contentType, AvailableLibraries availableLibraries)
+  static RoutesPair<ResponseStringWriteStrategy, String> mapResponseStringWriteStrategy(Method method, Set<MediaType> respondToMedia, String contentType, AvailableLibraries availableLibraries)
   {
     return mapResponseStringWriteStrategy(method.getReturnType(), respondToMedia, contentType, availableLibraries);
   }
 
-  static Pair<ResponseStringWriteStrategy, String> mapResponseStringWriteStrategy(Object returnedObject, Set<MediaType> respondToMedia, String contentType, AvailableLibraries availableLibraries)
+  static RoutesPair<ResponseStringWriteStrategy, String> mapResponseStringWriteStrategy(Object returnedObject, Set<MediaType> respondToMedia, String contentType, AvailableLibraries availableLibraries)
   {
     return mapResponseStringWriteStrategy(returnedObject.getClass(), respondToMedia, contentType, availableLibraries);
   }
 
-  static Pair<ResponseStringWriteStrategy, String> mapResponseStringWriteStrategy(Class returnType, Set<MediaType> respondToMedia, String contentType, AvailableLibraries availableLibraries)
+  static RoutesPair<ResponseStringWriteStrategy, String> mapResponseStringWriteStrategy(Class returnType, Set<MediaType> respondToMedia, String contentType, AvailableLibraries availableLibraries)
   {
     String returnClassName = returnType.getCanonicalName();
     String returnTypePackage = returnType.getPackage().getName();

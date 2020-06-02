@@ -60,7 +60,7 @@ class CriteriaBuilder
       }
       else if (pathTerminal instanceof ParsedMethodParameterPathTerminal)
       {
-        Pair<Type, Integer> parameterIndex = findDynamicParameterAndIndex(method, urlParameterIndex++);
+        RoutesPair<Type, Integer> parameterIndex = findDynamicParameterAndIndex(method, urlParameterIndex++);
         if (parameterIndex == null)
         {
           throw new RoutesException("Route path pattern {} at index: " + (urlParameterIndex - 1) + " has no matching method parameter for method: " + method);
@@ -125,7 +125,7 @@ class CriteriaBuilder
         }
         else if (parameterTerminal instanceof ParsedMethodParameterParameterTerminal)
         {
-          Pair<Type, Integer> parameterIndex = findDynamicParameterAndIndex(method, urlParameterIndex++);
+          RoutesPair<Type, Integer> parameterIndex = findDynamicParameterAndIndex(method, urlParameterIndex++);
           if (parameterIndex == null)
           {
             throw new RoutesException("Route parameter pattern {} at index: " + (urlParameterIndex - 1) + " has no matching method parameter for method: " + method);
@@ -186,7 +186,7 @@ class CriteriaBuilder
     }
   }
   
-  static Pair<Type, Integer> findDynamicParameterAndIndex(Method method, int dynamicIndex)
+  static RoutesPair<Type, Integer> findDynamicParameterAndIndex(Method method, int dynamicIndex)
   {
     Type[] parameters = method.getGenericParameterTypes();
     int dynamicParameterCounter = 0;
@@ -197,7 +197,7 @@ class CriteriaBuilder
       {
         if (dynamicParameterCounter++ == dynamicIndex)
         {
-          return Pair.pair(parameter, i);
+          return RoutesPair.pair(parameter, i);
         }
       }
     }
