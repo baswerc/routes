@@ -190,7 +190,7 @@ public class RequestParameters
    */
   public @Nullable String get(String name)
   {
-    return get(name, null);
+    return getOptionalString(name, null);
   }
 
   /**
