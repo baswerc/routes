@@ -34,12 +34,12 @@ public class RequestParameters
 
   final String queryString;
 
-  RequestParameters(HttpServletRequest request)
+  public RequestParameters(HttpServletRequest request)
   {
     this(request.getParameterMap());
   }
 
-  RequestParameters(Map<String, String[]> parameterMap)
+  public RequestParameters(Map<String, String[]> parameterMap)
   {
     parameters = new HashMap<String, List<String>>();
     StringBuilder queryStringBuilder = new StringBuilder();
@@ -59,7 +59,7 @@ public class RequestParameters
     queryString = queryStringBuilder.toString();
   }
 
-  RequestParameters(String queryString)
+  public RequestParameters(String queryString)
   {
     parameters = new HashMap<String, List<String>>();
     String[] parameterValues = queryString.split("&");
