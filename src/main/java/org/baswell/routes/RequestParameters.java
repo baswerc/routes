@@ -624,6 +624,18 @@ public class RequestParameters
     return longs;
   }
 
+  public List<Long> getRequiredLongs(String name) throws NumberFormatException
+  {
+    List<String> values = getNumbers(name);
+    List<Long> longs = new ArrayList();
+    for (String value : values)
+    {
+      longs.add(Long.parseLong(value));
+    }
+
+    return longs;
+  }
+
   /**
    *
    * @param name The parameter name
@@ -751,6 +763,19 @@ public class RequestParameters
 
     return doubles;
   }
+
+  public List<Double> getRequiredDoubles(String name) throws NumberFormatException
+  {
+    List<String> values = getNumbers(name);
+    List<Double> doubles = new ArrayList();
+    for (String value : values)
+    {
+      doubles.add(Double.parseDouble(value));
+    }
+
+    return doubles;
+  }
+
 
   /**
    * Removes the given parameter.
