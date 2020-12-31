@@ -29,7 +29,7 @@ import org.baswell.routes.CriterionForPathSegment.RequestPathSegmentCrierionType
 
 class CriteriaBuilder
 {
-  Criteria buildCriteria(Method method, ParsedRouteTree routeTree, RouteConfiguration routeConfiguration, RoutesConfiguration routesConfiguration) throws RoutesException
+  RouteCriteria buildCriteria(Method method, ParsedRouteTree routeTree, RouteConfiguration routeConfiguration, RoutesConfiguration routesConfiguration) throws RoutesException
   {
     List<CriterionForPathSegment> pathCriteria = new ArrayList<CriterionForPathSegment>();
     int urlParameterIndex = 0;
@@ -171,7 +171,21 @@ class CriteriaBuilder
       }
     }
 
-    return new Criteria(pathCriteria, parameterCriteria, routeConfiguration, routesConfiguration);
+    List<Pattern> acceptTypePattern = new ArrayList<>();
+    if (routeConfiguration.acceptTypePatterns != null) {
+      for (int i = 0; i < routeConfiguration.acceptTypePatterns.size(); i++) {
+        try
+        {
+          acceptTypePattern.add(Pattern.compile(routeConfiguration.acceptTypePatterns.get(i)));
+        }
+        catch (Exception e)
+        {
+          throw new RoutesException("Invalid acceptTypePattern: " + acceptTypePattern + " for method: " + method, e);
+        }
+      }
+    }
+
+    return new RouteCriteria(routeConfiguration.httpMethods, pathCriteria, parameterCriteria, acceptTypePattern, routeConfiguration, routesConfiguration);
   }
   
   static Pattern compile(String pattern, Method method)

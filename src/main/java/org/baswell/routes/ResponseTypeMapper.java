@@ -15,13 +15,8 @@
  */
 package org.baswell.routes;
 
-import javax.xml.bind.annotation.XmlRootElement;
 import java.io.InputStream;
 import java.lang.reflect.Method;
-import java.util.Set;
-
-import static org.baswell.routes.RoutesMethods.*;
-import static org.baswell.routes.RoutesPair.*;
 
 class ResponseTypeMapper
 {
@@ -47,67 +42,6 @@ class ResponseTypeMapper
     else
     {
       return ResponseType.STRING_CONTENT;
-    }
-  }
-
-  static RoutesPair<ResponseStringWriteStrategy, String> mapResponseStringWriteStrategy(Method method, Set<MediaType> respondToMedia, String contentType, AvailableLibraries availableLibraries)
-  {
-    return mapResponseStringWriteStrategy(method.getReturnType(), respondToMedia, contentType, availableLibraries);
-  }
-
-  static RoutesPair<ResponseStringWriteStrategy, String> mapResponseStringWriteStrategy(Object returnedObject, Set<MediaType> respondToMedia, String contentType, AvailableLibraries availableLibraries)
-  {
-    return mapResponseStringWriteStrategy(returnedObject.getClass(), respondToMedia, contentType, availableLibraries);
-  }
-
-  static RoutesPair<ResponseStringWriteStrategy, String> mapResponseStringWriteStrategy(Class returnType, Set<MediaType> respondToMedia, String contentType, AvailableLibraries availableLibraries)
-  {
-    String returnClassName = returnType.getCanonicalName();
-    String returnTypePackage = returnType.getPackage().getName();
-
-    MediaType mediaType = contentType == null ? null : MediaType.findFromMimeType(contentType);
-    if ((mediaType == null) && (respondToMedia != null) && (respondToMedia.size() == 1))
-    {
-      mediaType = respondToMedia.iterator().next();
-    }
-
-    if (returnTypePackage.startsWith("org.json"))
-    {
-      return pair(ResponseStringWriteStrategy.TO_STRING, MIMETypes.JSON);
-    }
-    else if (returnTypePackage.startsWith("org.w3c.dom"))
-    {
-      return pair(ResponseStringWriteStrategy.W3C_NODE, MIMETypes.XML);
-    }
-    else if (returnClassName.equals("org.jdom2.Document"))
-    {
-      return pair(ResponseStringWriteStrategy.JDOM2_DOCUMENT, MIMETypes.XML);
-    }
-    else if (returnClassName.equals("org.jdom2.Element"))
-    {
-      return pair(ResponseStringWriteStrategy.JDOM2_ELEMENT, MIMETypes.XML);
-    }
-    else if (returnType.getAnnotation(XmlRootElement.class) != null)
-    {
-      return pair(ResponseStringWriteStrategy.JAXB, MIMETypes.XML);
-    }
-    else if (classImplementsInterface(returnType, CharSequence.class))
-    {
-      return pair(ResponseStringWriteStrategy.TO_STRING, contentType);
-    }
-    else if ((((mediaType != null) && (mediaType == MediaType.JSON)))
-            && availableLibraries.gsonAvailable())
-    {
-      return pair(ResponseStringWriteStrategy.GSON, MIMETypes.JSON);
-    }
-    else if ((((mediaType != null) && (mediaType == MediaType.JSON)))
-        && availableLibraries.jacksonAvailable())
-    {
-      return pair(ResponseStringWriteStrategy.JACKSON, MIMETypes.JSON);
-    }
-    else
-    {
-      return null;
     }
   }
 }

@@ -28,9 +28,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
 
-import static org.baswell.routes.ContentConversionType.*;
-import static org.baswell.routes.RoutesMethods.*;
-
 /**
  * <p>
  * Hub for all routes. Routes can be added to the {@code RoutingTable} in the following ways:
@@ -75,6 +72,11 @@ public class RoutingTable
   private Thread developmentModeThread;
 
   /**
+   * Does at least one Route filter on parameters?
+   */
+  private boolean hasParameterCriteria;
+
+  /**
    * The default {@link org.baswell.routes.RoutesConfiguration} will be used.
    */
   public RoutingTable()
@@ -86,6 +88,10 @@ public class RoutingTable
   {
     this.routesConfiguration = routesConfiguration == null ? new RoutesConfiguration() : routesConfiguration;
     RoutingTable.theRoutingTable = this;
+  }
+
+  public boolean doAnyRoutesHaveParameterCriteria() {
+    return hasParameterCriteria;
   }
 
   /**
@@ -151,7 +157,6 @@ public class RoutingTable
     Parser parser = new Parser();
     CriteriaBuilder criteriaBuilder = new CriteriaBuilder();
     MethodParametersBuilder parametersBuilder = new MethodParametersBuilder();
-    AvailableLibraries availableLibraries = new AvailableLibraries(routesConfiguration);
 
     List<RouteNode> routeNodes = new ArrayList<RouteNode>();
     for (Object addedObject : addedObjects)
@@ -212,39 +217,11 @@ public class RoutingTable
           {
             RouteConfiguration routeConfiguration = new RouteConfiguration(routesClass, method, routesConfiguration, routesAnnotation, routeAnnotation, i);
             ParsedRouteTree tree = parser.parse(routeConfiguration.route);
-            RouteInstance routeInstance = instanceIsClass ? new RouteInstance(routesClass, routesConfiguration.routeInstancePool) : new RouteInstance(addedObject);
-            Criteria criteria = criteriaBuilder.buildCriteria(method, tree, routeConfiguration, routesConfiguration);
+            RouteHolder routeInstance = instanceIsClass ? new RouteClassHolder(routesClass, routesConfiguration.routeInstancePool) : new RouteInstanceHolder(addedObject);
+            RouteCriteria criteria = criteriaBuilder.buildCriteria(method, tree, routeConfiguration, routesConfiguration);
+            hasParameterCriteria = hasParameterCriteria || !criteria.parameterCriteria.isEmpty();
             List<MethodParameter> parameters = parametersBuilder.buildParameters(method, criteria);
             ResponseType responseType = mapResponseType(method, routeConfiguration);
-            ContentConversionType contentConversionType;
-
-            /*
-             * Try to map the content version type statically. If the method is strongly typed this should work. If it's more dynamic (for example returns a java.lang.Object) then
-             * we won't be able to map it here and will have to map it dyanmically on each request.
-             */
-            if (responseType == ResponseType.STRING_CONTENT)
-            {
-              MediaType mediaType = null;
-              if (hasContent(routeConfiguration.contentType))
-              {
-                mediaType = MediaType.findFromMimeType(routeConfiguration.contentType);
-              }
-
-              if ((mediaType == null) && (routeConfiguration.respondsToMedia.size() == 1))
-              {
-                mediaType = routeConfiguration.respondsToMedia.get(0);
-              }
-
-              contentConversionType = mapContentConversionType(method.getReturnType(), mediaType, availableLibraries);
-              if ((contentConversionType != null) && nullEmpty(routeConfiguration.contentType))
-              {
-                routeConfiguration.contentType = contentConversionType.mimeType;
-              }
-            }
-            else
-            {
-              contentConversionType = null;
-            }
 
             List<BeforeRouteNode> beforeNodes = new ArrayList<BeforeRouteNode>();
             for (BeforeRouteNode beforeNode : classBeforeNodes)
@@ -264,7 +241,7 @@ public class RoutingTable
               }
             }
 
-            classRoutes.add(new RouteNode(routeNodes.size(), method, routeConfiguration, routeInstance, criteria, parameters, responseType, contentConversionType, beforeNodes, afterNodes));
+            classRoutes.add(new RouteNode(routeNodes.size(), method, routeConfiguration, routeInstance, criteria, parameters, responseType, beforeNodes, afterNodes));
           }
         }
       }

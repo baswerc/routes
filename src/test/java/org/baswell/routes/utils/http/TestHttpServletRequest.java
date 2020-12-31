@@ -278,7 +278,7 @@ public class TestHttpServletRequest implements HttpServletRequest
   @Override
   public String getHeader(String name)
   {
-    throw new RuntimeException("Not implemented.");
+    return null;
   }
 
   @Override

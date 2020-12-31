@@ -42,16 +42,7 @@ public @interface Route
   /**
    * The type of media this route knows how to serve. If not provided the request media type will not be used as a criteria for matching this route.
    */
-  MediaType[] respondsToMediaRequests() default {};
-
-  /**
-   * <p>The expected media type of the request content. Use this to tell Routes how to parse the content for {@code RequestContent}.</p>
-   *
-   * <p>This should be used as a single value. Only the first value in the array will be used.</p>
-   *
-   * @see RequestContent
-   */
-  MediaType[] expectedRequestMediaType() default {};
+  String[] acceptTypePatterns() default {};
 
   /**
    * <p>

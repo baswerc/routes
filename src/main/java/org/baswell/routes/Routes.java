@@ -46,10 +46,10 @@ public @interface Routes
 
   /**
    * <p>
-   * The default type of media all routes in this class know how to serve. Overridden by {@link Route#respondsToMediaRequests()}.
+   * The default type of media all routes in this class know how to serve. Overridden by {@link Route#acceptTypePatterns()}.
    * </p>
    */
-  MediaType[] defaultRespondsToMedia() default {};
+  String[] acceptTypePatterns() default {};
 
   /**
    * <p>

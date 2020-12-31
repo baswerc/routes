@@ -20,13 +20,18 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.baswell.routes.CriterionForPathSegment.RequestPathSegmentCrierionType;
 
 import static org.baswell.routes.RoutesMethods.*;
 
-class Criteria implements Comparable<Criteria>
+class RouteCriteria implements Comparable<RouteCriteria>
 {
+  final List<HttpMethod> httpMethods;
+
+  final List<Pattern> acceptTypePatterns;
+
   final List<CriterionForPathSegment> pathCriteria;
   
   final List<CriterionForParameter> parameterCriteria;
@@ -41,8 +46,10 @@ class Criteria implements Comparable<Criteria>
   
   final boolean hasMultiPathCriterion;
   
-  Criteria(List<CriterionForPathSegment> pathCriteria, List<CriterionForParameter> parameterCriteria, RouteConfiguration routeConfiguration, RoutesConfiguration routesConfiguration)
+  RouteCriteria(List<HttpMethod> httpMethods, List<CriterionForPathSegment> pathCriteria, List<CriterionForParameter> parameterCriteria, List<Pattern> acceptTypePatterns, RouteConfiguration routeConfiguration, RoutesConfiguration routesConfiguration)
   {
+    this.httpMethods = httpMethods;
+    this.acceptTypePatterns = acceptTypePatterns;
     this.pathCriteria = pathCriteria;
     this.parameterCriteria = parameterCriteria;
     this.routeConfiguration = routeConfiguration;
@@ -76,19 +83,31 @@ class Criteria implements Comparable<Criteria>
 
   boolean matches(HttpMethod httpMethod, RequestedMediaType requestedMediaType, RequestPath path, RequestParameters parameters, List<Matcher> pathMatchers, Map<String, Matcher> parameterMatchers)
   {
-    if (!routeConfiguration.respondsToMethods.contains(httpMethod))
+
+    if (!httpMethods.contains(httpMethod)) {
+      return false;
+    }
+
+    if (!acceptTypePatterns.isEmpty()) {
+      boolean oneMatched = false;
+      for (int i = 0; i < acceptTypePatterns.size(); i++) {
+        if (acceptTypePatterns.get(i).matcher(requestedMediaType.mimeType).matches()) {
+          oneMatched = true;
+          break;
+        }
+      }
+
+      if (!oneMatched) {
+        return false;
+      }
+    }
+
+    if (!hasMultiPathCriterion && (path.size() != pathCriteria.size()))
     {
       return false;
     }
-    else if (!routeConfiguration.respondsToMedia.isEmpty() && !routeConfiguration.respondsToMedia.contains(requestedMediaType.mediaType))
-    {
-      return false;
-    }
-    else if (!hasMultiPathCriterion && (path.size() != pathCriteria.size()))
-    {
-      return false;
-    }
-    else if (!matchSegments(0, path, 0, pathCriteria, routesConfiguration, pathMatchers))
+
+    if (!matchSegments(0, path, 0, pathCriteria, routesConfiguration, pathMatchers))
     {
       return false;
     }
@@ -154,8 +173,11 @@ class Criteria implements Comparable<Criteria>
     return true;
   }
 
+  /**
+   * The more specific the criteria the earlier in the Route instance evaluation chain this criteria will go.
+   */
   @Override
-  public int compareTo(Criteria other)
+  public int compareTo(RouteCriteria other)
   {
     if (allCriteriaFixed && !other.allCriteriaFixed)
     {
@@ -167,7 +189,7 @@ class Criteria implements Comparable<Criteria>
     }
     else
     {
-      if (routeConfiguration.respondsToMedia.size() == other.routeConfiguration.respondsToMedia.size())
+      if (acceptTypePatterns.size() == acceptTypePatterns.size())
       {
         int numberParameters = size(parameterCriteria);
         int otherNumberParameters = size(other.parameterCriteria);
@@ -185,17 +207,17 @@ class Criteria implements Comparable<Criteria>
           return 0;
         }
       }
-      else if (routeConfiguration.respondsToMedia.isEmpty())
+      else if (acceptTypePatterns.isEmpty())
       {
         return 1;
       }
-      else if (other.routeConfiguration.respondsToMedia.isEmpty())
+      else if (acceptTypePatterns.isEmpty())
       {
         return -1;
       }
       else
       {
-        return routeConfiguration.respondsToMedia.size() - other.routeConfiguration.respondsToMedia.size();
+        return acceptTypePatterns.size() - other.acceptTypePatterns.size();
       }
     }
   }

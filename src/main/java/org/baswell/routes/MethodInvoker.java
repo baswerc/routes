@@ -76,7 +76,7 @@ class MethodInvoker
           case PARAMETER_LIST_MAP:
             if (parameterListMap == null)
             {
-              parameterListMap = Collections.unmodifiableMap(requestParameters.getParameterListMap());
+              parameterListMap = Collections.unmodifiableMap(requestParameters.getParameters());
             }
             invokeParameters[i] = parameterListMap;
             break;

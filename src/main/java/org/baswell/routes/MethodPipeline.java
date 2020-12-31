@@ -45,14 +45,14 @@ class MethodPipeline
               RequestedMediaType requestedMediaType, RequestPath path, RequestParameters parameters, RequestContent requestContent, List<Matcher> pathMatchers, Map<String, Matcher> parameterMatchers) throws IOException, ServletException, RouteInstanceBorrowException
   {
     MethodInvoker invoker = new MethodInvoker(servletRequest, servletResponse, httpMethod, path, parameters, requestedMediaType, requestContent, routeNode.routeConfiguration);
-    Object routeInstance = routeNode.instance.create();
+    Object routeObject = routeNode.routeHolder.getRouteObject();
 
     int afterRouteMethodIndex = 0; // If an exception thrown from @AfterRoute method, don't call it again in the exception handling logic below
     try
     {
       for (BeforeRouteNode beforeNode : routeNode.beforeRouteNodes)
       {
-        Object beforeResponse = invoker.invoke(routeInstance, beforeNode.method, beforeNode.parameters, pathMatchers, parameterMatchers);
+        Object beforeResponse = invoker.invoke(routeObject, beforeNode.method, beforeNode.parameters, pathMatchers, parameterMatchers);
         if (beforeNode.returnsBoolean && (beforeResponse != null) && (!(Boolean)beforeResponse))
         {
           return;
@@ -73,8 +73,8 @@ class MethodPipeline
         }
       }
 
-      Object response = invoker.invoke(routeInstance, routeNode.method, routeNode.parameters, pathMatchers, parameterMatchers);
-      responseProcessor.processResponse(routeNode.responseType, routeNode.contentConversionType, response, routeNode.routeConfiguration.contentType, routeNode.routeConfiguration, servletRequest, servletResponse);
+      Object response = invoker.invoke(routeObject, routeNode.method, routeNode.parameters, pathMatchers, parameterMatchers);
+      responseProcessor.processResponse(routeNode.responseType, response, routeNode.routeConfiguration.contentType, routeNode.routeConfiguration, servletRequest, servletResponse);
 
       boolean success = getStatus(servletResponse) < 300;
       for (AfterRouteNode afterNode : routeNode.afterRouteNodes)
@@ -85,7 +85,7 @@ class MethodPipeline
           continue;
         }
 
-        invoker.invoke(routeInstance, afterNode.method, afterNode.parameters, pathMatchers, parameterMatchers);
+        invoker.invoke(routeObject, afterNode.method, afterNode.parameters, pathMatchers, parameterMatchers);
       }
     }
     catch (InvocationTargetException e)
@@ -109,9 +109,9 @@ class MethodPipeline
         responseProcessor.forwardDispatch(((DisplayPath)targetException).pathToDisplay, servletRequest, servletResponse, routeNode.routeConfiguration);
         exceptionHandled = true;
       }
-      else if (targetException instanceof ReturnHttpResponseStatus)
+      else if (targetException instanceof ReturnStatus)
       {
-        ReturnHttpResponseStatus returnHttpResponseStatus = (ReturnHttpResponseStatus) targetException;
+        ReturnStatus returnHttpResponseStatus = (ReturnStatus) targetException;
         if (returnHttpResponseStatus.isError())
         {
           servletResponse.sendError(returnHttpResponseStatus.status);
@@ -130,7 +130,7 @@ class MethodPipeline
         {
           try
           {
-            invoker.invoke(routeInstance, afterNode.method, afterNode.parameters, pathMatchers, parameterMatchers);
+            invoker.invoke(routeObject, afterNode.method, afterNode.parameters, pathMatchers, parameterMatchers);
           }
           catch (Exception exc)
           {
@@ -160,15 +160,7 @@ class MethodPipeline
     }
     finally
     {
-      if (routeNode.instance.createdFromFactory)
-      {
-        try
-        {
-          routeNode.instance.factory.returnRouteInstance(routeInstance);
-        }
-        catch (Exception e)
-        {}
-      }
+      routeNode.routeHolder.useOfRouteObjectComplete(routeObject);
     }
   }
 

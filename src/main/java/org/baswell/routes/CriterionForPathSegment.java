@@ -19,7 +19,7 @@ import java.util.regex.Pattern;
 
 class CriterionForPathSegment
 {
-  static enum RequestPathSegmentCrierionType
+  enum RequestPathSegmentCrierionType
   {
     FIXED,
     PATTERN,

@@ -15,23 +15,39 @@
  */
 package org.baswell.routes;
 
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
-
-import java.io.IOException;
-import java.lang.reflect.Type;
-
-class JSONSimpleBridge
+class RouteClassHolder implements RouteHolder
 {
-  static <RequestContentType extends Object> RequestContentType parseJson(byte[] contentBytes) throws IOException
+  final Class clazz;
+
+  final RouteInstancePool factory;
+
+  final boolean createdFromFactory;
+
+  RouteClassHolder(Class clazz, RouteInstancePool factory)
   {
+    this.clazz = clazz;
+    this.factory = factory;
+    createdFromFactory = true;
+  }
+
+  @Override
+  public Class getRouteObjectClass() {
+    return clazz;
+  }
+
+  @Override
+  public Object getRouteObject() throws RouteInstanceBorrowException
+  {
+    return factory.borrowRouteInstance(clazz);
+  }
+
+  @Override
+  public void useOfRouteObjectComplete(Object routeObject) {
     try
     {
-      return (RequestContentType) new JSONParser().parse(new String(contentBytes));
+      factory.returnRouteInstance(routeObject);
     }
-    catch (ParseException e)
-    {
-      throw new IOException(e);
-    }
+    catch (Exception e)
+    {}
   }
 }

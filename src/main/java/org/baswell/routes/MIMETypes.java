@@ -16,7 +16,7 @@
 package org.baswell.routes;
 
 /**
- * Mime type constants that Routes is aware of.
+ * A list of mime types.
  */
 public class MIMETypes
 {
@@ -139,4 +139,52 @@ public class MIMETypes
    * text/xml
    */
   static public final String XML2 = "text/xml";
+
+  /**
+   * text/css
+   */
+  static public final String CSS = "text/css";
+
+  static public String getMimeTypeFromFileExtension(String extension) {
+    switch (extension.toLowerCase()) {
+      case "csv":
+        return CSV;
+      case "xlsx":
+      case "xls":
+        return EXCEL;
+
+      case "html":
+      case "htm":
+      case "htmls":
+        return HTML;
+
+      case "ics":
+        return ICS;
+
+      case "js":
+        return JAVASCRIPT;
+
+      case "json":
+        return JSON;
+
+      case "pdf":
+        return PDF;
+
+      case "rss":
+        return RSS;
+
+      case "text":
+      case "txt":
+        return TEXT;
+
+      case "doc":
+      case "docx":
+        return WORD;
+
+      case "xml":
+        return XML;
+    }
+
+    return null;
+  }
 }

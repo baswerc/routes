@@ -21,6 +21,7 @@ import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -56,7 +57,7 @@ public class CriteriaTest
     List<CriterionForPathSegment> pathCriteria = createPathCriteria(Arrays.asList(RequestPathSegmentCrierionType.FIXED, RequestPathSegmentCrierionType.FIXED, RequestPathSegmentCrierionType.FIXED, RequestPathSegmentCrierionType.FIXED),
                                                                Arrays.asList("a", "b", "c", "d"));
     
-    Criteria Criteria = new Criteria(pathCriteria, null, getPostRouteConfiguration, new RoutesConfiguration());
+    RouteCriteria Criteria = new RouteCriteria(Arrays.asList(HttpMethod.POST), pathCriteria, null, new ArrayList<>(), getPostRouteConfiguration, new RoutesConfiguration());
 
     RequestPath urlPath = new RequestPath(Arrays.asList("a", "b", "c", "d"));
     RequestParameters requestParameters = getRequestParameters();
@@ -81,7 +82,7 @@ public class CriteriaTest
     List<CriterionForPathSegment> pathCriteria = createPathCriteria(Arrays.asList(RequestPathSegmentCrierionType.FIXED, RequestPathSegmentCrierionType.FIXED, RequestPathSegmentCrierionType.FIXED, RequestPathSegmentCrierionType.PATTERN),
                                                                Arrays.asList("a", "b", "c", INTEGER_PATTERN));
 
-    Criteria Criteria = new Criteria(pathCriteria, null, getRouteConfiguration, new RoutesConfiguration());
+    RouteCriteria Criteria = new RouteCriteria(Arrays.asList(HttpMethod.GET), pathCriteria, null, new ArrayList<>(), getRouteConfiguration, new RoutesConfiguration());
     
     RequestPath urlPath = new RequestPath(Arrays.asList("a", "b", "c", "1"));
     RequestParameters requestParameters = getRequestParameters();
@@ -106,7 +107,7 @@ public class CriteriaTest
     List<CriterionForPathSegment> pathCriteria = createPathCriteria(Arrays.asList(RequestPathSegmentCrierionType.FIXED, RequestPathSegmentCrierionType.FIXED, RequestPathSegmentCrierionType.MULTI, RequestPathSegmentCrierionType.PATTERN),
                                                                Arrays.asList("a", "b", "**", INTEGER_PATTERN));
 
-    Criteria Criteria = new Criteria(pathCriteria, null, getRouteConfiguration, new RoutesConfiguration());
+    RouteCriteria Criteria = new RouteCriteria(Arrays.asList(HttpMethod.GET), pathCriteria, null, new ArrayList<>(), getRouteConfiguration, new RoutesConfiguration());
     
     RequestPath urlPath = new RequestPath(Arrays.asList("a", "b", "c", "1"));
     RequestParameters requestParameters = getRequestParameters();

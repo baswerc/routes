@@ -15,7 +15,7 @@
  */
 package org.baswell.routes.testroutes;
 
-import org.baswell.routes.MediaType;
+import org.baswell.routes.MIMETypes;
 import org.baswell.routes.RequestedMediaType;
 import org.baswell.routes.Route;
 
@@ -41,7 +41,7 @@ public class PartialExpressionRoutes extends BaseRoutes
   @Route("/{(.*)\\.(.*)}")
   public void getReport(String reportName, String extension, RequestedMediaType requestedMediaType)
   {
-    assertEquals(MediaType.PDF, requestedMediaType.mediaType);
+    assertEquals(MIMETypes.PDF, requestedMediaType.mimeType);
     methodsCalled.add("getReport");
     PartialExpressionRoutes.reportName = reportName;
     PartialExpressionRoutes.extension = extension;

@@ -18,6 +18,7 @@ package org.baswell.routes;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Base64;
 
 /**
  * A MetaAuthenticator that uses HTTP basic authentication. Once a user has successfully logged in ({@link #validCredentials(String, String)}
@@ -45,7 +46,7 @@ abstract public class BasicMetaAuthenticator implements MetaAuthenticator
       }
       else
       {
-        String userPasswordDecoded = new String(Base64.decode(authorizationHeader.substring(6)));
+        String userPasswordDecoded = new String(Base64.getDecoder().decode(authorizationHeader.substring(6)));
         String userName, password;
         int index = userPasswordDecoded.indexOf(':');
         if (index == -1)

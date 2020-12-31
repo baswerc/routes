@@ -50,8 +50,6 @@ public class RoutesEngine
 
   private final RoutesLogger logger;
 
-  private final AvailableLibraries availableLibraries;
-
   /**
    * If the routingTable has not already been built the  {@link RoutingTable#build()} method will be called on the first
    * request received.
@@ -63,8 +61,6 @@ public class RoutesEngine
     assert routingTable != null;
 
     this.routingTable = routingTable;
-
-    availableLibraries = new AvailableLibraries(routingTable.routesConfiguration);
 
     pipeline = new MethodPipeline(routingTable.routesConfiguration);
     if (routingTable.routesConfiguration.hasRoutesMetaPath())
@@ -111,14 +107,7 @@ public class RoutesEngine
     RequestedMediaType requestedMediaType = new RequestedMediaType(servletRequest.getHeader("Accept"), requestPath, requestParameters);
     RequestContent requestContent = null;
 
-
     MatchedRoute matchedRoute = null;
-
-    if (routingTable.routesConfiguration.routesCache != null)
-    {
-      matchedRoute = (MatchedRoute) routingTable.routesConfiguration.routesCache.get(httpMethod, requestedMediaType, requestPath, requestParameters);
-    }
-
     if (matchedRoute == null)
     {
       matchedRoute = routingTable.find(requestPath, requestParameters, httpMethod, requestedMediaType);
@@ -129,17 +118,12 @@ public class RoutesEngine
       Type requestContentType = matchedRoute.routeNode.getRequestContentType();
       if (requestContentType != null)
       {
-        requestContent = new RequestContent(routingTable.routesConfiguration, servletRequest, requestContentType, matchedRoute.routeNode.routeConfiguration.expectedMediaType, servletRequest.getContentType(), availableLibraries);
+        requestContent = new RequestContent(routingTable.routesConfiguration, servletRequest);
       }
 
       try
       {
         pipeline.invoke(matchedRoute.routeNode, servletRequest, servletResponse, httpMethod, requestedMediaType, requestPath, requestParameters, requestContent, matchedRoute.pathMatchers, matchedRoute.parameterMatchers);
-
-        if (routingTable.routesConfiguration.routesCache != null)
-        {
-          routingTable.routesConfiguration.routesCache.put(matchedRoute, httpMethod, requestedMediaType, requestPath, requestParameters);
-        }
 
         return true;
       }
@@ -147,7 +131,7 @@ public class RoutesEngine
       {
         if (logger != null)
         {
-          logger.logError("Unable to create route instance for class: " + matchedRoute.routeNode.instance.clazz, e);
+          logger.logError("Unable to create route instance for class: " + matchedRoute.routeNode.routeHolder.getRouteObjectClass(), e);
         }
         throw new ServletException(e);
       }
@@ -157,4 +141,6 @@ public class RoutesEngine
       return ((metaHandler != null) && metaHandler.handled(servletRequest, servletResponse, requestPath, requestParameters, httpMethod, requestedMediaType));
     }
   }
+
+
 }

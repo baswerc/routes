@@ -15,16 +15,25 @@
  */
 package org.baswell.routes;
 
-enum ResponseStringWriteStrategy
+class RouteInstanceHolder implements RouteHolder
 {
-  GSON,
-  JACKSON,
-  W3C_NODE,
-  JAXB,
-  JDOM2_DOCUMENT,
-  JDOM2_ELEMENT,
-  TO_STRING;
+  final Object instance;
 
-  ResponseStringWriteStrategy()
-  {}
+  RouteInstanceHolder(Object instance)
+  {
+    this.instance = instance;
+  }
+
+  @Override
+  public Class getRouteObjectClass() {
+    return instance.getClass();
+  }
+
+  @Override
+  public Object getRouteObject() {
+    return instance;
+  }
+
+  @Override
+  public void useOfRouteObjectComplete(Object routeObject) {}
 }

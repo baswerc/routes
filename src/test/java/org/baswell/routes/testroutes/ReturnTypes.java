@@ -15,7 +15,7 @@
  */
 package org.baswell.routes.testroutes;
 
-import org.baswell.routes.MediaType;
+import org.baswell.routes.MIMETypes;
 import org.baswell.routes.Route;
 import org.baswell.routes.Routes;
 
@@ -27,17 +27,6 @@ public class ReturnTypes extends BaseRoutes
   {
     methodsCalled.add("getHelloWorld");
     return "Hello World";
-  }
-
-  @Route(value = "/gson", respondsToMediaRequests = MediaType.JSON)
-  public GsonResponse gson()
-  {
-    methodsCalled.add("gson");
-    GsonResponse gsonResponse = new GsonResponse();
-    gsonResponse.one = "one";
-    gsonResponse.two = 2;
-    gsonResponse.three = true;
-    return gsonResponse;
   }
 
   static public class GsonResponse

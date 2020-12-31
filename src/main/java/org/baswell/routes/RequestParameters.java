@@ -30,25 +30,28 @@ import static org.baswell.routes.RoutesMethods.*;
  */
 public class RequestParameters
 {
-  final Map<String, List<String>> parameters;
-
   final String queryString;
+
+  private final HttpServletRequest request;
+
+  private Map<String, List<String>> parsedParameters;
 
   public RequestParameters(HttpServletRequest request)
   {
-    this(request.getParameterMap());
+    this.request = request;
+    queryString = request.getQueryString();
   }
 
   public RequestParameters(Map<String, String[]> parameterMap)
   {
-    parameters = new HashMap<String, List<String>>();
+    parsedParameters = new HashMap<>();
     StringBuilder queryStringBuilder = new StringBuilder();
     int index = 0;
     for (Entry<String, String[]> entry : parameterMap.entrySet())
     {
       String key = entry.getKey();
       String[] values = entry.getValue();
-      parameters.put(key, new ArrayList<String>(Arrays.asList(values)));
+      parsedParameters.put(key, new ArrayList<String>(Arrays.asList(values)));
       for (String value : values)
       {
         if (index > 0) queryStringBuilder.append('&');
@@ -56,12 +59,13 @@ public class RequestParameters
         queryStringBuilder.append(key).append('=').append(value);
       }
     }
-    queryString = queryStringBuilder.toString();
+    queryString = queryStringBuilder.toString().isEmpty() ? null : queryStringBuilder.toString();
+    this.request = null;
   }
 
   public RequestParameters(String queryString)
   {
-    parameters = new HashMap<String, List<String>>();
+    parsedParameters = new HashMap<String, List<String>>();
     String[] parameterValues = queryString.split("&");
     for (String parameterValue : parameterValues)
     {
@@ -72,24 +76,61 @@ public class RequestParameters
         {
           String key = parameter[0].trim();
           String value = parameter[1].trim();
-          if (!parameters.containsKey(key))
+          if (!parsedParameters.containsKey(key))
           {
-            parameters.put(key, new ArrayList<String>());
+            parsedParameters.put(key, new ArrayList<String>());
           }
-          parameters.get(key).add(value);
+          parsedParameters.get(key).add(value);
         }
       }
     }
     this.queryString = queryString;
+    request = null;
+  }
+
+  public boolean hasParameters() {
+    if (parsedParameters != null) {
+      return !parsedParameters.isEmpty();
+    }
+
+    if (queryString != null) {
+      return true;
+    }
+
+    if (request != null) {
+      if (request.getMethod().equalsIgnoreCase("post")) {
+        String contentType = request.getHeader("content-type");
+        if ("application/x-www-form-urlencoded".equalsIgnoreCase(contentType) || "multipart/form-data".equalsIgnoreCase(contentType)) {
+          return true;
+        }
+      }
+    }
+
+    return false;
   }
 
   /**
    *
-   * @return {@link #size()} > 0
+   * @return A parameter map where the key is the parameter name and the value is the parameter values.
    */
-  public boolean hasParameters()
-  {
-    return !parameters.isEmpty();
+  public Map<String, List<String>> getParameters() {
+    if (parsedParameters != null) {
+      return parsedParameters;
+    }
+
+    if (request != null) {
+      parsedParameters = new HashMap<>();
+      Map<String, String[]> parameterMap = request.getParameterMap();
+      for (Entry<String, String[]> entry : parameterMap.entrySet())
+      {
+        String key = entry.getKey();
+        String[] values = entry.getValue();
+        parsedParameters.put(key, new ArrayList<>(Arrays.asList(values)));
+      }
+    } else {
+      parsedParameters = new HashMap<>();
+    }
+    return parsedParameters;
   }
 
   /**
@@ -98,7 +139,7 @@ public class RequestParameters
    */
   public int size()
   {
-    return parameters.size();
+    return getParameters().size();
   }
 
   /**
@@ -119,7 +160,7 @@ public class RequestParameters
    */
   public boolean contains(String name)
   {
-    return parameters.containsKey(name);
+    return getParameters().containsKey(name);
   }
 
   /**
@@ -129,6 +170,7 @@ public class RequestParameters
    */
   public boolean containsContent(String name)
   {
+    Map<String, List<String>> parameters = getParameters();
     if (parameters.containsKey(name))
     {
       List<String> values = parameters.get(name);
@@ -142,21 +184,8 @@ public class RequestParameters
           }
         }
       }
-      return false;
     }
-    else
-    {
-      return false;
-    }
-  }
-
-  /**
-   *
-   * @return A parameter map where the key is the parameter name and the value is the parameter values.
-   */
-  public Map<String, List<String>> getParameterListMap()
-  {
-    return new HashMap<String, List<String>>(parameters);
+    return false;
   }
 
   /**
@@ -167,7 +196,7 @@ public class RequestParameters
   public Map<String, String> getParameterMap()
   {
     Map<String, String> parameterMap = new HashMap<String, String>();
-    for (Entry<String, List<String>> entry : parameters.entrySet())
+    for (Entry<String, List<String>> entry : getParameters().entrySet())
     {
       parameterMap.put(entry.getKey(), entry.getValue().get(0));
     }
@@ -180,7 +209,7 @@ public class RequestParameters
    */
   public List<String> getParameterNames()
   {
-    return new ArrayList<String>(parameters.keySet());
+    return new ArrayList<String>(getParameters().keySet());
   }
 
   /**
@@ -201,6 +230,7 @@ public class RequestParameters
    */
   public String get(String name, @NotNull String defaultValue)
   {
+    Map<String, List<String>> parameters = getParameters();
     if (parameters.containsKey(name))
     {
       for (String value : parameters.get(name))
@@ -217,6 +247,7 @@ public class RequestParameters
 
   public @Nullable String getOptionalString(String name, @Nullable String defaultValue)
   {
+    Map<String, List<String>> parameters = getParameters();
     if (parameters.containsKey(name))
     {
       for (String value : parameters.get(name))
@@ -239,6 +270,7 @@ public class RequestParameters
    */
   public List<String> getValues(String name)
   {
+    Map<String, List<String>> parameters = getParameters();
     List<String> values = new ArrayList<String>();
     if (parameters.containsKey(name))
     {
@@ -265,6 +297,7 @@ public class RequestParameters
    */
   public Character getCharacter(String name, Character defaultValue)
   {
+    Map<String, List<String>> parameters = getParameters();
     if (parameters.containsKey(name))
     {
       return parameters.get(name).get(0).charAt(0);
@@ -282,6 +315,7 @@ public class RequestParameters
    */
   public List<Character> getCharacters(String name)
   {
+    Map<String, List<String>> parameters = getParameters();
     List<Character> values = new ArrayList<Character>();
     if (parameters.containsKey(name))
     {
@@ -784,7 +818,7 @@ public class RequestParameters
    */
   public void remove(String name)
   {
-    parameters.remove(name);
+    getParameters().remove(name);
   }
 
   /**
@@ -795,6 +829,7 @@ public class RequestParameters
    */
   public void put(String name, Object value)
   {
+    Map<String, List<String>> parameters = getParameters();
     List<String> values = new ArrayList<String>();
     if (value instanceof Collection)
     {
@@ -826,7 +861,7 @@ public class RequestParameters
 
   void set(String name, List<String> values)
   {
-    parameters.put(name, values);
+    getParameters().put(name, values);
   }
 
   private String getNumber(String name) { return get(name).replace(",", "").trim(); }

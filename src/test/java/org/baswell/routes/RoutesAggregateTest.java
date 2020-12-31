@@ -5,6 +5,7 @@ import org.junit.Test;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.regex.Pattern;
 
 import static org.junit.Assert.*;
 import static org.baswell.routes.RoutesAggregate.*;
@@ -49,10 +50,10 @@ public class RoutesAggregateTest
 
     assertEquals("text/xhtml", routes.defaultContentType());
 
-    List<MediaType> mediaTypes = Arrays.asList(routes.defaultRespondsToMedia());
+    List<String> mediaTypes = Arrays.asList(routes.acceptTypePatterns());
     assertEquals(2, mediaTypes.size());
-    assertTrue(mediaTypes.contains(MediaType.CSV));
-    assertTrue(mediaTypes.contains(MediaType.HTML));
+    assertTrue(mediaTypes.contains(MIMETypes.CSV));
+    assertTrue(mediaTypes.contains(MIMETypes.HTML));
 
     assertFalse(routes.defaultReturnedStringIsContent()[0]);
     assertTrue(routes.routeUnannotatedPublicMethods()[0]);
@@ -68,7 +69,7 @@ public class RoutesAggregateTest
     return list;
   }
 
-  @Routes(value = {"/a", "/b"}, forwardPath = "one", tags = {"one"}, defaultContentType = "text/html", defaultRespondsToMedia = {MediaType.CSV}, defaultReturnedStringIsContent = true, routeUnannotatedPublicMethods = false)
+  @Routes(value = {"/a", "/b"}, forwardPath = "one", tags = {"one"}, defaultContentType = "text/html", acceptTypePatterns = {MIMETypes.CSV}, defaultReturnedStringIsContent = true, routeUnannotatedPublicMethods = false)
   static class One
   {
   }
@@ -78,7 +79,7 @@ public class RoutesAggregateTest
   {
   }
 
-  @Routes(value = {"/e", "/f"}, forwardPath = "three", tags = {"three"}, defaultRespondsToMedia = {MediaType.HTML}, routeUnannotatedPublicMethods = true)
+  @Routes(value = {"/e", "/f"}, forwardPath = "three", tags = {"three"}, acceptTypePatterns = {MIMETypes.HTML}, routeUnannotatedPublicMethods = true)
   static class Three extends Two
   {
   }

@@ -48,16 +48,15 @@ class MetaHandler
       {
         path = path.substring(routesMetaPath.length());
 
-        if (requestedMediaType.mediaType == MediaType.HTML)
+        if (requestedMediaType.contains("html"))
         {
           if (path.equals(""))
           {
             getRoutesPage(response);
             return true;
           }
-
         }
-        else if (requestedMediaType.mediaType == MediaType.JSON)
+        else if (requestedMediaType.contains("json"))
         {
           if (path.equals(""))
           {
@@ -156,13 +155,13 @@ class MetaHandler
       path = routeNode.routeConfiguration.route.replace("\\", "\\\\");
       link = request.getContextPath() + path;
 
-      if ((routeNode.routeConfiguration.respondsToMethods == null) || routeNode.routeConfiguration.respondsToMethods.isEmpty())
+      if ((routeNode.routeConfiguration.httpMethods == null) || routeNode.routeConfiguration.httpMethods.isEmpty())
       {
         httpMethods = "";
       }
       else
       {
-        for (HttpMethod httpMethod : routeNode.routeConfiguration.respondsToMethods)
+        for (HttpMethod httpMethod : routeNode.routeConfiguration.httpMethods)
         {
           if (httpMethods == null)
           {
@@ -175,21 +174,21 @@ class MetaHandler
         }
       }
 
-      if ((routeNode.routeConfiguration.respondsToMedia == null) || routeNode.routeConfiguration.respondsToMedia.isEmpty())
+      if ((routeNode.routeConfiguration.acceptTypePatterns == null) || routeNode.routeConfiguration.acceptTypePatterns.isEmpty())
       {
         acceptFormats = "";
       }
       else
       {
-        for (MediaType mediaType : routeNode.routeConfiguration.respondsToMedia)
+        for (String acceptTypePattern : routeNode.routeConfiguration.acceptTypePatterns)
         {
           if (acceptFormats == null)
           {
-            acceptFormats = mediaType.toString();
+            acceptFormats = acceptTypePattern;
           }
           else
           {
-            acceptFormats += ", " + mediaType.toString();
+            acceptFormats += ", " + acceptTypePattern;
           }
         }
       }
@@ -197,7 +196,7 @@ class MetaHandler
       classMethod = routeNode.method.getDeclaringClass().getSimpleName() + ":" + routeNode.method.getName();
     }
 
-    void toJson(PrintWriter writer) throws IOException
+    void toJson(PrintWriter writer)
     {
       writer.write("{\"link\": \"" + link + "\", \"path\": \"" + path + "\", \"respondsToMethods\": \"" + httpMethods + "\", \"acceptFormats\": \"" + acceptFormats + "\", \"classMethod\": \"" + classMethod + "\"}");
     }

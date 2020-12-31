@@ -21,7 +21,7 @@ package org.baswell.routes;
  * be set with the {@code status} of this exception and no further processing will continue.
  * </p>
  */
-public class ReturnHttpResponseStatus extends RuntimeException
+public class ReturnStatus extends RuntimeException
 {
   /**
    * <p>
@@ -32,7 +32,7 @@ public class ReturnHttpResponseStatus extends RuntimeException
    * throw ReturnHttpResponseStatus.BAD_REQUEST;
    * </pre>
    */
-  public static ReturnHttpResponseStatus BAD_REQUEST = new ReturnHttpResponseStatus(400);
+  public static ReturnStatus BAD_REQUEST_400 = new ReturnStatus(400);
 
   /**
    * <p>
@@ -43,7 +43,7 @@ public class ReturnHttpResponseStatus extends RuntimeException
    * throw ReturnHttpResponseStatus.UNAUTHORIZED;
    * </pre>
    */
-  public static ReturnHttpResponseStatus UNAUTHORIZED = new ReturnHttpResponseStatus(401);
+  public static ReturnStatus UNAUTHORIZED_401 = new ReturnStatus(401);
 
   /**
    * <p>
@@ -54,7 +54,7 @@ public class ReturnHttpResponseStatus extends RuntimeException
    * throw ReturnHttpResponseStatus.FORBIDDEN;
    * </pre>
    */
-  public static ReturnHttpResponseStatus FORBIDDEN = new ReturnHttpResponseStatus(403);
+  public static ReturnStatus FORBIDDEN_403 = new ReturnStatus(403);
 
   /**
    * <p>
@@ -65,7 +65,7 @@ public class ReturnHttpResponseStatus extends RuntimeException
    * throw ReturnHttpResponseStatus.NOT_FOUND;
    * </pre>
    */
-  public static ReturnHttpResponseStatus NOT_FOUND = new ReturnHttpResponseStatus(404);
+  public static ReturnStatus NOT_FOUND_404 = new ReturnStatus(404);
 
   /**
    * <p>
@@ -76,7 +76,7 @@ public class ReturnHttpResponseStatus extends RuntimeException
    * throw ReturnHttpResponseStatus.INTERNAL_SERVER_ERROR;
    * </pre>
    */
-  public static ReturnHttpResponseStatus INTERNAL_SERVER_ERROR = new ReturnHttpResponseStatus(500);
+  public static ReturnStatus INTERNAL_SERVER_ERROR_500 = new ReturnStatus(500);
 
   /**
    * The HTTP status to return.
@@ -87,7 +87,7 @@ public class ReturnHttpResponseStatus extends RuntimeException
    *
    * @param status The HTTP status to return.
    */
-  public ReturnHttpResponseStatus(int status)
+  public ReturnStatus(int status)
   {
     this.status = status;
   }

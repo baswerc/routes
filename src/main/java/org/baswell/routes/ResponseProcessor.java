@@ -35,22 +35,16 @@ import javax.xml.transform.stream.StreamResult;
 
 import org.w3c.dom.Node;
 
-import static org.baswell.routes.ContentConversionType.*;
-import static org.baswell.routes.RoutesMethods.*;
-
 class ResponseProcessor
 {
   private final RoutesConfiguration routesConfiguration;
 
-  private final AvailableLibraries availableLibraries;
-
   ResponseProcessor(RoutesConfiguration routesConfiguration)
   {
     this.routesConfiguration = routesConfiguration;
-    availableLibraries = new AvailableLibraries(routesConfiguration);
   }
   
-  void processResponse(ResponseType responseType, ContentConversionType contentConversionType, Object response, String contentType, RouteConfiguration routeConfiguration, HttpServletRequest servletRequest, HttpServletResponse servletResponse) throws IOException, ServletException
+  void processResponse(ResponseType responseType, Object response, String contentType, RouteConfiguration routeConfiguration, HttpServletRequest servletRequest, HttpServletResponse servletResponse) throws IOException, ServletException
   {
     if (response != null)
     {
@@ -65,66 +59,9 @@ class ResponseProcessor
           break;
           
         case STRING_CONTENT:
-
-          if (contentConversionType == null)
-          {
-            MediaType mediaType = null;
-            if (hasContent(routeConfiguration.contentType))
-            {
-              mediaType = MediaType.findFromMimeType(routeConfiguration.contentType);
-            }
-
-            if ((mediaType == null) && (routeConfiguration.respondsToMedia.size() == 1))
-            {
-              mediaType = routeConfiguration.respondsToMedia.get(0);
-            }
-
-            contentConversionType = mapContentConversionType(response.getClass(), mediaType, availableLibraries);
-            if (contentConversionType == null)
-            {
-              contentConversionType = ContentConversionType.TO_STRING;
-            }
-
-            if (nullEmpty(servletResponse.getContentType()) && contentConversionType.mimeType != null)
-            {
-              servletResponse.setContentType(contentConversionType.mimeType);
-            }
-          }
-
-          switch(contentConversionType)
-          {
-            case JACKSON:
-              JacksonBridge.sendJackson(response, servletResponse);
-              break;
-
-            case GSON:
-              GSONBridge.sendGson(response, servletResponse);
-              break;
-
-            case W3C_NODE:
-              sendNode(response, servletResponse);
-              break;
-
-            case JAXB:
-              sendJaxb(response, servletResponse);
-              break;
-
-            case JDOM2_DOCUMENT:
-              JDOMBridge.sendJdom2Document(response, servletResponse);
-              break;
-
-            case JDOM2_ELEMENT:
-              JDOMBridge.sendJdom2Element(response, servletResponse);
-              break;
-
-            case TO_STRING:
-            case JSON_SIMPLE:
-            default:
-              sendToString(response, servletResponse);
-              break;
-          }
+          sendToString(response, servletResponse);
           break;
-          
+
         case FORWARD_DISPATCH:
           forwardDispatch(response.toString(), servletRequest, servletResponse, routeConfiguration);
           break;

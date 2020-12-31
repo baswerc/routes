@@ -19,7 +19,7 @@ import java.util.regex.Pattern;
 
 class CriterionForParameter
 {
-  static enum RequestParameterType
+  enum RequestParameterType
   {
     FIXED,
     PATTERN;

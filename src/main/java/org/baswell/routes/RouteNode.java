@@ -27,30 +27,27 @@ class RouteNode implements Comparable<RouteNode>
   
   final RouteConfiguration routeConfiguration;
 
-  final RouteInstance instance;
+  final RouteHolder routeHolder;
   
-  final Criteria criteria;
+  final RouteCriteria criteria;
   
   final List<MethodParameter> parameters;
   
   final ResponseType responseType;
 
-  final ContentConversionType contentConversionType;
-  
   final List<BeforeRouteNode> beforeRouteNodes;
 
   final List<AfterRouteNode> afterRouteNodes;
 
-  RouteNode(int index, Method method, RouteConfiguration routeConfiguration, RouteInstance instance, Criteria criteria, List<MethodParameter> parameters, ResponseType responseType, ContentConversionType contentConversionType, List<BeforeRouteNode> beforeRouteNodes, final List<AfterRouteNode> afterRouteNodes)
+  RouteNode(int index, Method method, RouteConfiguration routeConfiguration, RouteHolder routeHolder, RouteCriteria criteria, List<MethodParameter> parameters, ResponseType responseType, List<BeforeRouteNode> beforeRouteNodes, final List<AfterRouteNode> afterRouteNodes)
   {
     this.index = index;
     this.method = method;
     this.routeConfiguration = routeConfiguration;
-    this.instance = instance;
+    this.routeHolder = routeHolder;
     this.criteria = criteria;
     this.parameters = parameters;
     this.responseType = responseType;
-    this.contentConversionType = contentConversionType;
     this.beforeRouteNodes = beforeRouteNodes;
     this.afterRouteNodes = afterRouteNodes;
   }

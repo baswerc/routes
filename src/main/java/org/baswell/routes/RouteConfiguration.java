@@ -16,32 +16,24 @@
 package org.baswell.routes;
 
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 class RouteConfiguration
 {
   final String route;
 
-  final List<HttpMethod> respondsToMethods;
-  
-  final List<MediaType> respondsToMedia;
+  final List<HttpMethod> httpMethods;
 
-  final MediaType expectedMediaType;
-  
+  final List<String> acceptTypePatterns = new ArrayList<>();
+
   String contentType;
-  
+
   final boolean returnedStringIsContent;
 
   final Map<String, List<String>> defaultParameters;
-  
+
   final Set<String> tags;
-  
+
   final String forwardPath;
 
   RouteConfiguration(Class clazz, Method method, RoutesConfiguration routesConfiguration)
@@ -51,9 +43,8 @@ class RouteConfiguration
 
   RouteConfiguration(Class clazz, Method method, RoutesConfiguration routesConfiguration, Routes routes, Route route, int routesPathIndex)
   {
-    respondsToMethods = getHttpMethods(routes, route, method, routesConfiguration.routeByConvention);
+    httpMethods = getHttpMethods(routes, route, method, routesConfiguration.routeByConvention);
     this.route = buildRoutePath(routesConfiguration.rootPath, routes, route, clazz, method, routesConfiguration.routeByConvention, routesPathIndex);
-    respondsToMedia = new ArrayList<MediaType>();
     defaultParameters = new HashMap<String, List<String>>();
 
     tags = new HashSet<String>();
@@ -65,7 +56,7 @@ class RouteConfiguration
     String forwardPath;
     if (routes != null)
     {
-      respondsToMedia.addAll(Arrays.asList(routes.defaultRespondsToMedia()));
+      acceptTypePatterns.addAll(Arrays.asList(routes.acceptTypePatterns()));
 
       forwardPath = routes.forwardPath();
       if (!forwardPath.startsWith("/"))
@@ -77,7 +68,7 @@ class RouteConfiguration
           forwardPath = rootForwardPath + forwardPath;
         }
       }
-      
+
     }
     else
     {
@@ -91,20 +82,29 @@ class RouteConfiguration
 
     if (route == null)
     {
-      expectedMediaType = null;
       contentType = ((routes == null) || (routes.defaultContentType().length() == 0)) ? routesConfiguration.defaultContentType : routes.defaultContentType();
       returnedStringIsContent = ((routes == null) || (routes.defaultReturnedStringIsContent().length == 0)) ? routesConfiguration.defaultReturnedStringIsContent : routes.defaultReturnedStringIsContent()[0];
     }
     else
     {
-      if (route.expectedRequestMediaType().length == 0)
+      acceptTypePatterns.addAll(Arrays.asList(route.acceptTypePatterns()));
+      /*
+      if (route.acceptTypePatterns().length > 0)
       {
-        expectedMediaType = null;
+        for (String acceptTypePattern : route.acceptTypePatterns())
+        {
+          try
+          {
+            acceptTypePatterns.add(Pattern.compile(acceptTypePattern));
+          }
+          catch (Exception e)
+          {
+            throw new RoutesException("Invalid acceptTypePattern: " + acceptTypePattern + " for method: " + method, e);
+          }
+        }
       }
-      else
-      {
-        expectedMediaType = route.expectedRequestMediaType()[0];
-      }
+
+       */
 
       if (route.contentType().length() == 0)
       {
@@ -146,10 +146,9 @@ class RouteConfiguration
       }
 
       tags.addAll(Arrays.asList(route.tags()));
-      respondsToMedia.addAll(Arrays.asList(route.respondsToMediaRequests()));
     }
   }
-  
+
   static String buildRoutePath(String rootPath, Routes routes, Route route, Class routesClass, Method routeMethod, RouteByConvention routeByConvention, int routesPathIndex)
   {
     String routePath = "";
@@ -157,7 +156,7 @@ class RouteConfiguration
     {
       routePath = rootPath;
     }
-    
+
     if ((routes != null) && (routes.value().length > routesPathIndex) && !routes.value()[routesPathIndex].trim().isEmpty())
     {
       if (!routePath.isEmpty() && !routePath.endsWith("/")) routePath += "/";
@@ -200,7 +199,7 @@ class RouteConfiguration
   static List<HttpMethod> getHttpMethods(Routes routes, Route route, Method method, RouteByConvention routeByConvention)
   {
     List<HttpMethod> httpMethods = new ArrayList<HttpMethod>();
-    
+
     if ((route != null) && (route.respondsToMethods().length > 0))
     {
       for (HttpMethod httpMethod : route.respondsToMethods()) httpMethods.add(httpMethod);
@@ -209,7 +208,7 @@ class RouteConfiguration
     {
       httpMethods.addAll(routeByConvention.respondsToMethods(method));
     }
-    
+
     return httpMethods;
   }
 }

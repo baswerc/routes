@@ -35,7 +35,7 @@ class MethodParametersBuilder
     return buildParameters(method, null);
   }
   
-  List<MethodParameter> buildParameters(Method method, Criteria routeCriteria) throws RoutesException
+  List<MethodParameter> buildParameters(Method method, RouteCriteria routeCriteria) throws RoutesException
   {
     List<MethodParameter> routeParameters = new ArrayList<MethodParameter>();
     Type[] parameters = method.getGenericParameterTypes();
@@ -46,8 +46,7 @@ class MethodParametersBuilder
     CriterionForParameter currentParameterCriteron = null;
 
     boolean pathSegmentsProcessed = false;
-    Type allowedRequestContentType = null;
-    
+
     PARAMETERS_LOOP: for (int i = 0; i < parameters.length; i++)
     {
       Type parameter = parameters[i];
@@ -74,16 +73,7 @@ class MethodParametersBuilder
       }
       else if (parameterClass == RequestContent.class)
       {
-        Type requestContentType = ((ParameterizedType)method.getGenericParameterTypes()[i]).getActualTypeArguments()[0];
-
-        if ((allowedRequestContentType != null) && (allowedRequestContentType != requestContentType))
-        {
-          throw new RoutesException("RequestContent with different types are not allowed.");
-        }
-
-        allowedRequestContentType = requestContentType;
-
-        routeParameters.add(new MethodParameter(MethodRouteParameterType.REQUEST_CONTENT, requestContentType));
+        routeParameters.add(new MethodParameter(MethodRouteParameterType.REQUEST_CONTENT));
       }
       else if (parameterClass == RequestedMediaType.class)
       {

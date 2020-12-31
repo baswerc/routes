@@ -15,6 +15,9 @@
  */
 package org.baswell.routes;
 
+import static org.baswell.routes.RoutesMethods.hasContent;
+import static org.baswell.routes.RoutesMethods.nullEmpty;
+
 /**
  * The requested media type of an HTTP request. Taken from the either the file extension of the request path if present or the Accept header.
  */
@@ -24,7 +27,7 @@ public class RequestedMediaType
 
   public final String fileExtension;
   
-  public final MediaType mediaType;
+  public final String mimeType;
 
   RequestedMediaType(String acceptType)
   {
@@ -36,43 +39,40 @@ public class RequestedMediaType
     this.acceptType = acceptType;
     fileExtension = requestPath == null ? null : requestPath.getFileExtension();
 
-    MediaType mediaType = null;
-
-    if (requestParameters != null)
-    {
-      mediaType = MediaType.findFromMediaTypeParameter(requestParameters.get("mediaType"));
+    String mimeType = null;
+    if (requestParameters != null && requestParameters.contains("mediaType")) {
+      mimeType = requestParameters.get("mediaType");
     }
 
-    if (fileExtension != null)
-    {
-      mediaType = MediaType.findFromExtension(fileExtension);
+    if (nullEmpty(mimeType) && hasContent(fileExtension)) {
+      mimeType = MIMETypes.getMimeTypeFromFileExtension(fileExtension);
     }
 
-    if ((mediaType == null) && (acceptType != null))
-    {
-      mediaType = MediaType.findFromMimeType(acceptType);
+    if (nullEmpty(mimeType) && hasContent(acceptType)) {
+      mimeType = acceptType;
     }
 
-    this.mediaType = mediaType;
+    if (nullEmpty(mimeType)) {
+      mimeType = MIMETypes.HTML;
+    }
+
+    this.mimeType = mimeType;
+  }
+
+  public boolean contains(String mimeTypePartial) {
+    return mimeType != null && mimeType.toLowerCase().contains(mimeTypePartial.toLowerCase());
   }
 
   @Override
   public String toString()
   {
-    if (acceptType == null)
+    if (mimeType == null)
     {
-      if (mediaType == null)
-      {
-        return "*/*";
-      }
-      else
-      {
-        return mediaType.mimeType;
-      }
+      return "*/*";
     }
     else
     {
-      return acceptType;
+      return mimeType;
     }
   }
 }

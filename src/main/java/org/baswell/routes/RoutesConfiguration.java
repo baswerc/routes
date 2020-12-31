@@ -107,13 +107,6 @@ public class RoutesConfiguration
   public RouteByConvention routeByConvention = new RouteByLowercaseConvention();
 
   /**
-   * The routes cache implementation. No cache will be used if null.
-   *
-   * Default value: <status>null</status>
-   */
-  public RoutesCache routesCache;
-
-  /**
    * The path (relative to context path) to access the Routes meta page. If this value is null then the Routes meta
    * page will not be accessible. If there is a collision between this path and a routes path, the routes path will
    * win.

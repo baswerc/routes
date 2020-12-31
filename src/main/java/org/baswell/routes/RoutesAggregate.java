@@ -4,6 +4,7 @@ import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.regex.Pattern;
 
 import static org.baswell.routes.RoutesMethods.*;
 
@@ -13,7 +14,7 @@ class RoutesAggregate implements Routes
 
   private final String forwardPath;
 
-  private final List<MediaType> defaultResponsesToMedia;
+  private final List<String> acceptTypePatterns;
 
   private final Boolean routeUnannotatedPublicMethods;
 
@@ -31,7 +32,7 @@ class RoutesAggregate implements Routes
     {
       routes = new ArrayList<String>();
       forwardPath = null;
-      defaultResponsesToMedia = new ArrayList<MediaType>();
+      acceptTypePatterns = new ArrayList<String>();
       routeUnannotatedPublicMethods = null;
       defaultContentType = null;
       defaultReturnedStringIsContent = null;
@@ -42,7 +43,7 @@ class RoutesAggregate implements Routes
       Routes routes = routeses.get(0);
       this.routes =  Arrays.asList(routes.value());
       forwardPath = routes.forwardPath();
-      defaultResponsesToMedia = Arrays.asList(routes.defaultRespondsToMedia());
+      acceptTypePatterns = Arrays.asList(routes.acceptTypePatterns());
       routeUnannotatedPublicMethods = routes.routeUnannotatedPublicMethods().length == 0 ? null : routes.routeUnannotatedPublicMethods()[0];
       defaultContentType = routes.defaultContentType();
       defaultReturnedStringIsContent = routes.defaultReturnedStringIsContent().length == 0 ? null : routes.defaultReturnedStringIsContent()[0];
@@ -89,7 +90,7 @@ class RoutesAggregate implements Routes
       this.routes = expandRoutes(routeValues);
       this.forwardPath = forwardPath.isEmpty() ? null : forwardPath;
 
-      List<MediaType> defaultResponsesToMedia = new ArrayList<MediaType>();
+      List<String> acceptTypePatterns = new ArrayList<String>();
       Boolean routeUnannotatedPublicMethods = null;
       String defaultContentType = null;
       Boolean defaultReturnedStringIsContent = null;
@@ -97,11 +98,11 @@ class RoutesAggregate implements Routes
 
       for (Routes routes : routeses)
       {
-        for (MediaType mediaType : routes.defaultRespondsToMedia())
+        for (String acceptTypePattern : routes.acceptTypePatterns())
         {
-          if (!defaultResponsesToMedia.contains(mediaType))
+          if (!acceptTypePatterns.contains(acceptTypePattern))
           {
-            defaultResponsesToMedia.add(mediaType);
+            acceptTypePatterns.add(acceptTypePattern);
           }
         }
 
@@ -129,7 +130,7 @@ class RoutesAggregate implements Routes
         }
       }
 
-      this.defaultResponsesToMedia = defaultResponsesToMedia;
+      this.acceptTypePatterns = acceptTypePatterns;
       this.routeUnannotatedPublicMethods = routeUnannotatedPublicMethods;
       this.defaultContentType = defaultContentType;
       this.defaultReturnedStringIsContent = defaultReturnedStringIsContent;
@@ -150,9 +151,9 @@ class RoutesAggregate implements Routes
   }
 
   @Override
-  public MediaType[] defaultRespondsToMedia()
+  public String[] acceptTypePatterns()
   {
-    return defaultResponsesToMedia.toArray(new MediaType[defaultResponsesToMedia.size()]);
+    return acceptTypePatterns.toArray(new String[acceptTypePatterns.size()]);
   }
 
   @Override

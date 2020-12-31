@@ -111,7 +111,7 @@ public class MethodParamtersBuilderTest
 
     RoutesConfiguration routesConfiguration = new RoutesConfiguration();
     CriteriaBuilder criteriaBuilder = new CriteriaBuilder();
-    Criteria criteria = criteriaBuilder.buildCriteria(routeMethod, routeTree, null, routesConfiguration);
+    RouteCriteria criteria = criteriaBuilder.buildCriteria(routeMethod, routeTree, new RouteConfiguration(getClass(), getClass().getMethod("getOnly"), new RoutesConfiguration()), routesConfiguration);
 
     parameters = builder.buildParameters(routeMethod, criteria);
     
@@ -125,6 +125,8 @@ public class MethodParamtersBuilderTest
     
     
   }
-  
 
+  @Route(respondsToMethods = {HttpMethod.GET})
+  public void getOnly()
+  {}
 }

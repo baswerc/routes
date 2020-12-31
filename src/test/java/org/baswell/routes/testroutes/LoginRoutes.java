@@ -36,7 +36,7 @@ public class LoginRoutes extends BaseRoutes
     methodsCalled.add("getForgotPassword");
   }
 
-  public void postTest(RequestContent<byte[]> content)
+  public void postTest(RequestContent content)
   {
   }
 }
