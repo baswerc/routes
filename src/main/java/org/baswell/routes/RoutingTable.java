@@ -66,8 +66,8 @@ public class RoutingTable
   volatile boolean built;
 
   private List<Object> addedObjects = new ArrayList<Object>();
-  
-  private List<RouteNode> routeNodes;
+
+  private List<RoutesNode> routesNodes;
 
   private Thread developmentModeThread;
 
@@ -158,16 +158,17 @@ public class RoutingTable
     CriteriaBuilder criteriaBuilder = new CriteriaBuilder();
     MethodParametersBuilder parametersBuilder = new MethodParametersBuilder();
 
-    List<RouteNode> routeNodes = new ArrayList<RouteNode>();
+    this.routesNodes = new ArrayList<>();
     for (Object addedObject : addedObjects)
     {
       boolean instanceIsClass = (addedObject instanceof Class);
       Class routesClass = instanceIsClass ? (Class) addedObject : addedObject.getClass();
 
+      RoutesData routesAnnotation = new RoutesData(routesClass);
+
       List<BeforeRouteNode> classBeforeNodes = getBeforeRouteNodes(routesClass);
       List<AfterRouteNode> classAfterNodes = getAfterRouteNodes(routesClass);
 
-      Routes routesAnnotation = new RoutesAggregate(routesClass);
 
       int numRoutesPaths;
       boolean routeUnannotatedPublicMethods;
@@ -215,18 +216,18 @@ public class RoutingTable
 
           for (int i = 0; i < numRoutesPaths; i++)
           {
-            RouteConfiguration routeConfiguration = new RouteConfiguration(routesClass, method, routesConfiguration, routesAnnotation, routeAnnotation, i);
-            ParsedRouteTree tree = parser.parse(routeConfiguration.route);
+            RouteData routeData = new RouteData(routesClass, method, routesConfiguration, routesAnnotation, routeAnnotation, i);
+            ParsedRouteTree tree = parser.parse(routeData.route);
             RouteHolder routeInstance = instanceIsClass ? new RouteClassHolder(routesClass, routesConfiguration.routeInstancePool) : new RouteInstanceHolder(addedObject);
-            RouteCriteria criteria = criteriaBuilder.buildCriteria(method, tree, routeConfiguration, routesConfiguration);
+            RouteCriteria criteria = criteriaBuilder.buildRouteCriteria(method, tree, routeData, routesConfiguration);
             hasParameterCriteria = hasParameterCriteria || !criteria.parameterCriteria.isEmpty();
             List<MethodParameter> parameters = parametersBuilder.buildParameters(method, criteria);
-            ResponseType responseType = mapResponseType(method, routeConfiguration);
+            ResponseType responseType = mapResponseType(method, routeData);
 
             List<BeforeRouteNode> beforeNodes = new ArrayList<BeforeRouteNode>();
             for (BeforeRouteNode beforeNode : classBeforeNodes)
             {
-              if ((beforeNode.onlyTags.isEmpty() || containsOne(beforeNode.onlyTags, routeConfiguration.tags)) && (beforeNode.exceptTags.isEmpty() || !containsOne(beforeNode.exceptTags, routeConfiguration.tags)))
+              if ((beforeNode.onlyTags.isEmpty() || containsOne(beforeNode.onlyTags, routeData.tags)) && (beforeNode.exceptTags.isEmpty() || !containsOne(beforeNode.exceptTags, routeData.tags)))
               {
                 beforeNodes.add(beforeNode);
               }
@@ -235,13 +236,13 @@ public class RoutingTable
             List<AfterRouteNode> afterNodes = new ArrayList<AfterRouteNode>();
             for (AfterRouteNode afterNode : classAfterNodes)
             {
-              if ((afterNode.onlyTags.isEmpty() || containsOne(afterNode.onlyTags, routeConfiguration.tags)) && (afterNode.exceptTags.isEmpty() || !containsOne(afterNode.exceptTags, routeConfiguration.tags)))
+              if ((afterNode.onlyTags.isEmpty() || containsOne(afterNode.onlyTags, routeData.tags)) && (afterNode.exceptTags.isEmpty() || !containsOne(afterNode.exceptTags, routeData.tags)))
               {
                 afterNodes.add(afterNode);
               }
             }
 
-            classRoutes.add(new RouteNode(routeNodes.size(), method, routeConfiguration, routeInstance, criteria, parameters, responseType, beforeNodes, afterNodes));
+            classRoutes.add(new RouteNode(routeNodes.size(), method, routeData, routeInstance, criteria, parameters, responseType, beforeNodes, afterNodes));
           }
         }
       }
@@ -256,9 +257,7 @@ public class RoutingTable
       }
 
     }
-    Collections.sort(routeNodes);
 
-    this.routeNodes = routeNodes;
     if (!built)
     {
       built = true;
@@ -302,22 +301,30 @@ public class RoutingTable
   {
     developmentModeThread = null;
     built = false;
-    routeNodes.clear();;
+    routesNodes.clear();
   }
 
   MatchedRoute find(RequestPath path, RequestParameters parameters, HttpMethod httpMethod, RequestedMediaType requestedMediaType)
   {
-    List<Matcher> pathMatchers = new ArrayList<Matcher>();
-    Map<String, Matcher> parameterMatchers = new HashMap<String, Matcher>();
-    for (RouteNode routeNode : routeNodes)
-    {
-      pathMatchers.clear();
-      parameterMatchers.clear();
-      if (routeNode.criteria.matches(httpMethod, requestedMediaType, path, parameters, pathMatchers, parameterMatchers))
-      {
-        return new MatchedRoute(routeNode, pathMatchers, parameterMatchers);
+    List<Matcher> pathMatchers = new ArrayList<>();
+    Map<String, Matcher> parameterMatchers = new HashMap<>();
+
+    for (int i = 0; i < routesNodes.size(); i++) {
+      RoutesNode routesNode = routesNodes.get(i);
+      if (routesNode.routesCriteria.matches(requestedMediaType, path)) {
+        for (int j = 0; j < routesNode.routeNodes.size(); j++)
+        {
+          RouteNode routeNode = routesNode.routeNodes.get(j);
+          pathMatchers.clear();
+          parameterMatchers.clear();
+          if (routeNode.criteria.matches(httpMethod, requestedMediaType, path, parameters, pathMatchers, parameterMatchers))
+          {
+            return new MatchedRoute(routeNode, pathMatchers, parameterMatchers);
+          }
+        }
       }
     }
+
     return null;
   }
 
@@ -429,7 +436,7 @@ public class RoutingTable
     }
   }
 
-  static ResponseType mapResponseType(Method method, RouteConfiguration routeConfiguration)
+  static ResponseType mapResponseType(Method method, RouteData routeData)
   {
     Class returnType = method.getReturnType();
     if ((returnType == void.class) || (returnType == Void.class))
@@ -444,7 +451,7 @@ public class RoutingTable
     {
       return ResponseType.STREAM_CONTENT;
     }
-    else if ((returnType == String.class) && !routeConfiguration.returnedStringIsContent)
+    else if ((returnType == String.class) && !routeData.returnedStringIsContent)
     {
       return ResponseType.FORWARD_DISPATCH;
     }

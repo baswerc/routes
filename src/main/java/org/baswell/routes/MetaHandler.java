@@ -152,16 +152,16 @@ class MetaHandler
 
     RouteTableRow(RouteNode routeNode, HttpServletRequest request)
     {
-      path = routeNode.routeConfiguration.route.replace("\\", "\\\\");
+      path = routeNode.routeData.route.replace("\\", "\\\\");
       link = request.getContextPath() + path;
 
-      if ((routeNode.routeConfiguration.httpMethods == null) || routeNode.routeConfiguration.httpMethods.isEmpty())
+      if ((routeNode.routeData.httpMethods == null) || routeNode.routeData.httpMethods.isEmpty())
       {
         httpMethods = "";
       }
       else
       {
-        for (HttpMethod httpMethod : routeNode.routeConfiguration.httpMethods)
+        for (HttpMethod httpMethod : routeNode.routeData.httpMethods)
         {
           if (httpMethods == null)
           {
@@ -174,13 +174,13 @@ class MetaHandler
         }
       }
 
-      if ((routeNode.routeConfiguration.acceptTypePatterns == null) || routeNode.routeConfiguration.acceptTypePatterns.isEmpty())
+      if ((routeNode.routeData.acceptTypePatterns == null) || routeNode.routeData.acceptTypePatterns.isEmpty())
       {
         acceptFormats = "";
       }
       else
       {
-        for (String acceptTypePattern : routeNode.routeConfiguration.acceptTypePatterns)
+        for (String acceptTypePattern : routeNode.routeData.acceptTypePatterns)
         {
           if (acceptFormats == null)
           {

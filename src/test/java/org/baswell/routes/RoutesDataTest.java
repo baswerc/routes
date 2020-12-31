@@ -5,12 +5,11 @@ import org.junit.Test;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.regex.Pattern;
 
 import static org.junit.Assert.*;
-import static org.baswell.routes.RoutesAggregate.*;
+import static org.baswell.routes.RoutesData.*;
 
-public class RoutesAggregateTest
+public class RoutesDataTest
 {
   @Test
   public void testExpandRoutes()
@@ -33,7 +32,7 @@ public class RoutesAggregateTest
   @Test
   public void test()
   {
-    RoutesAggregate routes = new RoutesAggregate(Three.class);
+    RoutesData routes = new RoutesData(Three.class);
 
     List<String> routePaths = Arrays.asList(routes.value());
     assertEquals(8, routePaths.size());

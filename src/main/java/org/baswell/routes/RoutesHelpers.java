@@ -9,7 +9,7 @@ public class RoutesHelpers
 
   public static String rootUrl(Class routesClass)
   {
-    Routes routes = new RoutesAggregate(routesClass);
+    Routes routes = new RoutesData(routesClass);
     String[] values = routes.value();
     if (values != null && values.length > 0)
     {

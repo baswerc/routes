@@ -20,7 +20,7 @@ import java.lang.reflect.Method;
 
 class ResponseTypeMapper
 {
-  static ResponseType mapResponseType(Method method, RouteConfiguration routeConfiguration)
+  static ResponseType mapResponseType(Method method, RouteData routeData)
   {
     Class returnType = method.getReturnType();
     if ((returnType == void.class) || (returnType == Void.class))
@@ -35,7 +35,7 @@ class ResponseTypeMapper
     {
       return ResponseType.STREAM_CONTENT;
     }
-    else if ((returnType == String.class) && !routeConfiguration.returnedStringIsContent)
+    else if ((returnType == String.class) && !routeData.returnedStringIsContent)
     {
       return ResponseType.FORWARD_DISPATCH;
     }

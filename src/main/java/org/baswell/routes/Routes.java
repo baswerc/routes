@@ -29,11 +29,10 @@ public @interface Routes
 {
   /**
    * <p>
-   * The base matching URI paths. If provided these values will be prepended to all {@link Route#value()} paths. Multiple
-   * values can be specified here here so that a routes class supports multiple root urls.
+   * The base matching URI path. If provided this value will be prepended to all {@link Route#value()} paths.
    * </p>
    */
-  String[] value() default {};
+  String value() default "";
 
   /**
    * <p>

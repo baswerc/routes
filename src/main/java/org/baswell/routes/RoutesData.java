@@ -4,13 +4,12 @@ import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.regex.Pattern;
 
 import static org.baswell.routes.RoutesMethods.*;
 
-class RoutesAggregate implements Routes
+class RoutesData implements Routes
 {
-  private final List<String> routes;
+  private final String path;
 
   private final String forwardPath;
 
@@ -24,13 +23,13 @@ class RoutesAggregate implements Routes
 
   private final List<String> tags;
 
-  RoutesAggregate(Class clazz)
+  RoutesData(Class clazz)
   {
     List<Routes> routeses = getRoutesHierarchy(clazz);
 
     if (routeses.isEmpty())
     {
-      routes = new ArrayList<String>();
+      path = "";
       forwardPath = null;
       acceptTypePatterns = new ArrayList<String>();
       routeUnannotatedPublicMethods = null;
@@ -41,7 +40,7 @@ class RoutesAggregate implements Routes
     else if (routeses.size() == 1)
     {
       Routes routes = routeses.get(0);
-      this.routes =  Arrays.asList(routes.value());
+      path = routes.value();
       forwardPath = routes.forwardPath();
       acceptTypePatterns = Arrays.asList(routes.acceptTypePatterns());
       routeUnannotatedPublicMethods = routes.routeUnannotatedPublicMethods().length == 0 ? null : routes.routeUnannotatedPublicMethods()[0];
@@ -51,19 +50,24 @@ class RoutesAggregate implements Routes
     }
     else
     {
-      List<String[]> routeValues = new ArrayList<String[]>();
 
+      String path = "";
       String forwardPath = "";
       int forwardPathSegments = 0;
 
       for (int i = routeses.size() - 1; i >= 0; i--)
       {
         Routes routes = routeses.get(i);
+        String pathSegment = routes.value();
+        if (hasContent(pathSegment)) {
+          if (!path.endsWith("/")) {
+            path += "/";
+          }
+          if (pathSegment.startsWith("/")) {
+            pathSegment = pathSegment.substring(1);
+          }
 
-        String[] values = routes.value();
-        if (values.length > 0)
-        {
-          routeValues.add(values);
+          path += pathSegment;
         }
 
         String forwardPathSegment = routes.forwardPath();
@@ -78,7 +82,7 @@ class RoutesAggregate implements Routes
 
             if (forwardPathSegment.startsWith("/"))
             {
-              forwardPathSegment = forwardPathSegment.length() == 1 ? "" : forwardPathSegment.substring(1, forwardPathSegment.length());
+              forwardPathSegment = forwardPathSegment.length() == 1 ? "" : forwardPathSegment.substring(1);
             }
           }
 
@@ -87,7 +91,7 @@ class RoutesAggregate implements Routes
         }
       }
 
-      this.routes = expandRoutes(routeValues);
+      this.path = path;
       this.forwardPath = forwardPath.isEmpty() ? null : forwardPath;
 
       List<String> acceptTypePatterns = new ArrayList<String>();
@@ -139,9 +143,9 @@ class RoutesAggregate implements Routes
   }
 
   @Override
-  public String[] value()
+  public String value()
   {
-    return routes.toArray(new String[routes.size()]);
+    return path;
   }
 
   @Override

@@ -15,10 +15,11 @@
  */
 package org.baswell.routes;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.*;
 
-class RouteConfiguration
+class RouteData implements Route
 {
   final String route;
 
@@ -36,18 +37,18 @@ class RouteConfiguration
 
   final String forwardPath;
 
-  RouteConfiguration(Class clazz, Method method, RoutesConfiguration routesConfiguration)
+  RouteData(Class clazz, Method method, RoutesConfiguration routesConfiguration)
   {
-    this(clazz, method, routesConfiguration, new RoutesAggregate(method.getDeclaringClass()), method.getAnnotation(Route.class), 0);
+    this(clazz, method, routesConfiguration, new RoutesData(method.getDeclaringClass()), method.getAnnotation(Route.class));
   }
 
-  RouteConfiguration(Class clazz, Method method, RoutesConfiguration routesConfiguration, Routes routes, Route route, int routesPathIndex)
+  RouteData(Class clazz, Method method, RoutesConfiguration routesConfiguration, Routes routes, Route route)
   {
     httpMethods = getHttpMethods(routes, route, method, routesConfiguration.routeByConvention);
-    this.route = buildRoutePath(routesConfiguration.rootPath, routes, route, clazz, method, routesConfiguration.routeByConvention, routesPathIndex);
-    defaultParameters = new HashMap<String, List<String>>();
+    this.route = buildRoutePath(routesConfiguration.rootPath, routes, route, clazz, method, routesConfiguration.routeByConvention);
+    defaultParameters = new HashMap<>();
 
-    tags = new HashSet<String>();
+    tags = new HashSet<>();
     if (routes != null)
     {
       tags.addAll(Arrays.asList(routes.tags()));
@@ -88,24 +89,6 @@ class RouteConfiguration
     else
     {
       acceptTypePatterns.addAll(Arrays.asList(route.acceptTypePatterns()));
-      /*
-      if (route.acceptTypePatterns().length > 0)
-      {
-        for (String acceptTypePattern : route.acceptTypePatterns())
-        {
-          try
-          {
-            acceptTypePatterns.add(Pattern.compile(acceptTypePattern));
-          }
-          catch (Exception e)
-          {
-            throw new RoutesException("Invalid acceptTypePattern: " + acceptTypePattern + " for method: " + method, e);
-          }
-        }
-      }
-
-       */
-
       if (route.contentType().length() == 0)
       {
         contentType = ((routes == null) || (routes.defaultContentType().length() == 0)) ? routesConfiguration.defaultContentType : routes.defaultContentType();
@@ -128,7 +111,7 @@ class RouteConfiguration
           {
             if (!defaultParameters.containsKey(vals[0]))
             {
-              defaultParameters.put(vals[0], new ArrayList<String>());
+              defaultParameters.put(vals[0], new ArrayList<>());
             }
             defaultParameters.get(vals[0]).add(vals[1]);
           }
@@ -149,7 +132,7 @@ class RouteConfiguration
     }
   }
 
-  static String buildRoutePath(String rootPath, Routes routes, Route route, Class routesClass, Method routeMethod, RouteByConvention routeByConvention, int routesPathIndex)
+  static String buildRoutePath(String rootPath, Routes routes, Route route, Class routesClass, Method routeMethod, RouteByConvention routeByConvention)
   {
     String routePath = "";
     if (rootPath != null)
@@ -157,17 +140,16 @@ class RouteConfiguration
       routePath = rootPath;
     }
 
-    if ((routes != null) && (routes.value().length > routesPathIndex) && !routes.value()[routesPathIndex].trim().isEmpty())
+    if ((routes != null) && !routes.value().trim().isEmpty())
     {
       if (!routePath.isEmpty() && !routePath.endsWith("/")) routePath += "/";
-      routePath += routes.value()[routesPathIndex].trim();
+      routePath += routes.value().trim();
     }
     else if ((route == null) || route.value().trim().isEmpty())
     {
       if (!routePath.isEmpty() && !routePath.endsWith("/")) routePath += "/";
       routePath += routeByConvention.routesPathPrefix(routesClass);
     }
-
 
     if ((route != null) && !route.value().trim().isEmpty())
     {
@@ -200,9 +182,9 @@ class RouteConfiguration
   {
     List<HttpMethod> httpMethods = new ArrayList<HttpMethod>();
 
-    if ((route != null) && (route.respondsToMethods().length > 0))
+    if ((route != null) && (route.methods().length > 0))
     {
-      for (HttpMethod httpMethod : route.respondsToMethods()) httpMethods.add(httpMethod);
+      for (HttpMethod httpMethod : route.methods()) httpMethods.add(httpMethod);
     }
     else
     {
@@ -210,5 +192,51 @@ class RouteConfiguration
     }
 
     return httpMethods;
+  }
+
+  @Override
+  public String value() {
+    return route;
+  }
+
+  @Override
+  public HttpMethod[] methods() {
+    return httpMethods.toArray(new HttpMethod[httpMethods.size()]);
+  }
+
+  @Override
+  public String[] acceptTypePatterns() {
+    return acceptTypePatterns.toArray(new String[acceptTypePatterns.size()]);
+  }
+
+  @Override
+  public String contentType() {
+    return contentType;
+  }
+
+  @Override
+  public boolean[] returnedStringIsContent() {
+    return new boolean[] {returnedStringIsContent};
+  }
+
+  @Override
+  public String[] defaultParameters() {
+    List<String> builder = new ArrayList<>();
+    for (Map.Entry<String, List<String>> entry : defaultParameters.entrySet()) {
+      for (String value : entry.getValue()) {
+        builder.add(entry.getKey() + "=" + value);
+      }
+    }
+    return builder.toArray(new String[builder.size()]);
+  }
+
+  @Override
+  public String[] tags() {
+    return tags.toArray(new String[tags.size()]);
+  }
+
+  @Override
+  public Class<? extends Annotation> annotationType() {
+    return Route.class;
   }
 }

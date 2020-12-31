@@ -44,7 +44,7 @@ class MethodPipeline
   void invoke(RouteNode routeNode, HttpServletRequest servletRequest, HttpServletResponse servletResponse, HttpMethod httpMethod,
               RequestedMediaType requestedMediaType, RequestPath path, RequestParameters parameters, RequestContent requestContent, List<Matcher> pathMatchers, Map<String, Matcher> parameterMatchers) throws IOException, ServletException, RouteInstanceBorrowException
   {
-    MethodInvoker invoker = new MethodInvoker(servletRequest, servletResponse, httpMethod, path, parameters, requestedMediaType, requestContent, routeNode.routeConfiguration);
+    MethodInvoker invoker = new MethodInvoker(servletRequest, servletResponse, httpMethod, path, parameters, requestedMediaType, requestContent, routeNode.routeData);
     Object routeObject = routeNode.routeHolder.getRouteObject();
 
     int afterRouteMethodIndex = 0; // If an exception thrown from @AfterRoute method, don't call it again in the exception handling logic below
@@ -60,12 +60,12 @@ class MethodPipeline
       }
 
       // If provided set the configured content type. A route method can override this by setting HttpServletResponse.setContentType since we do it before the call.
-      if (routeNode.routeConfiguration.contentType != null)
+      if (routeNode.routeData.contentType != null)
       {
-        servletResponse.setContentType(routeNode.routeConfiguration.contentType);
+        servletResponse.setContentType(routeNode.routeData.contentType);
       }
 
-      for (Map.Entry<String, List<String>> entry : routeNode.routeConfiguration.defaultParameters.entrySet())
+      for (Map.Entry<String, List<String>> entry : routeNode.routeData.defaultParameters.entrySet())
       {
         if (!parameters.contains(entry.getKey()))
         {
@@ -74,7 +74,7 @@ class MethodPipeline
       }
 
       Object response = invoker.invoke(routeObject, routeNode.method, routeNode.parameters, pathMatchers, parameterMatchers);
-      responseProcessor.processResponse(routeNode.responseType, response, routeNode.routeConfiguration.contentType, routeNode.routeConfiguration, servletRequest, servletResponse);
+      responseProcessor.processResponse(routeNode.responseType, response, routeNode.routeData.contentType, routeNode.routeData, servletRequest, servletResponse);
 
       boolean success = getStatus(servletResponse) < 300;
       for (AfterRouteNode afterNode : routeNode.afterRouteNodes)
@@ -106,7 +106,7 @@ class MethodPipeline
       }
       else if (targetException instanceof DisplayPath)
       {
-        responseProcessor.forwardDispatch(((DisplayPath)targetException).pathToDisplay, servletRequest, servletResponse, routeNode.routeConfiguration);
+        responseProcessor.forwardDispatch(((DisplayPath)targetException).pathToDisplay, servletRequest, servletResponse, routeNode.routeData);
         exceptionHandled = true;
       }
       else if (targetException instanceof ReturnStatus)

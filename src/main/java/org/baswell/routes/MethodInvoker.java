@@ -39,7 +39,7 @@ class MethodInvoker
   
   private RequestParameters requestParameters; 
   
-  private RouteConfiguration routeConfiguration;
+  private RouteData routeData;
 
   private Map<String, List<String>> parameterListMap;
 
@@ -51,7 +51,7 @@ class MethodInvoker
 
   private URL url;
 
-  MethodInvoker(HttpServletRequest request, HttpServletResponse response, HttpMethod httpMethod, RequestPath requestPath, RequestParameters requestParameters, RequestedMediaType requestedMediaType, RequestContent requestContent, RouteConfiguration routeConfiguration)
+  MethodInvoker(HttpServletRequest request, HttpServletResponse response, HttpMethod httpMethod, RequestPath requestPath, RequestParameters requestParameters, RequestedMediaType requestedMediaType, RequestContent requestContent, RouteData routeData)
   {
     this.request = request;
     this.response = response;
@@ -60,7 +60,7 @@ class MethodInvoker
     this.requestParameters = requestParameters;
     this.requestedMediaType = requestedMediaType;
     this.requestContent = requestContent;
-    this.routeConfiguration = routeConfiguration;
+    this.routeData = routeData;
   }
   
   Object invoke(Object routeInstance, Method method, List<MethodParameter> methodParameters, List<Matcher> pathMatchers, Map<String, Matcher> parameterMatchers) throws InvocationTargetException

@@ -45,7 +45,7 @@ public interface RouteByConvention
   String routePath(Method routeMethod);
 
   /**
-   * The HTTP methods this route method responds to when {@link org.baswell.routes.Route#respondsToMethods()} is not specified.
+   * The HTTP methods this route method responds to when {@link org.baswell.routes.Route#methods()} is not specified.
    * @param routeMethod
    * @return The HTTP methods this route method responds to.
    */

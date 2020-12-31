@@ -37,7 +37,7 @@ public @interface Route
    * The HTTP methods this route method accepts. If not provided the allowed HTTP methods will be built from the route method
    * name.
    */
-  HttpMethod[] respondsToMethods() default {};
+  HttpMethod[] methods() default {};
 
   /**
    * The type of media this route knows how to serve. If not provided the request media type will not be used as a criteria for matching this route.

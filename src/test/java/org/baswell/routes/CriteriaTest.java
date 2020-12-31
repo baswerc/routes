@@ -21,7 +21,6 @@ import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -31,23 +30,23 @@ import static org.junit.Assert.*;
 
 public class CriteriaTest
 {
-  RouteConfiguration getRouteConfiguration;
+  RouteData getRouteData;
 
-  RouteConfiguration getPostRouteConfiguration;
+  RouteData getPostRouteData;
 
-  @Route(respondsToMethods = {HttpMethod.GET})
+  @Route(methods = {HttpMethod.GET})
   public void getOnly()
   {}
 
-  @Route(respondsToMethods = {HttpMethod.GET, HttpMethod.POST})
+  @Route(methods = {HttpMethod.GET, HttpMethod.POST})
   public void getAndPost()
   {}
 
   @Before
   public void setupTest() throws NoSuchMethodException
   {
-    getRouteConfiguration = new RouteConfiguration(getClass(), getClass().getMethod("getOnly"), new RoutesConfiguration());
-    getPostRouteConfiguration = new RouteConfiguration(getClass(), getClass().getMethod("getAndPost"), new RoutesConfiguration());
+    getRouteData = new RouteData(getClass(), getClass().getMethod("getOnly"), new RoutesConfiguration());
+    getPostRouteData = new RouteData(getClass(), getClass().getMethod("getAndPost"), new RoutesConfiguration());
   }
 
 
@@ -57,23 +56,23 @@ public class CriteriaTest
     List<CriterionForPathSegment> pathCriteria = createPathCriteria(Arrays.asList(RequestPathSegmentCrierionType.FIXED, RequestPathSegmentCrierionType.FIXED, RequestPathSegmentCrierionType.FIXED, RequestPathSegmentCrierionType.FIXED),
                                                                Arrays.asList("a", "b", "c", "d"));
     
-    RouteCriteria Criteria = new RouteCriteria(Arrays.asList(HttpMethod.POST), pathCriteria, null, new ArrayList<>(), getPostRouteConfiguration, new RoutesConfiguration());
+    RouteCriteria criteria = new RouteCriteria(Arrays.asList(HttpMethod.POST), pathCriteria, null, new ArrayList<>(), getPostRouteData, new RoutesConfiguration());
 
     RequestPath urlPath = new RequestPath(Arrays.asList("a", "b", "c", "d"));
     RequestParameters requestParameters = getRequestParameters();
-    assertTrue(Criteria.matches(HttpMethod.POST, new RequestedMediaType("text/html"), urlPath, requestParameters));
+    assertTrue(criteria.matches(HttpMethod.POST, new RequestedMediaType("text/html"), urlPath, requestParameters));
 
     urlPath = new RequestPath(Arrays.asList("a", "b", "c"));
-    assertFalse(Criteria.matches(HttpMethod.POST, new RequestedMediaType("text/html"), urlPath, requestParameters));
+    assertFalse(criteria.matches(HttpMethod.POST, new RequestedMediaType("text/html"), urlPath, requestParameters));
 
     urlPath = new RequestPath(Arrays.asList("a", "b", "c", "d", "e"));
-    assertFalse(Criteria.matches(HttpMethod.POST, new RequestedMediaType("text/html"), urlPath, requestParameters));
+    assertFalse(criteria.matches(HttpMethod.POST, new RequestedMediaType("text/html"), urlPath, requestParameters));
 
     urlPath = new RequestPath(Arrays.asList("a"));
-    assertFalse(Criteria.matches(HttpMethod.POST, new RequestedMediaType("text/html"), urlPath, requestParameters));
+    assertFalse(criteria.matches(HttpMethod.POST, new RequestedMediaType("text/html"), urlPath, requestParameters));
 
     urlPath = new RequestPath(new ArrayList<String>());
-    assertFalse(Criteria.matches(HttpMethod.POST, new RequestedMediaType("text/html"), urlPath, requestParameters));
+    assertFalse(criteria.matches(HttpMethod.POST, new RequestedMediaType("text/html"), urlPath, requestParameters));
   }
   
   @Test
@@ -82,23 +81,23 @@ public class CriteriaTest
     List<CriterionForPathSegment> pathCriteria = createPathCriteria(Arrays.asList(RequestPathSegmentCrierionType.FIXED, RequestPathSegmentCrierionType.FIXED, RequestPathSegmentCrierionType.FIXED, RequestPathSegmentCrierionType.PATTERN),
                                                                Arrays.asList("a", "b", "c", INTEGER_PATTERN));
 
-    RouteCriteria Criteria = new RouteCriteria(Arrays.asList(HttpMethod.GET), pathCriteria, null, new ArrayList<>(), getRouteConfiguration, new RoutesConfiguration());
+    RouteCriteria criteria = new RouteCriteria(Arrays.asList(HttpMethod.GET), pathCriteria, null, new ArrayList<>(), getRouteData, new RoutesConfiguration());
     
     RequestPath urlPath = new RequestPath(Arrays.asList("a", "b", "c", "1"));
     RequestParameters requestParameters = getRequestParameters();
-    assertTrue(Criteria.matches(HttpMethod.GET, new RequestedMediaType("text/html"), urlPath, requestParameters));
-    assertFalse(Criteria.matches(HttpMethod.POST, new RequestedMediaType("text/html"), urlPath, requestParameters));
+    assertTrue(criteria.matches(HttpMethod.GET, new RequestedMediaType("text/html"), urlPath, requestParameters));
+    assertFalse(criteria.matches(HttpMethod.POST, new RequestedMediaType("text/html"), urlPath, requestParameters));
 
     urlPath = new RequestPath(Arrays.asList("a", "b", "c", "-1"));
-    assertTrue(Criteria.matches(HttpMethod.GET, new RequestedMediaType("text/html"), urlPath, requestParameters));
-    assertFalse(Criteria.matches(HttpMethod.POST, new RequestedMediaType("text/html"), urlPath, requestParameters));
+    assertTrue(criteria.matches(HttpMethod.GET, new RequestedMediaType("text/html"), urlPath, requestParameters));
+    assertFalse(criteria.matches(HttpMethod.POST, new RequestedMediaType("text/html"), urlPath, requestParameters));
 
     urlPath = new RequestPath(Arrays.asList("a", "b", "c", "0"));
-    assertTrue(Criteria.matches(HttpMethod.GET, new RequestedMediaType("text/html"), urlPath, requestParameters));
-    assertFalse(Criteria.matches(HttpMethod.POST, new RequestedMediaType("text/html"), urlPath, requestParameters));
+    assertTrue(criteria.matches(HttpMethod.GET, new RequestedMediaType("text/html"), urlPath, requestParameters));
+    assertFalse(criteria.matches(HttpMethod.POST, new RequestedMediaType("text/html"), urlPath, requestParameters));
 
     urlPath = new RequestPath(Arrays.asList("a", "b", "c", "1.2"));
-    assertFalse(Criteria.matches(HttpMethod.GET, new RequestedMediaType("text/html"), urlPath, requestParameters));
+    assertFalse(criteria.matches(HttpMethod.GET, new RequestedMediaType("text/html"), urlPath, requestParameters));
   }
 
   @Test
@@ -107,26 +106,26 @@ public class CriteriaTest
     List<CriterionForPathSegment> pathCriteria = createPathCriteria(Arrays.asList(RequestPathSegmentCrierionType.FIXED, RequestPathSegmentCrierionType.FIXED, RequestPathSegmentCrierionType.MULTI, RequestPathSegmentCrierionType.PATTERN),
                                                                Arrays.asList("a", "b", "**", INTEGER_PATTERN));
 
-    RouteCriteria Criteria = new RouteCriteria(Arrays.asList(HttpMethod.GET), pathCriteria, null, new ArrayList<>(), getRouteConfiguration, new RoutesConfiguration());
+    RouteCriteria criteria = new RouteCriteria(Arrays.asList(HttpMethod.GET), pathCriteria, null, new ArrayList<>(), getRouteData, new RoutesConfiguration());
     
     RequestPath urlPath = new RequestPath(Arrays.asList("a", "b", "c", "1"));
     RequestParameters requestParameters = getRequestParameters();
-    assertTrue(Criteria.matches(HttpMethod.GET, new RequestedMediaType("text/html"), urlPath, requestParameters));
-    assertFalse(Criteria.matches(HttpMethod.POST, new RequestedMediaType("text/html"), urlPath, requestParameters));
+    assertTrue(criteria.matches(HttpMethod.GET, new RequestedMediaType("text/html"), urlPath, requestParameters));
+    assertFalse(criteria.matches(HttpMethod.POST, new RequestedMediaType("text/html"), urlPath, requestParameters));
 
     urlPath = new RequestPath(Arrays.asList("a", "b", "1"));
     requestParameters = getRequestParameters();
-    assertTrue(Criteria.matches(HttpMethod.GET, new RequestedMediaType("text/html"), urlPath, requestParameters));
-    assertFalse(Criteria.matches(HttpMethod.POST, new RequestedMediaType("text/html"), urlPath, requestParameters));
+    assertTrue(criteria.matches(HttpMethod.GET, new RequestedMediaType("text/html"), urlPath, requestParameters));
+    assertFalse(criteria.matches(HttpMethod.POST, new RequestedMediaType("text/html"), urlPath, requestParameters));
 
     urlPath = new RequestPath(Arrays.asList("a", "b", "c", "d", "1"));
     requestParameters = getRequestParameters();
-    assertTrue(Criteria.matches(HttpMethod.GET, new RequestedMediaType("text/html"), urlPath, requestParameters));
-    assertFalse(Criteria.matches(HttpMethod.POST, new RequestedMediaType("text/html"), urlPath, requestParameters));
+    assertTrue(criteria.matches(HttpMethod.GET, new RequestedMediaType("text/html"), urlPath, requestParameters));
+    assertFalse(criteria.matches(HttpMethod.POST, new RequestedMediaType("text/html"), urlPath, requestParameters));
 
     urlPath = new RequestPath(Arrays.asList("a", "b", "c", "d"));
     requestParameters = getRequestParameters();
-    assertFalse(Criteria.matches(HttpMethod.GET, new RequestedMediaType("text/html"), urlPath, requestParameters));
+    assertFalse(criteria.matches(HttpMethod.GET, new RequestedMediaType("text/html"), urlPath, requestParameters));
   }
 
   

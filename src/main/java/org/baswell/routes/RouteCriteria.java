@@ -36,7 +36,7 @@ class RouteCriteria implements Comparable<RouteCriteria>
   
   final List<CriterionForParameter> parameterCriteria;
 
-  final RouteConfiguration routeConfiguration;
+  final RouteData routeData;
   
   final RoutesConfiguration routesConfiguration;
 
@@ -46,13 +46,13 @@ class RouteCriteria implements Comparable<RouteCriteria>
   
   final boolean hasMultiPathCriterion;
   
-  RouteCriteria(List<HttpMethod> httpMethods, List<CriterionForPathSegment> pathCriteria, List<CriterionForParameter> parameterCriteria, List<Pattern> acceptTypePatterns, RouteConfiguration routeConfiguration, RoutesConfiguration routesConfiguration)
+  RouteCriteria(List<HttpMethod> httpMethods, List<CriterionForPathSegment> pathCriteria, List<CriterionForParameter> parameterCriteria, List<Pattern> acceptTypePatterns, RouteData routeData, RoutesConfiguration routesConfiguration)
   {
     this.httpMethods = httpMethods;
     this.acceptTypePatterns = acceptTypePatterns;
     this.pathCriteria = pathCriteria;
     this.parameterCriteria = parameterCriteria;
-    this.routeConfiguration = routeConfiguration;
+    this.routeData = routeData;
     this.routesConfiguration = routesConfiguration;
 
     boolean hasPattern = false;
@@ -118,9 +118,9 @@ class RouteCriteria implements Comparable<RouteCriteria>
       {
         List<String> parameterValues = parameters.getValues(parameterCriterion.name);
 
-        if (parameterValues.isEmpty() && routeConfiguration.defaultParameters.containsKey(parameterCriterion.name))
+        if (parameterValues.isEmpty() && routeData.defaultParameters.containsKey(parameterCriterion.name))
         {
-          parameterValues.addAll(routeConfiguration.defaultParameters.get(parameterCriterion.name));
+          parameterValues.addAll(routeData.defaultParameters.get(parameterCriterion.name));
         }
 
         if (parameterValues.isEmpty() && parameterCriterion.presenceRequired)

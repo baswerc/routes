@@ -44,7 +44,7 @@ class ResponseProcessor
     this.routesConfiguration = routesConfiguration;
   }
   
-  void processResponse(ResponseType responseType, Object response, String contentType, RouteConfiguration routeConfiguration, HttpServletRequest servletRequest, HttpServletResponse servletResponse) throws IOException, ServletException
+  void processResponse(ResponseType responseType, Object response, String contentType, RouteData routeData, HttpServletRequest servletRequest, HttpServletResponse servletResponse) throws IOException, ServletException
   {
     if (response != null)
     {
@@ -63,7 +63,7 @@ class ResponseProcessor
           break;
 
         case FORWARD_DISPATCH:
-          forwardDispatch(response.toString(), servletRequest, servletResponse, routeConfiguration);
+          forwardDispatch(response.toString(), servletRequest, servletResponse, routeData);
           break;
           
         case VOID:
@@ -73,7 +73,7 @@ class ResponseProcessor
   }
 
 
-  void forwardDispatch(String path, HttpServletRequest servletRequest, HttpServletResponse servletResponse, RouteConfiguration routeConfiguration) throws IOException, ServletException
+  void forwardDispatch(String path, HttpServletRequest servletRequest, HttpServletResponse servletResponse, RouteData routeData) throws IOException, ServletException
   {
     if (path.startsWith("redirect:"))
     {
@@ -83,7 +83,7 @@ class ResponseProcessor
     {
       if (!path.startsWith("/"))
       {
-        path = routeConfiguration.forwardPath + path;
+        path = routeData.forwardPath + path;
       }
 
       servletRequest.getRequestDispatcher(path).forward(servletRequest, servletResponse);

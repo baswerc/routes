@@ -160,7 +160,7 @@ abstract public class RouteByHttpMethodNameConvention implements RouteByConventi
 
   /**
    * Removes any of the HTTP method names GET, POST, PUT, DELETE, HEAD (case insensitive) from the beginning of this method
-   * name if the given method does not have a {@link Route#respondsToMethods()} specified. If {@code respondsToMethods} is
+   * name if the given method does not have a {@link Route#methods()} specified. If {@code respondsToMethods} is
    * specified the method name is returned unaltered.
    *
    * @param method
@@ -170,7 +170,7 @@ abstract public class RouteByHttpMethodNameConvention implements RouteByConventi
   protected String removeHttpMethodsFromName(Method method)
   {
     Route route = method.getAnnotation(Route.class);
-    if ((route == null) || (route.respondsToMethods().length == 0)) // Are we using the method name to determine the http methods ?
+    if ((route == null) || (route.methods().length == 0)) // Are we using the method name to determine the http methods ?
     {
       return removeHttpMethods(method.getName());
     }
