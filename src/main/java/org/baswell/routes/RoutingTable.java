@@ -158,7 +158,7 @@ public class RoutingTable
     CriteriaBuilder criteriaBuilder = new CriteriaBuilder();
     MethodParametersBuilder parametersBuilder = new MethodParametersBuilder();
 
-    this.routesNodes = new ArrayList<>();
+    routesNodes = new ArrayList<>();
     for (Object addedObject : addedObjects)
     {
       boolean instanceIsClass = (addedObject instanceof Class);
@@ -167,7 +167,7 @@ public class RoutingTable
       RoutesData routesData = new RoutesData(routesClass);
 
       List<RouteNode> routeNodes = new ArrayList<>();
-      RoutesNode routesNode = new RoutesNode(criteriaBuilder.buildRoutesCriteria(routesClass, routesData, routesConfiguration), routeNodes);
+      routesNodes.add(new RoutesNode(criteriaBuilder.buildRoutesCriteria(routesClass, routesData, routesConfiguration), routeNodes));
 
       List<BeforeRouteNode> classBeforeNodes = getBeforeRouteNodes(routesClass);
       List<AfterRouteNode> classAfterNodes = getAfterRouteNodes(routesClass);
@@ -251,7 +251,7 @@ public class RoutingTable
       {
         throw new RoutesException("Route class: " + routesClass + " has no routes.");
       }
-
+      Collections.sort(routeNodes);
     }
 
     if (!built)

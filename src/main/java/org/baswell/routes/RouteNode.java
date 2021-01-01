@@ -100,4 +100,9 @@ class RouteNode implements Comparable<RouteNode>
       return criteriaCompare;
     }
   }
+
+  @Override
+  public String toString() {
+    return routeData.route;
+  }
 }

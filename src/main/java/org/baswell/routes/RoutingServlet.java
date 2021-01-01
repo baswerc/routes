@@ -26,32 +26,32 @@ import static org.baswell.routes.RoutingTable.*;
 /**
  * <p>
  * An entry point for mapping HTTP servlet requests to route methods. All HTTP requests received by this servlet will be passed to
- * {@link org.baswell.routes.RoutesEngine}. If a routes match was found the request will be processed by that route otherwise this
+ * {@link RoutingEngine}. If a routes match was found the request will be processed by that route otherwise this
  * servlet will return a 404 (<status>HttpServletResponse.setStatus(404)</status>).
  * </p>
  *
- * @see org.baswell.routes.RoutesFilter
- * @see org.baswell.routes.RoutesEngine
+ * @see RoutingFilter
+ * @see RoutingEngine
  */
-public class RoutesServlet extends HttpServlet
+public class RoutingServlet extends HttpServlet
 {
-  private volatile static RoutesEngine routesEngine;
+  private volatile static RoutingEngine routingEngine;
 
   @Override
   protected void service(HttpServletRequest servletRequest, HttpServletResponse servletResponse) throws ServletException, IOException
   {
-    if (routesEngine == null)
+    if (routingEngine == null)
     {
-      synchronized (RoutesServlet.class)
+      synchronized (RoutingServlet.class)
       {
-        if (routesEngine == null)
+        if (routingEngine == null)
         {
-          routesEngine = new RoutesEngine(theRoutingTable);
+          routingEngine = new RoutingEngine(theRoutingTable);
         }
       }
     }
 
-    if (!routesEngine.process(servletRequest, servletResponse))
+    if (!routingEngine.process(servletRequest, servletResponse))
     {
       servletResponse.setStatus(404);
     }

@@ -45,13 +45,14 @@ The <a href="http://baswerc.github.io/routes/javadoc/org/baswell/routes/RoutesSe
 matching route for is returned a 404 (`HttpServletResponse.setStatus(404)`).
 
 ````xml
+
 <servlet>
     <servlet-name>RoutesServlet</servlet-name>
-    <servlet-class>org.baswell.routes.RoutesServlet</servlet-class>
+    <servlet-class>org.baswell.routes.RoutingServletorg.baswell.routes.RoutingServlet</servlet-class>
 </servlet>
 <servlet-mapping>
-    <servlet-name>RoutesServlet</servlet-name>
-    <url-pattern>/routes/*</url-pattern>
+<servlet-name>RoutesServlet</servlet-name>
+<url-pattern>/routes/*</url-pattern>
 </servlet-mapping>
 ````
 
@@ -60,13 +61,14 @@ matching route for is returned a 404 (`HttpServletResponse.setStatus(404)`).
 The <a href="http://baswerc.github.io/routes/javadoc/org/baswell/routes/RoutesFilter.html">RoutesFilter</a> may work better when Routes is not the only means of serving content for your application.
 
 ````xml
+
 <filter>
     <filter-name>RoutesFilter</filter-name>
-    <filter-class>org.baswell.routes.RoutesFilter</filter-class>
+    <filter-class>org.baswell.routes.RoutingFilterorg.baswell.routes.RoutingFilter</filter-class>
 </filter>
 <filter-mapping>
-    <filter-name>RoutesFilter</filter-name>
-    <url-pattern>/*</url-pattern>
+<filter-name>RoutesFilter</filter-name>
+<url-pattern>/*</url-pattern>
 </filter-mapping>
 ````
 

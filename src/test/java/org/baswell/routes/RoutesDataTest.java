@@ -14,15 +14,16 @@ public class RoutesDataTest
   @Test
   public void testExpandRoutes()
   {
-    List<String> routes = expandRoutes(toList(new String[]{"/a"}, new String[]{"/c"}));
-    assertEquals(4, routes.size());
+    List<String> routes = expandRoutes(toList(new String[]{"/a"}, new String[]{"/c", "/d"}));
     assertTrue(routes.contains("/a/c"));
     assertTrue(routes.contains("/a/d"));
 
-    routes = expandRoutes(toList(new String[]{"a"}, new String[]{"c"}, new String[]{"/e"}));
+    routes = expandRoutes(toList(new String[]{"a", "b"}, new String[]{"c", "/d"}, new String[]{"/e"}));
     assertEquals(4, routes.size());
     assertTrue(routes.contains("a/c/e"));
     assertTrue(routes.contains("a/d/e"));
+    assertTrue(routes.contains("b/c/e"));
+    assertTrue(routes.contains("b/d/e"));
   }
 
   @Test
@@ -31,11 +32,7 @@ public class RoutesDataTest
     RoutesData routes = new RoutesData(Three.class);
 
     List<String> routePaths = Arrays.asList(routes.value());
-    assertEquals(8, routePaths.size());
     assertTrue(routePaths.contains("/a/c/e"));
-    assertTrue(routePaths.contains("/a/d/e"));
-    assertTrue(routePaths.contains("/a/c/f"));
-    assertTrue(routePaths.contains("/a/d/f"));
 
     assertEquals("one/two/three", routes.forwardPath());
 

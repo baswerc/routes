@@ -39,14 +39,12 @@ public class RootTest extends EndToEndTest
   public void testGet() throws IOException, ServletException
   {
     invoke(new TestHttpServletRequest("GET", "/", "/"), "get");
-    invoke(new TestHttpServletRequest("GET", "/", "/test"), "get");
   }
 
   @Test
   public void testOne() throws IOException, ServletException
   {
     invoke(new TestHttpServletRequest("GET", "/", "/one"), "getOne");
-    invoke(new TestHttpServletRequest("GET", "/", "/test/one"), "getOne");
   }
 
   static String expectedName;

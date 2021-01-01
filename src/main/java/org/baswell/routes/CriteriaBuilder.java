@@ -21,6 +21,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
@@ -31,7 +32,7 @@ class CriteriaBuilder {
     private TreeParser treeParser = new TreeParser();
 
     RoutesCriteria buildRoutesCriteria(Class clazz, RoutesData routesData, RoutesConfiguration routesConfiguration) {
-        List<CriterionForPathSegment> pathCriteria = parsePathCriteria(treeParser.parse(routesData.path), clazz, null, routesConfiguration);
+        List<CriterionForPathSegment> pathCriteria = parsePathCriteria(treeParser.parse(routesData.path), clazz, null, routesConfiguration, new AtomicInteger());
         List<Pattern> acceptTypePattern = new ArrayList<>();
         if (routesData.acceptTypePatterns != null) {
             for (int i = 0; i < routesData.acceptTypePatterns.size(); i++) {
@@ -47,9 +48,10 @@ class CriteriaBuilder {
     }
 
     RouteCriteria buildRouteCriteria(Method method, ParsedRouteTree routeTree, RouteData routeData, RoutesConfiguration routesConfiguration) throws RoutesException {
-        List<CriterionForPathSegment> pathCriteria = parsePathCriteria(routeTree, method.getDeclaringClass(), method, routesConfiguration);
-        List<CriterionForParameter> parameterCriteria = new ArrayList<CriterionForParameter>();
-        int urlParameterIndex = 0;
+        AtomicInteger patternSegmentCounts = new AtomicInteger();
+        List<CriterionForPathSegment> pathCriteria = parsePathCriteria(routeTree, method.getDeclaringClass(), method, routesConfiguration, patternSegmentCounts);
+        List<CriterionForParameter> parameterCriteria = new ArrayList<>();
+        int urlParameterIndex = patternSegmentCounts.get();
         if (routeTree.parameterTerminals != null) {
             for (int i = 0; i < routeTree.parameterTerminals.size(); i++) {
                 ParsedParameterTerminal parameterTerminal = routeTree.parameterTerminals.get(i);
@@ -134,9 +136,8 @@ class CriteriaBuilder {
         return null;
     }
 
-    static List<CriterionForPathSegment> parsePathCriteria(ParsedRouteTree routeTree, Class clazz, Method method, RoutesConfiguration routesConfiguration) throws RoutesException {
+    static List<CriterionForPathSegment> parsePathCriteria(ParsedRouteTree routeTree, Class clazz, Method method, RoutesConfiguration routesConfiguration, AtomicInteger patterSegmentCounts) throws RoutesException {
         List<CriterionForPathSegment> pathCriteria = new ArrayList<CriterionForPathSegment>();
-        int urlParameterIndex = 0;
         for (int i = 0; i < routeTree.pathTerminals.size(); i++) {
             ParsedPathTerminal pathTerminal = routeTree.pathTerminals.get(i);
             if (pathTerminal instanceof ParsedExactPathTerminal) {
@@ -148,25 +149,27 @@ class CriteriaBuilder {
                 }
                 ParsedPatternPathTerminal patternTerminal = (ParsedPatternPathTerminal) pathTerminal;
                 CriterionForPathSegment patternCriteria = new CriterionForPathSegment(i, patternTerminal.pattern, RequestPathSegmentCrierionType.PATTERN, compile(patternTerminal.pattern, method));
-                urlParameterIndex += Math.min(1, patternCriteria.numberPatternGroups);
+                patterSegmentCounts.set(patterSegmentCounts.get() + Math.min(1, patternCriteria.numberPatternGroups));
                 pathCriteria.add(patternCriteria);
             } else if (pathTerminal instanceof ParsedWildcardPathTerminal) {
                 if (method == null) {
                     throw new RoutesException("Routes class " + clazz.getCanonicalName() + " cannot use pattern in routes path.");
                 }
-                ++urlParameterIndex;
+                patterSegmentCounts.incrementAndGet();
                 pathCriteria.add(new CriterionForPathSegment(i, "*", RequestPathSegmentCrierionType.PATTERN, compile(WILDCARD_PATTERN, method)));
             } else if (pathTerminal instanceof ParsedDoubleWildcardPathTerminal) {
-                ++urlParameterIndex;
+                patterSegmentCounts.incrementAndGet();
                 pathCriteria.add(new CriterionForPathSegment(i, "**", RequestPathSegmentCrierionType.MULTI, null));
             } else if (pathTerminal instanceof ParsedMethodParameterPathTerminal) {
                 if (method == null) {
                     throw new RoutesException("Routes class " + clazz.getCanonicalName() + " cannot use pattern in routes path.");
                 }
 
-                RoutesPair<Type, Integer> parameterIndex = findDynamicParameterAndIndex(method, urlParameterIndex++);
+                RoutesPair<Type, Integer> parameterIndex = findDynamicParameterAndIndex(method, patterSegmentCounts.get());
+                patterSegmentCounts.incrementAndGet();
+
                 if (parameterIndex == null) {
-                    throw new RoutesException("Route path pattern {} at index: " + (urlParameterIndex - 1) + " has no matching method parameter for method: " + method);
+                    throw new RoutesException("Route path pattern {} at index: " + (patterSegmentCounts.get() - 1) + " has no matching method parameter for method: " + method);
                 } else {
                     Type parameter = parameterIndex.x;
                     if (typesToPatterns.containsKey(parameter)) {
@@ -180,7 +183,7 @@ class CriteriaBuilder {
                 ParsedSymbolPathTerminal symbolTerminal = (ParsedSymbolPathTerminal) pathTerminal;
                 if (routesConfiguration.symbolsToPatterns.containsKey(symbolTerminal.symbol)) {
                     CriterionForPathSegment patternCriteria = new CriterionForPathSegment(i, symbolTerminal.symbol, RequestPathSegmentCrierionType.PATTERN, routesConfiguration.symbolsToPatterns.get(symbolTerminal.symbol));
-                    urlParameterIndex += Math.min(1, patternCriteria.numberPatternGroups);
+                    patterSegmentCounts.set(patterSegmentCounts.get() + Math.min(1, patternCriteria.numberPatternGroups));
                     pathCriteria.add(patternCriteria);
                 } else {
                     throw new RoutesException("Invalid symbol: " + symbolTerminal.symbol + " in method: " + method);

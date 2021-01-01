@@ -239,4 +239,9 @@ class RouteData implements Route
   public Class<? extends Annotation> annotationType() {
     return Route.class;
   }
+
+  @Override
+  public String toString() {
+    return value();
+  }
 }

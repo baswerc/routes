@@ -81,10 +81,10 @@ import static org.baswell.routes.RoutingTable.*;
  * If both <code>ONLY</code> and <code>EXCEPT</code> are specified then the route methods will not be checked if the <code>ONLY</code> pattern does not match or the <code>EXCEPT</code> pattern does match.
  * </p>
  *
- * @see org.baswell.routes.RoutesServlet
- * @see org.baswell.routes.RoutesEngine
+ * @see RoutingServlet
+ * @see RoutingEngine
  */
-public class RoutesFilter implements Filter
+public class RoutingFilter implements Filter
 {
   private volatile MethodPipeline pipeline;
   
@@ -92,7 +92,7 @@ public class RoutesFilter implements Filter
   
   private List<Pattern> exceptPatterns;
 
-  private volatile RoutesEngine routesEngine;
+  private volatile RoutingEngine routingEngine;
   
   @Override
   public void init(FilterConfig filterConfig) throws ServletException
@@ -174,18 +174,18 @@ public class RoutesFilter implements Filter
 
     assert theRoutingTable != null;
 
-    if (routesEngine == null)
+    if (routingEngine == null)
     {
       synchronized (this)
       {
-        if (routesEngine == null)
+        if (routingEngine == null)
         {
-          routesEngine = new RoutesEngine(theRoutingTable);
+          routingEngine = new RoutingEngine(theRoutingTable);
         }
       }
     }
 
-    if (!routesEngine.process(servletRequest, servletResponse))
+    if (!routingEngine.process(servletRequest, servletResponse))
     {
       chain.doFilter(servletRequest, servletResponse);
     }

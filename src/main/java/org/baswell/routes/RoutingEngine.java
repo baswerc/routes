@@ -23,8 +23,8 @@ import java.lang.reflect.Type;
 
 /**
  * <p>
- * Routes process engine. Reponsible for finding route method matches and executing matched methods. Used by {@link org.baswell.routes.RoutesFilter}
- * and {@link org.baswell.routes.RoutesServlet}.
+ * Routes process engine. Reponsible for finding route method matches and executing matched methods. Used by {@link RoutingFilter}
+ * and {@link RoutingServlet}.
  * </p>
  *
  * <p>
@@ -40,7 +40,7 @@ import java.lang.reflect.Type;
  * }
  * </pre>
  */
-public class RoutesEngine
+public class RoutingEngine
 {
   private final RoutingTable routingTable;
 
@@ -56,7 +56,7 @@ public class RoutesEngine
    *
    * @param routingTable
    */
-  public RoutesEngine(RoutingTable routingTable)
+  public RoutingEngine(RoutingTable routingTable)
   {
     assert routingTable != null;
 
