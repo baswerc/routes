@@ -3,12 +3,15 @@ package org.baswell.routes;
 import java.util.List;
 
 public class RoutesNode {
-    final RoutesCriteria routesCriteria;
+    final RoutesCriteria criteria;
 
-    final List<RouteNode> routeNodes;
+    final RoutesData data;
 
-    public RoutesNode(RoutesCriteria routesCriteria, List<RouteNode> routeNodes) {
-        this.routesCriteria = routesCriteria;
-        this.routeNodes = routeNodes;
+    final List<RouteNode> nodes;
+
+    public RoutesNode(RoutesCriteria criteria, RoutesData data, List<RouteNode> nodes) {
+        this.criteria = criteria;
+        this.data = data;
+        this.nodes = nodes;
     }
 }

@@ -21,6 +21,8 @@ import java.util.List;
 
 class RouteNode implements Comparable<RouteNode>
 {
+  final RoutesNode parent;
+
   final int index;
 
   final Method method;
@@ -39,8 +41,9 @@ class RouteNode implements Comparable<RouteNode>
 
   final List<AfterRouteNode> afterRouteNodes;
 
-  RouteNode(int index, Method method, RouteData routeData, RouteHolder routeHolder, RouteCriteria criteria, List<MethodParameter> parameters, ResponseType responseType, List<BeforeRouteNode> beforeRouteNodes, final List<AfterRouteNode> afterRouteNodes)
+  RouteNode(RoutesNode parent, int index, Method method, RouteData routeData, RouteHolder routeHolder, RouteCriteria criteria, List<MethodParameter> parameters, ResponseType responseType, List<BeforeRouteNode> beforeRouteNodes, final List<AfterRouteNode> afterRouteNodes)
   {
+    this.parent = parent;
     this.index = index;
     this.method = method;
     this.routeData = routeData;

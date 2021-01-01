@@ -77,10 +77,17 @@ public class TestHttpServletRequest implements HttpServletRequest
     this.method = method;
     this.contextPath = contextPath;
     this.requestUri = requestUri;
-    
-    for (int i = 0; i < parameters.length; i += 2)
-    {
-      this.parameters.put(parameters[i], new String[] {parameters[i + 1]});
+
+    if (parameters.length > 0) {
+      queryString = "";
+      for (int i = 0; i < parameters.length; i += 2)
+      {
+        this.parameters.put(parameters[i], new String[] {parameters[i + 1]});
+        if (i > 0) {
+          queryString += "&";
+        }
+        queryString += parameters[i] + "=" + parameters[i + 1];
+      }
     }
   }
 

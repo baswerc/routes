@@ -149,6 +149,13 @@ public class RoutesConfiguration
    */
   public boolean useGSONForJSON;
 
+  /**
+   * The routes cache implementation. No cache will be used if null.
+   *
+   * Default value: <code>InMemoryRouteCache(1000)</code>
+   */
+  public RouteCache routeCache = new InMemoryRouteCache(1000);
+
   public RoutesRedirectHandler redirectHandler = new AddContextPathRedirectHandler();
 
   final Map<String, Pattern> symbolsToPatterns = new HashMap<String, Pattern>();

@@ -23,6 +23,8 @@ class RoutesData implements Routes
 
   final List<String> tags;
 
+  final boolean cacheable;
+
   RoutesData(Class clazz)
   {
     List<Routes> routeses = getRoutesHierarchy(clazz);
@@ -35,7 +37,8 @@ class RoutesData implements Routes
       routeUnannotatedPublicMethods = null;
       defaultContentType = null;
       defaultReturnedStringIsContent = null;
-      tags = new ArrayList<String>();
+      tags = new ArrayList<>();
+      cacheable = true;
     }
     else if (routeses.size() == 1)
     {
@@ -47,6 +50,7 @@ class RoutesData implements Routes
       defaultContentType = routes.defaultContentType();
       defaultReturnedStringIsContent = routes.defaultReturnedStringIsContent().length == 0 ? null : routes.defaultReturnedStringIsContent()[0];
       tags = Arrays.asList(routes.tags());
+      cacheable = routes.cacheable().length > 0 ? routes.cacheable()[0] : true;
     }
     else
     {
@@ -54,10 +58,16 @@ class RoutesData implements Routes
       String path = "";
       String forwardPath = "";
       int forwardPathSegments = 0;
+      Boolean cacheable = null;
 
       for (int i = routeses.size() - 1; i >= 0; i--)
       {
         Routes routes = routeses.get(i);
+
+        if (cacheable == null && routes.cacheable().length > 0) {
+          cacheable = routes.cacheable()[0];
+        }
+
         String pathSegment = routes.value();
         if (hasContent(pathSegment)) {
           if (!path.endsWith("/")) {
@@ -93,6 +103,7 @@ class RoutesData implements Routes
 
       this.path = path;
       this.forwardPath = forwardPath.isEmpty() ? null : forwardPath;
+      this.cacheable = cacheable == null ? true : cacheable;
 
       List<String> acceptTypePatterns = new ArrayList<String>();
       Boolean routeUnannotatedPublicMethods = null;
@@ -182,6 +193,11 @@ class RoutesData implements Routes
   public String[] tags()
   {
     return tags.toArray(new String[tags.size()]);
+  }
+
+  @Override
+  public boolean[] cacheable() {
+    return new boolean[] {cacheable};
   }
 
   @Override

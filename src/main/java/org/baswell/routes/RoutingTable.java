@@ -167,7 +167,8 @@ public class RoutingTable
       RoutesData routesData = new RoutesData(routesClass);
 
       List<RouteNode> routeNodes = new ArrayList<>();
-      routesNodes.add(new RoutesNode(criteriaBuilder.buildRoutesCriteria(routesClass, routesData, routesConfiguration), routeNodes));
+      RoutesNode routesNode = new RoutesNode(criteriaBuilder.buildRoutesCriteria(routesClass, routesData, routesConfiguration), routesData, routeNodes);
+      routesNodes.add(routesNode);
 
       List<BeforeRouteNode> classBeforeNodes = getBeforeRouteNodes(routesClass);
       List<AfterRouteNode> classAfterNodes = getAfterRouteNodes(routesClass);
@@ -239,7 +240,7 @@ public class RoutingTable
             }
           }
 
-          classRoutes.add(new RouteNode(routeNodes.size(), method, routeData, routeInstance, criteria, parameters, responseType, beforeNodes, afterNodes));
+          classRoutes.add(new RouteNode(routesNode, routeNodes.size(), method, routeData, routeInstance, criteria, parameters, responseType, beforeNodes, afterNodes));
         }
       }
 
@@ -307,10 +308,10 @@ public class RoutingTable
 
     for (int i = 0; i < routesNodes.size(); i++) {
       RoutesNode routesNode = routesNodes.get(i);
-      if (routesNode.routesCriteria.matches(requestedMediaType, path)) {
-        for (int j = 0; j < routesNode.routeNodes.size(); j++)
+      if (routesNode.criteria.matches(requestedMediaType, path)) {
+        for (int j = 0; j < routesNode.nodes.size(); j++)
         {
-          RouteNode routeNode = routesNode.routeNodes.get(j);
+          RouteNode routeNode = routesNode.nodes.get(j);
           pathMatchers.clear();
           parameterMatchers.clear();
           if (routeNode.criteria.matches(httpMethod, requestedMediaType, path, parameters, pathMatchers, parameterMatchers))
@@ -328,7 +329,7 @@ public class RoutingTable
   {
     List<RouteNode> routeNodes = new ArrayList<>();
     for (RoutesNode routesNode : routesNodes) {
-      routeNodes.addAll(routesNode.routeNodes);
+      routeNodes.addAll(routesNode.nodes);
     }
     return routeNodes;
   }

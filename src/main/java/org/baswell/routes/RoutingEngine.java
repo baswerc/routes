@@ -107,7 +107,21 @@ public class RoutingEngine
     RequestedMediaType requestedMediaType = new RequestedMediaType(servletRequest.getHeader("Accept"), requestPath, requestParameters);
     RequestContent requestContent = null;
 
+
     MatchedRoute matchedRoute = null;
+    String cacheKey = null;
+    boolean routeFromCache = false;
+
+    RouteCache routeCache = routingTable.routesConfiguration.routeCache;
+    if (routeCache != null) {
+      cacheKey = requestPath.toString();
+      if (requestParameters.hasParameters()) {
+        cacheKey += "?" + requestParameters.queryString;
+      }
+      matchedRoute = (MatchedRoute) routeCache.get(cacheKey);
+      routeFromCache = matchedRoute != null;
+    }
+
     if (matchedRoute == null)
     {
       matchedRoute = routingTable.find(requestPath, requestParameters, httpMethod, requestedMediaType);
@@ -134,6 +148,14 @@ public class RoutingEngine
           logger.logError("Unable to create route instance for class: " + matchedRoute.routeNode.routeHolder.getRouteObjectClass(), e);
         }
         throw new ServletException(e);
+      }
+      finally {
+        /**
+         * We only cache nodes with fixed (no patterns) paths and parameters.
+         */
+        if (routeCache != null && !routeFromCache && matchedRoute.routeNode.criteria.allCriteriaFixed && matchedRoute.routeNode.parent.data.cacheable) {
+          routeCache.put(cacheKey, matchedRoute);
+        }
       }
     }
     else

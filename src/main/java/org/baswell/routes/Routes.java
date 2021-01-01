@@ -104,4 +104,8 @@ public @interface Routes
    */
   String[] tags() default {};
 
+  /**
+   * Are routes within this class cacheable?
+   */
+  boolean[] cacheable() default {};
 }
