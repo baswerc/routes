@@ -65,7 +65,7 @@ public class RoutingTable
 
   volatile boolean built;
 
-  private List<Object> addedObjects = new ArrayList<Object>();
+  private List<Object> addedObjects = new ArrayList<>();
 
   private List<RoutesNode> routesNodes;
 
@@ -154,7 +154,7 @@ public class RoutingTable
    */
   public void build() throws RoutesException
   {
-    Parser parser = new Parser();
+    TreeParser treeParser = new TreeParser();
     CriteriaBuilder criteriaBuilder = new CriteriaBuilder();
     MethodParametersBuilder parametersBuilder = new MethodParametersBuilder();
 
@@ -164,18 +164,19 @@ public class RoutingTable
       boolean instanceIsClass = (addedObject instanceof Class);
       Class routesClass = instanceIsClass ? (Class) addedObject : addedObject.getClass();
 
-      RoutesData routesAnnotation = new RoutesData(routesClass);
+      RoutesData routesData = new RoutesData(routesClass);
+
+      List<RouteNode> routeNodes = new ArrayList<>();
+      RoutesNode routesNode = new RoutesNode(criteriaBuilder.buildRoutesCriteria(routesClass, routesData, routesConfiguration), routeNodes);
 
       List<BeforeRouteNode> classBeforeNodes = getBeforeRouteNodes(routesClass);
       List<AfterRouteNode> classAfterNodes = getAfterRouteNodes(routesClass);
 
 
-      int numRoutesPaths;
       boolean routeUnannotatedPublicMethods;
 
-      if (routesAnnotation == null)
+      if (routesData == null)
       {
-        numRoutesPaths = 1;
         if (routesConfiguration.routeUnannotatedPublicMethods)
         {
           routeUnannotatedPublicMethods = true;
@@ -200,8 +201,7 @@ public class RoutingTable
       }
       else
       {
-        numRoutesPaths = Math.max(1, routesAnnotation.value().length);
-        routeUnannotatedPublicMethods = routesAnnotation.routeUnannotatedPublicMethods().length == 0 ? routesConfiguration.routeUnannotatedPublicMethods : routesAnnotation.routeUnannotatedPublicMethods()[0];
+        routeUnannotatedPublicMethods = routesData.routeUnannotatedPublicMethods().length == 0 ? routesConfiguration.routeUnannotatedPublicMethods : routesData.routeUnannotatedPublicMethods()[0];
       }
 
       List<RouteNode> classRoutes = new ArrayList<RouteNode>();
@@ -213,37 +213,33 @@ public class RoutingTable
         Route routeAnnotation = method.getAnnotation(Route.class);
         if ((routeAnnotation != null) || (routeUnannotatedPublicMethods && Modifier.isPublic(method.getModifiers()) && (method.getDeclaringClass() == routesClass)))
         {
+          RouteData routeData = new RouteData(routesClass, method, routesConfiguration, routesData, routeAnnotation);
+          ParsedRouteTree tree = treeParser.parse(routeData.route);
+          RouteHolder routeInstance = instanceIsClass ? new RouteClassHolder(routesClass, routesConfiguration.routeInstancePool) : new RouteInstanceHolder(addedObject);
+          RouteCriteria criteria = criteriaBuilder.buildRouteCriteria(method, tree, routeData, routesConfiguration);
+          hasParameterCriteria = hasParameterCriteria || !criteria.parameterCriteria.isEmpty();
+          List<MethodParameter> parameters = parametersBuilder.buildParameters(method, criteria);
+          ResponseType responseType = mapResponseType(method, routeData);
 
-          for (int i = 0; i < numRoutesPaths; i++)
+          List<BeforeRouteNode> beforeNodes = new ArrayList<BeforeRouteNode>();
+          for (BeforeRouteNode beforeNode : classBeforeNodes)
           {
-            RouteData routeData = new RouteData(routesClass, method, routesConfiguration, routesAnnotation, routeAnnotation, i);
-            ParsedRouteTree tree = parser.parse(routeData.route);
-            RouteHolder routeInstance = instanceIsClass ? new RouteClassHolder(routesClass, routesConfiguration.routeInstancePool) : new RouteInstanceHolder(addedObject);
-            RouteCriteria criteria = criteriaBuilder.buildRouteCriteria(method, tree, routeData, routesConfiguration);
-            hasParameterCriteria = hasParameterCriteria || !criteria.parameterCriteria.isEmpty();
-            List<MethodParameter> parameters = parametersBuilder.buildParameters(method, criteria);
-            ResponseType responseType = mapResponseType(method, routeData);
-
-            List<BeforeRouteNode> beforeNodes = new ArrayList<BeforeRouteNode>();
-            for (BeforeRouteNode beforeNode : classBeforeNodes)
+            if ((beforeNode.onlyTags.isEmpty() || containsOne(beforeNode.onlyTags, routeData.tags)) && (beforeNode.exceptTags.isEmpty() || !containsOne(beforeNode.exceptTags, routeData.tags)))
             {
-              if ((beforeNode.onlyTags.isEmpty() || containsOne(beforeNode.onlyTags, routeData.tags)) && (beforeNode.exceptTags.isEmpty() || !containsOne(beforeNode.exceptTags, routeData.tags)))
-              {
-                beforeNodes.add(beforeNode);
-              }
+              beforeNodes.add(beforeNode);
             }
-
-            List<AfterRouteNode> afterNodes = new ArrayList<AfterRouteNode>();
-            for (AfterRouteNode afterNode : classAfterNodes)
-            {
-              if ((afterNode.onlyTags.isEmpty() || containsOne(afterNode.onlyTags, routeData.tags)) && (afterNode.exceptTags.isEmpty() || !containsOne(afterNode.exceptTags, routeData.tags)))
-              {
-                afterNodes.add(afterNode);
-              }
-            }
-
-            classRoutes.add(new RouteNode(routeNodes.size(), method, routeData, routeInstance, criteria, parameters, responseType, beforeNodes, afterNodes));
           }
+
+          List<AfterRouteNode> afterNodes = new ArrayList<AfterRouteNode>();
+          for (AfterRouteNode afterNode : classAfterNodes)
+          {
+            if ((afterNode.onlyTags.isEmpty() || containsOne(afterNode.onlyTags, routeData.tags)) && (afterNode.exceptTags.isEmpty() || !containsOne(afterNode.exceptTags, routeData.tags)))
+            {
+              afterNodes.add(afterNode);
+            }
+          }
+
+          classRoutes.add(new RouteNode(routeNodes.size(), method, routeData, routeInstance, criteria, parameters, responseType, beforeNodes, afterNodes));
         }
       }
 
@@ -330,7 +326,11 @@ public class RoutingTable
 
   List<RouteNode> getRouteNodes()
   {
-    return new ArrayList<RouteNode>(routeNodes);
+    List<RouteNode> routeNodes = new ArrayList<>();
+    for (RoutesNode routesNode : routesNodes) {
+      routeNodes.addAll(routesNode.routeNodes);
+    }
+    return routeNodes;
   }
 
   static List<BeforeRouteNode> getBeforeRouteNodes(Class clazz) throws RoutesException

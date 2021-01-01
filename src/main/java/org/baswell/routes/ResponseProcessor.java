@@ -26,8 +26,6 @@ import java.nio.channels.WritableByteChannel;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
@@ -97,18 +95,6 @@ class ResponseProcessor
       TransformerFactory.newInstance().newTransformer().transform(new DOMSource((Node) response), new StreamResult(servletResponse.getOutputStream()));
     }
     catch (TransformerException e)
-    {
-      throw new RuntimeException(e);
-    }
-  }
-
-  void sendJaxb(Object response, HttpServletResponse servletResponse) throws IOException
-  {
-    try
-    {
-      JAXBContext.newInstance(response.getClass()).createMarshaller().marshal(response, servletResponse.getOutputStream());
-    }
-    catch (JAXBException e)
     {
       throw new RuntimeException(e);
     }

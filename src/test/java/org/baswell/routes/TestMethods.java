@@ -23,7 +23,7 @@ public class TestMethods
 {
   static public ParsedRouteTree routeTree(String route)
   {
-    return new Parser().parse(route);
+    return new TreeParser().parse(route);
   }
   
   static public RequestParameters getRequestParameters(Object... values)

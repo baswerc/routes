@@ -57,11 +57,9 @@ public class RootTest extends EndToEndTest
 
     expectedName = "blahblahblah";
     invoke(new TestHttpServletRequest("GET", "/", "/" + expectedName), "getName");
-    expectedName = "abc";
-    invoke(new TestHttpServletRequest("GET", "/", "/test/" + expectedName), "getName");
   }
 
-  @Routes({"/", "/test"})
+  @Routes("/")
   static public class RootRoute extends BaseRoutes
   {
     @Route("*")

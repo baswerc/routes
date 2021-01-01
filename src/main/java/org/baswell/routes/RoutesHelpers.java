@@ -10,10 +10,10 @@ public class RoutesHelpers
   public static String rootUrl(Class routesClass)
   {
     Routes routes = new RoutesData(routesClass);
-    String[] values = routes.value();
-    if (values != null && values.length > 0)
+    String path = routes.value();
+    if (path.length() > 0)
     {
-      return values[0];
+      return path;
     }
     else
     {

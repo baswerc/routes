@@ -18,7 +18,7 @@ package org.baswell.routes;
 import java.util.ArrayList;
 import java.util.List;
 
-class Parser
+class TreeParser
 {
   ParsedRouteTree parse(String route) throws RoutesException
   {

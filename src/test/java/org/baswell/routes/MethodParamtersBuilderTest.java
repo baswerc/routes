@@ -105,9 +105,9 @@ public class MethodParamtersBuilderTest
     catch (RoutesException e)
     {}
     
-    Parser parser = new Parser();
+    TreeParser treeParser = new TreeParser();
     Method routeMethod = RouteTest.class.getMethod("routeOne", String.class, boolean.class, HttpServletRequest.class, List.class);
-    ParsedRouteTree routeTree = parser.parse(routeMethod.getAnnotation(Route.class).value());
+    ParsedRouteTree routeTree = treeParser.parse(routeMethod.getAnnotation(Route.class).value());
 
     RoutesConfiguration routesConfiguration = new RoutesConfiguration();
     CriteriaBuilder criteriaBuilder = new CriteriaBuilder();

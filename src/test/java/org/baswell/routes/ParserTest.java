@@ -15,10 +15,6 @@
  */
 package org.baswell.routes;
 
-import org.baswell.routes.ParsedExactParameterTerminal;
-import org.baswell.routes.ParsedExactPathTerminal;
-import org.baswell.routes.ParsedRouteTree;
-import org.baswell.routes.Parser;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
@@ -28,9 +24,9 @@ public class ParserTest
   @Test
   public void testSimplePath()
   {
-    Parser parser = new Parser();
+    TreeParser treeParser = new TreeParser();
     
-    ParsedRouteTree tree = parser.parse("/test/this/out");
+    ParsedRouteTree tree = treeParser.parse("/test/this/out");
     
     assertEquals(tree.pathTerminals.size(), 3);
     assertEquals(tree.parameterTerminals.size(), 0);
@@ -57,9 +53,9 @@ public class ParserTest
   @Test
   public void testSimplePathParameters()
   {
-    Parser parser = new Parser();
+    TreeParser treeParser = new TreeParser();
     
-    ParsedRouteTree tree = parser.parse("/test/this/out?one=two&three=four");
+    ParsedRouteTree tree = treeParser.parse("/test/this/out?one=two&three=four");
     
     assertEquals(tree.pathTerminals.size(), 3);
     

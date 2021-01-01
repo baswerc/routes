@@ -14,19 +14,15 @@ public class RoutesDataTest
   @Test
   public void testExpandRoutes()
   {
-    List<String> routes = expandRoutes(toList(new String[]{"/a", "/b"}, new String[]{"/c", "/d"}));
+    List<String> routes = expandRoutes(toList(new String[]{"/a"}, new String[]{"/c"}));
     assertEquals(4, routes.size());
     assertTrue(routes.contains("/a/c"));
     assertTrue(routes.contains("/a/d"));
-    assertTrue(routes.contains("/b/c"));
-    assertTrue(routes.contains("/b/c"));
 
-    routes = expandRoutes(toList(new String[]{"a", "b"}, new String[]{"c", "d"}, new String[]{"/e"}));
+    routes = expandRoutes(toList(new String[]{"a"}, new String[]{"c"}, new String[]{"/e"}));
     assertEquals(4, routes.size());
     assertTrue(routes.contains("a/c/e"));
     assertTrue(routes.contains("a/d/e"));
-    assertTrue(routes.contains("b/c/e"));
-    assertTrue(routes.contains("b/c/e"));
   }
 
   @Test
@@ -40,10 +36,6 @@ public class RoutesDataTest
     assertTrue(routePaths.contains("/a/d/e"));
     assertTrue(routePaths.contains("/a/c/f"));
     assertTrue(routePaths.contains("/a/d/f"));
-    assertTrue(routePaths.contains("/b/c/e"));
-    assertTrue(routePaths.contains("/b/d/e"));
-    assertTrue(routePaths.contains("/b/c/f"));
-    assertTrue(routePaths.contains("/b/d/f"));
 
     assertEquals("one/two/three", routes.forwardPath());
 
@@ -68,17 +60,17 @@ public class RoutesDataTest
     return list;
   }
 
-  @Routes(value = {"/a", "/b"}, forwardPath = "one", tags = {"one"}, defaultContentType = "text/html", acceptTypePatterns = {MIMETypes.CSV}, defaultReturnedStringIsContent = true, routeUnannotatedPublicMethods = false)
+  @Routes(value = "/a", forwardPath = "one", tags = {"one"}, defaultContentType = "text/html", acceptTypePatterns = {MIMETypes.CSV}, defaultReturnedStringIsContent = true, routeUnannotatedPublicMethods = false)
   static class One
   {
   }
 
-  @Routes(value = {"/c", "/d"}, forwardPath = "two", tags = {"two"}, defaultContentType = "text/xhtml", defaultReturnedStringIsContent = false, routeUnannotatedPublicMethods = false)
+  @Routes(value = "/c", forwardPath = "two", tags = {"two"}, defaultContentType = "text/xhtml", defaultReturnedStringIsContent = false, routeUnannotatedPublicMethods = false)
   static class Two extends One
   {
   }
 
-  @Routes(value = {"/e", "/f"}, forwardPath = "three", tags = {"three"}, acceptTypePatterns = {MIMETypes.HTML}, routeUnannotatedPublicMethods = true)
+  @Routes(value = "/e", forwardPath = "three", tags = {"three"}, acceptTypePatterns = {MIMETypes.HTML}, routeUnannotatedPublicMethods = true)
   static class Three extends Two
   {
   }

@@ -9,19 +9,19 @@ import static org.baswell.routes.RoutesMethods.*;
 
 class RoutesData implements Routes
 {
-  private final String path;
+  final String path;
 
-  private final String forwardPath;
+  final String forwardPath;
 
-  private final List<String> acceptTypePatterns;
+  final List<String> acceptTypePatterns;
 
-  private final Boolean routeUnannotatedPublicMethods;
+  final Boolean routeUnannotatedPublicMethods;
 
-  private final String defaultContentType;
+  final String defaultContentType;
 
-  private final Boolean defaultReturnedStringIsContent;
+  final Boolean defaultReturnedStringIsContent;
 
-  private final List<String> tags;
+  final List<String> tags;
 
   RoutesData(Class clazz)
   {
